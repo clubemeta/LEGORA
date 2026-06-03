@@ -1488,3 +1488,512 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 </script>
 </body>
 </html>
+<!-- INJETADO: TOUR + MOBILE FIX -->
+<style>
+/* ═══════════════════════════════
+   MOBILE-FIRST OVERRIDES
+   90% dos usuários são mobile
+═══════════════════════════════ */
+
+/* Base mobile */
+html{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* Touch targets mínimos 44px */
+button,a,[onclick]{min-height:44px}
+.chip,input,select{min-height:40px;font-size:16px!important} /* 16px evita zoom no iOS */
+.vmq-sel,.vmq-inp,.mode-sel,.qty-sel,.df-sel,.disc-search{font-size:16px!important}
+
+/* Sidebar: escondida por padrão no mobile */
+.sb{
+  position:fixed!important;
+  left:-100%!important;
+  width:280px!important;
+  z-index:800!important;
+  transition:left .25s ease!important;
+  box-shadow:4px 0 20px rgba(0,0,0,.15)!important;
+  height:100vh!important;
+  overflow-y:auto!important;
+}
+.sb.open{left:0!important}
+
+/* Topbar sempre visível */
+.topbar{position:sticky;top:0;z-index:100;height:54px!important}
+.topbar h1{font-size:.9rem!important}
+.ham{display:flex!important;width:44px!important;height:44px!important}
+
+/* Content full width no mobile */
+.main{width:100%!important;overflow-y:auto!important;height:100vh!important}
+.content{padding:14px 12px!important;overflow-y:visible!important;height:auto!important}
+
+/* Stats: 2 colunas no mobile */
+.dash-stats{grid-template-columns:1fr 1fr!important;gap:8px!important}
+.stat{padding:14px 12px!important}
+.stat-val{font-size:1.4rem!important}
+.stat-lbl{font-size:.65rem!important}
+
+/* VMQ filters: 1 coluna no mobile */
+.vmq-row{grid-template-columns:1fr 1fr!important;gap:6px!important}
+.vmq-actions{flex-direction:column!important;gap:10px!important}
+.vmq-tabs-area{width:100%}
+.vmq-btns{width:100%;justify-content:flex-end}
+.vmq-label{width:80px!important;font-size:.68rem!important}
+
+/* Question card mobile */
+.q-card{padding:14px 12px!important}
+.q-text{font-size:.88rem!important}
+.q-opt{font-size:.84rem!important;padding:12px!important;min-height:48px!important}
+.q-footer{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:0!important}
+.qf-btn{font-size:.6rem!important;flex-direction:column!important;gap:2px!important;padding:8px 2px!important}
+.qf-btn svg{width:14px!important;height:14px!important}
+
+/* Dashboard bottom: stack no mobile */
+.dash-bottom{grid-template-columns:1fr!important}
+.donut-card{padding:14px!important}
+
+/* Simulado: full width */
+.sim-run{padding:14px 12px!important}
+
+/* Drawer: full width no mobile */
+.drawer{width:100%!important;border-radius:20px 20px 0 0!important;top:auto!important;bottom:0!important;height:85vh!important;transform:translateY(100%)!important}
+.drawer.show{transform:translateY(0)!important}
+
+/* Profile menu: full width bottom sheet */
+.prof-menu{
+  position:fixed!important;
+  right:0!important;left:0!important;
+  top:auto!important;bottom:0!important;
+  width:100%!important;
+  border-radius:20px 20px 0 0!important;
+  box-shadow:0 -4px 30px rgba(0,0,0,.15)!important;
+}
+
+/* Trial banner compact */
+.trial-banner{font-size:.72rem!important;padding:6px 12px!important}
+
+/* Bottom nav bar para mobile */
+#bottom-nav{
+  display:flex;
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e5e7eb;
+  height:60px;z-index:700;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;color:#9ca3af;font-size:.58rem;font-weight:600;
+  transition:color .15s;border:none;background:none;padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-item.active{color:#1a9fd4}
+.bn-item svg{width:20px;height:20px}
+
+/* Compensar bottom nav */
+.content{padding-bottom:74px!important}
+.modal-bg .modal{margin-bottom:60px}
+
+/* Desktop: esconder bottom nav, mostrar sidebar */
+@media(min-width:768px){
+  #bottom-nav{display:none!important}
+  .sb{position:relative!important;left:0!important;width:140px!important;box-shadow:none!important;height:100vh!important}
+  .main{height:100vh!important}
+  .content{padding:22px!important;padding-bottom:22px!important}
+  .dash-stats{grid-template-columns:repeat(5,1fr)!important}
+  .vmq-row{grid-template-columns:repeat(4,1fr)!important}
+  .dash-bottom{grid-template-columns:1fr 240px!important}
+  .q-footer{display:flex!important}
+  .drawer{width:340px!important;border-radius:0!important;top:0!important;bottom:0!important;height:100%!important;transform:translateX(100%)!important}
+  .drawer.show{transform:translateX(0)!important}
+  .prof-menu{position:fixed!important;right:12px!important;left:auto!important;top:var(--top)!important;bottom:auto!important;width:210px!important;border-radius:8px!important;box-shadow:0 8px 28px rgba(0,0,0,.1)!important}
+  .ham{display:none!important}
+}
+
+/* ═══════════════════════════════
+   TOUR STYLES
+═══════════════════════════════ */
+#tour-overlay{
+  position:fixed;inset:0;z-index:2000;pointer-events:none;display:none;
+}
+#tour-overlay.active{display:block}
+#tour-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  pointer-events:all;
+}
+#tour-highlight{
+  position:fixed;border-radius:10px;
+  box-shadow:0 0 0 4px #1a9fd4, 0 0 0 9999px rgba(0,0,0,.55);
+  pointer-events:none;z-index:2001;
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+#tour-box{
+  position:fixed;z-index:2002;
+  background:#fff;border-radius:14px;
+  padding:18px 18px 14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.25);
+  max-width:290px;width:calc(100vw - 32px);
+  pointer-events:all;
+}
+.tour-step-num{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.7rem;font-weight:700;color:#1a9fd4;
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;
+}
+.tour-step-dots{display:flex;gap:4px;margin-left:auto}
+.tour-dot{width:6px;height:6px;border-radius:50%;background:#e5e7eb}
+.tour-dot.active{background:#1a9fd4}
+#tour-title{font-size:.95rem;font-weight:700;color:#111;margin-bottom:5px}
+#tour-desc{font-size:.82rem;color:#6b7280;line-height:1.6;margin-bottom:14px}
+.tour-actions{display:flex;gap:8px;align-items:center}
+#tour-skip{font-size:.75rem;color:#9ca3af;background:none;border:none;cursor:pointer;padding:8px 0;min-height:auto}
+#tour-skip:hover{color:#6b7280}
+#tour-next{
+  flex:1;padding:10px;border-radius:8px;
+  background:#1a9fd4;color:#fff;
+  font-size:.82rem;font-weight:700;border:none;cursor:pointer;
+  min-height:40px;
+}
+#tour-next:hover{background:#1589b8}
+#tour-prev{
+  padding:10px 14px;border-radius:8px;
+  background:#f3f4f6;color:#374151;
+  font-size:.82rem;font-weight:600;border:none;cursor:pointer;
+  min-height:40px;
+}
+#tour-prev:hover{background:#e5e7eb}
+.tour-progress{height:3px;background:#e5e7eb;border-radius:2px;margin-bottom:12px;overflow:hidden}
+.tour-progress-fill{height:100%;background:#1a9fd4;border-radius:2px;transition:width .3s}
+
+/* Tour confetti */
+.confetti-piece{
+  position:fixed;width:8px;height:8px;border-radius:2px;
+  pointer-events:none;z-index:3000;
+  animation:confetti-fall 1.5s ease-in forwards;
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+</style>
+
+<!-- BOTTOM NAV (mobile) -->
+<div id="bottom-nav">
+  <button class="bn-item active" id="bn-dash" onclick="bnNav('desempenho','bn-dash')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </button>
+  <button class="bn-item" id="bn-vmq" onclick="bnNav('questoes','bn-vmq')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    Questões
+  </button>
+  <button class="bn-item" id="bn-sim" onclick="bnNav('simulados','bn-sim')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Simulados
+  </button>
+  <button class="bn-item" id="bn-disc" onclick="bnNav('disciplinas','bn-disc')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="3" cy="18" r="1"/></svg>
+    Legislação
+  </button>
+  <button class="bn-item" id="bn-menu" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    Menu
+  </button>
+</div>
+
+<!-- TOUR OVERLAY -->
+<div id="tour-overlay">
+  <div id="tour-backdrop" onclick="tourSkip()"></div>
+  <div id="tour-highlight"></div>
+  <div id="tour-box">
+    <div style="display:flex;align-items:center;margin-bottom:8px">
+      <div class="tour-step-num">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="tour-step-label">Passo 1 de 7</span>
+      </div>
+      <div class="tour-step-dots" id="tour-dots"></div>
+    </div>
+    <div class="tour-progress"><div class="tour-progress-fill" id="tour-progress-fill"></div></div>
+    <div id="tour-title">Bem-vindo ao LeisecaQuest!</div>
+    <div id="tour-desc">Vamos fazer um tour rápido para você conhecer a plataforma.</div>
+    <div class="tour-actions">
+      <button id="tour-skip" onclick="tourSkip()">Pular tour</button>
+      <button id="tour-prev" onclick="tourPrev()" style="display:none">← Voltar</button>
+      <button id="tour-next" onclick="tourNext()">Começar →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════ */
+function bnNav(page, btnId){
+  navTo(page);
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById(btnId);
+  if(btn)btn.classList.add('active');
+  closeSidebar();
+}
+
+/* ═══════════════════════════════
+   TOUR ENGINE
+═══════════════════════════════ */
+const TOUR_STEPS = [
+  {
+    title: 'Bem-vindo ao LeisecaQuest! 👋',
+    desc: 'Somos a plataforma mais completa para estudo de lei seca em concursos públicos. Vamos te mostrar tudo em menos de 1 minuto!',
+    target: null,
+    position: 'center'
+  },
+  {
+    title: '📊 Seu Dashboard',
+    desc: 'Aqui você acompanha seu desempenho em tempo real — questões resolvidas, taxa de acerto e histórico de evolução.',
+    target: '.dash-stats',
+    position: 'bottom'
+  },
+  {
+    title: '⚡ Vade Mecum de Questões',
+    desc: 'O coração da plataforma! Mais de 100 mil questões de lei seca filtradas por legislação, banca e cargo. Responda e veja o gabarito fundamentado.',
+    target: '#bn-vmq',
+    position: 'top'
+  },
+  {
+    title: '⏱ Simulados',
+    desc: 'Simulados com timer e correção automática. Pratique no ritmo da prova real e veja sua nota ao final.',
+    target: '#bn-sim',
+    position: 'top'
+  },
+  {
+    title: '📋 Legislações',
+    desc: 'Mais de 1.200 legislações organizadas. Clique em qualquer uma para estudar só aquela lei com questões filtradas.',
+    target: '#bn-disc',
+    position: 'top'
+  },
+  {
+    title: '🎯 Retas Finais',
+    desc: 'Cronogramas direcionados para concursos específicos — ENAM, MPE, TJ, PRF e muito mais. Saiba exatamente o que estudar cada dia.',
+    target: '#sub-retas',
+    position: 'right'
+  },
+  {
+    title: 'Pronto para começar! 🚀',
+    desc: 'Você já conhece tudo! Comece respondendo questões agora. Quanto mais você responde, mais a plataforma aprende o que você precisa revisar.',
+    target: null,
+    position: 'center',
+    isLast: true
+  },
+];
+
+let tourStep = 0;
+let tourActive = false;
+
+function startTour(){
+  tourStep = 0;
+  tourActive = true;
+  document.getElementById('tour-overlay').classList.add('active');
+  // Ir para dashboard primeiro
+  navTo('desempenho');
+  setTimeout(()=>renderTourStep(), 400);
+}
+
+function renderTourStep(){
+  const step = TOUR_STEPS[tourStep];
+  const total = TOUR_STEPS.length;
+
+  // Update text
+  document.getElementById('tour-step-label').textContent = `Passo ${tourStep+1} de ${total}`;
+  document.getElementById('tour-title').textContent = step.title;
+  document.getElementById('tour-desc').textContent = step.desc;
+  document.getElementById('tour-progress-fill').style.width = `${((tourStep+1)/total)*100}%`;
+
+  // Dots
+  const dots = document.getElementById('tour-dots');
+  dots.innerHTML = TOUR_STEPS.map((_,i)=>`<div class="tour-dot ${i===tourStep?'active':''}"></div>`).join('');
+
+  // Buttons
+  document.getElementById('tour-prev').style.display = tourStep > 0 ? 'block' : 'none';
+  const nextBtn = document.getElementById('tour-next');
+  nextBtn.textContent = step.isLast ? '🚀 Começar a estudar!' : (tourStep===0?'Começar →':'Próximo →');
+
+  // Navigate to relevant page
+  if(tourStep===2) navTo('questoes');
+  else if(tourStep===3) navTo('simulados');
+  else if(tourStep===4) navTo('disciplinas');
+  else if(tourStep===5){ navTo('retas'); }
+  else if(tourStep===0||tourStep===1||tourStep===6) navTo('desempenho');
+
+  // Highlight
+  const hl = document.getElementById('tour-highlight');
+  const box = document.getElementById('tour-box');
+
+  if(!step.target){
+    // Center mode
+    hl.style.opacity = '0';
+    box.style.top = '50%';
+    box.style.left = '50%';
+    box.style.transform = 'translate(-50%,-50%)';
+    box.style.bottom = 'auto';
+    box.style.right = 'auto';
+    return;
+  }
+
+  // Find target after small delay (page may be rendering)
+  setTimeout(()=>{
+    const el = document.querySelector(step.target);
+    if(!el){ renderTourStepCenter(); return; }
+
+    const rect = el.getBoundingClientRect();
+    const pad = 6;
+
+    hl.style.opacity = '1';
+    hl.style.top = (rect.top-pad)+'px';
+    hl.style.left = (rect.left-pad)+'px';
+    hl.style.width = (rect.width+pad*2)+'px';
+    hl.style.height = (rect.height+pad*2)+'px';
+    hl.style.transform = 'none';
+
+    // Position box
+    const bw = 290;
+    const bh = 180;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 14;
+
+    box.style.transform = 'none';
+
+    if(step.position === 'top'){
+      box.style.bottom = (vh - rect.top + margin)+'px';
+      box.style.top = 'auto';
+      box.style.left = Math.max(margin, Math.min(rect.left, vw-bw-margin))+'px';
+      box.style.right = 'auto';
+    } else if(step.position === 'bottom'){
+      box.style.top = (rect.bottom+margin)+'px';
+      box.style.bottom = 'auto';
+      box.style.left = Math.max(margin, Math.min(rect.left, vw-bw-margin))+'px';
+      box.style.right = 'auto';
+    } else if(step.position === 'right'){
+      box.style.top = Math.max(margin, rect.top)+'px';
+      box.style.bottom = 'auto';
+      box.style.left = (rect.right+margin)+'px';
+      box.style.right = 'auto';
+      // If too far right, go left
+      if(rect.right+margin+bw > vw){
+        box.style.left = Math.max(margin, rect.left-bw-margin)+'px';
+      }
+    } else {
+      // center fallback
+      box.style.top = '50%';
+      box.style.left = '50%';
+      box.style.transform = 'translate(-50%,-50%)';
+      box.style.bottom = 'auto';
+      box.style.right = 'auto';
+    }
+
+    // Mobile: always bottom position for bottom-nav items
+    if(vw < 768 && (step.position==='top')){
+      box.style.bottom = (vh-rect.top+margin)+'px';
+      box.style.top = 'auto';
+      box.style.left = margin+'px';
+      box.style.right = margin+'px';
+      box.style.width = 'auto';
+    }
+  }, 200);
+}
+
+function renderTourStepCenter(){
+  const box = document.getElementById('tour-box');
+  document.getElementById('tour-highlight').style.opacity = '0';
+  box.style.top = '50%';
+  box.style.left = '50%';
+  box.style.transform = 'translate(-50%,-50%)';
+  box.style.bottom = 'auto';
+  box.style.right = 'auto';
+}
+
+function tourNext(){
+  if(tourStep >= TOUR_STEPS.length-1){
+    tourEnd();
+    return;
+  }
+  tourStep++;
+  renderTourStep();
+}
+
+function tourPrev(){
+  if(tourStep > 0){
+    tourStep--;
+    renderTourStep();
+  }
+}
+
+function tourSkip(){
+  tourEnd();
+}
+
+function tourEnd(){
+  tourActive = false;
+  document.getElementById('tour-overlay').classList.remove('active');
+  navTo('desempenho');
+  // Confetti!
+  if(tourStep === TOUR_STEPS.length-1) fireConfetti();
+  // Save tour completed
+  localStorage.setItem('lq_tour_done','1');
+}
+
+function fireConfetti(){
+  const colors=['#1a9fd4','#16a34a','#f97316','#8b5cf6','#ec4899','#eab308'];
+  for(let i=0;i<40;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.left=Math.random()*100+'vw';
+    el.style.top='-20px';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDelay=Math.random()*.8+'s';
+    el.style.animationDuration=(.8+Math.random()*1)+'s';
+    el.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 2000);
+  }
+}
+
+/* Hook tour into platform init */
+const _origInitPlatform = window.initPlatform;
+window.initPlatform = function(){
+  if(_origInitPlatform) _origInitPlatform();
+  // Start tour for new users
+  if(!localStorage.getItem('lq_tour_done')){
+    setTimeout(()=>startTour(), 1000);
+  }
+};
+
+/* Hook tour into sidebar Tour link */
+document.querySelectorAll('.sb-link').forEach(el=>{
+  if(el.textContent.includes('Tour')){
+    el.onclick = ()=>{ closeSidebar(); startTour(); };
+  }
+});
+
+/* Fix: override initPlatform call timing */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Patch tour explicativo link after platform loads
+  setTimeout(()=>{
+    document.querySelectorAll('.sb-link').forEach(el=>{
+      if(el.textContent.includes('Tour')){
+        el.onclick = ()=>{ closeSidebar(); startTour(); };
+      }
+    });
+  }, 2000);
+});
+
+/* ═══════════════════════════════
+   MOBILE: close sidebar on nav
+═══════════════════════════════ */
+const _origNavTo = window.navTo;
+window.navTo = function(id){
+  if(_origNavTo) _origNavTo(id);
+  // Sync bottom nav
+  const map={desempenho:'bn-dash',posicao:'bn-dash',questoes:'bn-vmq',simulados:'bn-sim',disciplinas:'bn-disc',rankings:'bn-disc',disciplinas:'bn-disc'};
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const bnId=map[id];
+  if(bnId){const b=document.getElementById(bnId);if(b)b.classList.add('active');}
+};
+</script>
