@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LeisecaQuest — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#111827;background:#f3f4f6}
+button,input,select,textarea{font-family:inherit}
+:root{
+  --blue:#1a9fd4;--blue2:#1589b8;--blue-bg:#e8f6fb;
+  --green:#16a34a;--green-bg:#dcfce7;
+  --red:#dc2626;--red-bg:#fee2e2;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --purple:#7c3aed;--purple-bg:#f3e8ff;
+  --bd:#e5e7eb;--bd2:#d1d5db;
+  --card:#fff;--muted:#6b7280;--dim:#9ca3af;
+  --sb:220px;--top:56px;
+}
+/* LOADING */
+#loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:12px}
+.spinner{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* LOGIN */
+#login-wrap{display:none;position:fixed;inset:0;background:#f3f4f6;align-items:center;justify-content:center;z-index:1000}
+#login-wrap.show{display:flex}
+.login-box{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:36px;max-width:380px;width:100%}
+.login-box h2{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.login-box p{font-size:.82rem;color:var(--muted);margin-bottom:24px}
+.login-field{margin-bottom:12px}
+.login-field label{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.login-field input{width:100%;padding:10px 13px;border:1px solid var(--bd2);border-radius:7px;font-size:.88rem;outline:none;transition:border-color .15s}
+.login-field input:focus{border-color:var(--blue)}
+.login-btn{width:100%;padding:11px;border:none;border-radius:7px;background:var(--blue);color:#fff;font-size:.88rem;font-weight:600;cursor:pointer}
+.login-btn:hover{background:var(--blue2)}
+.login-error{background:var(--red-bg);border:1px solid #fca5a5;border-radius:6px;padding:8px 12px;font-size:.78rem;color:#991b1b;margin-bottom:12px;display:none}
+/* SHELL */
+#app{display:none;height:100vh;flex-direction:row}
+#app.show{display:flex}
+/* SIDEBAR */
+.sb{width:var(--sb);flex-shrink:0;background:#111827;display:flex;flex-direction:column;height:100vh}
+.sb-top{height:var(--top);padding:0 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo{font-size:.95rem;font-weight:800;color:#fff}
+.sb-logo span{color:var(--blue)}
+.sb-badge{background:var(--orange);color:#fff;border-radius:4px;padding:1px 7px;font-size:.6rem;font-weight:700;text-transform:uppercase}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 8px}
+.sb-section{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);padding:10px 10px 4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.65);font-size:.82rem;font-weight:500;transition:.12s;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.sb-item.active{background:rgba(26,159,212,.2);color:var(--blue)}
+.sb-item svg{width:16px;height:16px;flex-shrink:0}
+.sb-item .sb-count{margin-left:auto;background:var(--blue);color:#fff;border-radius:999px;padding:1px 7px;font-size:.6rem;font-weight:700}
+.sb-footer{padding:12px 8px;border-top:1px solid rgba(255,255,255,.1)}
+.sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;transition:.12s}
+.sb-user:hover{background:rgba(255,255,255,.08)}
+.sb-av{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0}
+.sb-uname{font-size:.78rem;font-weight:600;color:#fff}
+.sb-urole{font-size:.62rem;color:rgba(255,255,255,.4)}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--top);background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.topbar h1{font-size:1rem;font-weight:700}
+.tb-right{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;border:none}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue2)}
+.btn-secondary{background:#fff;color:var(--muted);border:1px solid var(--bd)}
+.btn-secondary:hover{background:#f9fafb;color:#111}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #fca5a5}
+.btn-danger:hover{background:#fee2e2}
+.btn-success{background:var(--green-bg);color:var(--green);border:1px solid #86efac}
+.btn svg{width:14px;height:14px}
+.content{flex:1;overflow-y:auto;padding:24px}
+/* PAGES */
+.page{display:none}.page.show{display:block}
+/* CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 10px 0 60px;opacity:.08}
+.stat-card.blue::before{background:var(--blue)}
+.stat-card.green::before{background:var(--green)}
+.stat-card.orange::before{background:var(--orange)}
+.stat-card.purple::before{background:var(--purple)}
+.stat-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.stat-icon.blue{background:var(--blue-bg)}.stat-icon.green{background:var(--green-bg)}.stat-icon.orange{background:var(--orange-bg)}.stat-icon.purple{background:var(--purple-bg)}
+.stat-icon svg{width:18px;height:18px}
+.stat-val{font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:3px}
+.stat-lbl{font-size:.75rem;color:var(--muted)}
+.stat-delta{font-size:.72rem;margin-top:6px;display:flex;align-items:center;gap:3px}
+.delta-up{color:var(--green)}.delta-dn{color:var(--red)}
+/* TABLE */
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.card-title{font-size:.9rem;font-weight:700}
+.card-actions{display:flex;gap:8px}
+.search-bar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--bd);background:#fafafa}
+.search-inp{flex:1;padding:8px 12px;border:1px solid var(--bd2);border-radius:7px;font-size:.82rem;outline:none}
+.search-inp:focus{border-color:var(--blue)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 16px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);border-bottom:1px solid var(--bd);background:#f9fafb;white-space:nowrap}
+td{padding:12px 16px;font-size:.8rem;border-bottom:1px solid var(--bd);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.badge{display:inline-flex;padding:3px 9px;border-radius:999px;font-size:.68rem;font-weight:700}
+.badge-blue{background:var(--blue-bg);color:var(--blue)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-orange{background:var(--orange-bg);color:var(--orange)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+.badge-gray{background:#f3f4f6;color:var(--muted)}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:14px;padding:28px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:1rem;font-weight:700;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid.full{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.span2{grid-column:span 2}
+.fg label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.fg input,.fg select,.fg textarea{padding:9px 12px;border:1px solid var(--bd2);border-radius:7px;font-size:.85rem;outline:none;transition:border-color .15s;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue)}
+.fg textarea{resize:vertical;min-height:80px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd)}
+/* EMAIL SECTION */
+.email-grid{display:grid;grid-template-columns:300px 1fr;gap:20px}
+.email-list{background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.email-item{padding:14px 16px;border-bottom:1px solid var(--bd);cursor:pointer;transition:.12s}
+.email-item:last-child{border-bottom:none}
+.email-item:hover{background:#f9fafb}
+.email-item.active{background:var(--blue-bg);border-left:3px solid var(--blue)}
+.email-name{font-size:.84rem;font-weight:600;margin-bottom:2px}
+.email-sub{font-size:.72rem;color:var(--muted)}
+.email-editor{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:24px}
+.email-preview{background:#f8fafc;border:1px solid var(--bd);border-radius:10px;padding:0;overflow:hidden}
+.email-preview-hd{background:#fff;padding:14px 20px;border-bottom:1px solid var(--bd);font-size:.78rem;color:var(--muted)}
+.email-preview-body{padding:24px}
+/* CHARTS */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.mini-chart{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px}
+.mini-chart-title{font-size:.84rem;font-weight:600;margin-bottom:14px}
+.bar-chart{display:flex;gap:6px;align-items:flex-end;height:80px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:.3s}
+.bar-lbl{font-size:.58rem;color:var(--dim)}
+/* ALERTS */
+.alert{padding:12px 14px;border-radius:8px;font-size:.82rem;margin-bottom:16px;display:flex;align-items:flex-start;gap:8px}
+.alert-info{background:var(--blue-bg);border:1px solid var(--blue-bd,#b8dff0);color:#0c4a6e}
+.alert-success{background:var(--green-bg);border:1px solid #86efac;color:#166534}
+.alert-warn{background:var(--orange-bg);border:1px solid #fdba74;color:#9a3412}
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-bottom:20px}
+.tab{padding:10px 16px;font-size:.82rem;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-panel{display:none}.tab-panel.on{display:block}
+/* QUESTIONS */
+.q-row td{vertical-align:top;max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+    <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#1a9fd4,#1270a8);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.7rem;color:#fff">LQ</div>
+    <div style="font-size:.95rem;font-weight:700">Leiseca<span style="color:#1a9fd4">Quest</span> <span style="font-size:.65rem;background:#ea580c;color:#fff;border-radius:4px;padding:1px 6px;font-weight:700">ADMIN</span></div>
+  </div>
+  <div class="spinner"></div>
+</div>
+
+<!-- LOGIN ADMIN -->
+<div id="login-wrap">
+  <div class="login-box">
+    <h2>🔐 Painel Admin</h2>
+    <p>Acesso restrito. Entre com sua conta de administrador.</p>
+    <div class="login-error" id="login-err"></div>
+    <div class="login-field"><label>Email</label><input type="email" id="adm-email" placeholder="admin@leisecaquest.com.br"></div>
+    <div class="login-field"><label>Senha</label><input type="password" id="adm-pwd" placeholder="Senha" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <button class="login-btn" onclick="adminLogin()">Entrar no painel</button>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <nav class="sb">
+    <div class="sb-top">
+      <div class="sb-logo">Leiseca<span>Quest</span></div>
+      <div class="sb-badge">Admin</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Principal</div>
+      <div class="sb-item active" id="nav-overview" onclick="goTo('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Visão geral
+      </div>
+      <div class="sb-item" id="nav-users" onclick="goTo('users')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Alunos
+        <span class="sb-count" id="sb-user-count">0</span>
+      </div>
+      <div class="sb-item" id="nav-questions" onclick="goTo('questions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Questões
+        <span class="sb-count" id="sb-q-count">0</span>
+      </div>
+      <div class="sb-item" id="nav-products" onclick="goTo('products')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Produtos
+      </div>
+      <div class="sb-section">Comunicação</div>
+      <div class="sb-item" id="nav-emails" onclick="goTo('emails')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        E-mails
+      </div>
+      <div class="sb-item" id="nav-broadcast" onclick="goTo('broadcast')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8a16 16 0 006.93 6.93l1.18-1.18a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        Disparos
+      </div>
+      <div class="sb-section">Configurações</div>
+      <div class="sb-item" id="nav-webhook" onclick="goTo('webhook')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        Webhook Hotmart
+      </div>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-user" onclick="adminLogout()">
+        <div class="sb-av" id="adm-av">A</div>
+        <div>
+          <div class="sb-uname" id="adm-name">Admin</div>
+          <div class="sb-urole">Sair da conta</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <h1 id="page-title">Visão geral</h1>
+      <div class="tb-right" id="tb-actions"></div>
+    </div>
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="page show" id="p-overview">
+        <div class="stat-grid">
+          <div class="stat-card blue">
+            <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="#1a9fd4" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="stat-val" id="ov-users">0</div>
+            <div class="stat-lbl">Total de alunos</div>
+            <div class="stat-delta delta-up">↑ carregando...</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div>
+            <div class="stat-val" id="ov-questions">0</div>
+            <div class="stat-lbl">Questões no banco</div>
+            <div class="stat-delta delta-up">↑ VMQ ativo</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="stat-val" id="ov-revenue">R$0</div>
+            <div class="stat-lbl">Faturamento estimado</div>
+            <div class="stat-delta delta-up">↑ conectar Hotmart</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="stat-val" id="ov-answers">0</div>
+            <div class="stat-lbl">Respostas dadas</div>
+            <div class="stat-delta delta-up">↑ engajamento</div>
+          </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="mini-chart">
+            <div class="mini-chart-title">Cadastros por dia (últimos 7 dias)</div>
+            <div class="bar-chart" id="chart-signups"></div>
+          </div>
+          <div class="mini-chart">
+            <div class="mini-chart-title">Planos dos alunos</div>
+            <div id="plan-breakdown" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Últimos alunos cadastrados</div>
+            <button class="btn btn-secondary" onclick="goTo('users')">Ver todos</button>
+          </div>
+          <table>
+            <thead><tr><th>Nome</th><th>Email</th><th>Plano</th><th>Cadastro</th><th>Trial</th></tr></thead>
+            <tbody id="recent-users"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--dim)">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ALUNOS -->
+      <div class="page" id="p-users">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Todos os alunos</div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="openAddUser()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Adicionar aluno
+              </button>
+            </div>
+          </div>
+          <div class="search-bar">
+            <input class="search-inp" type="text" placeholder="Buscar por nome ou email..." id="user-search" oninput="filterUsers(this.value)">
+            <select style="padding:8px 12px;border:1px solid var(--bd2);border-radius:7px;font-size:.82rem;outline:none" onchange="filterUsersByPlan(this.value)">
+              <option value="">Todos os planos</option>
+              <option value="free">Gratuito</option>
+              <option value="vmq_vitalicio">VMQ Vitalício</option>
+              <option value="premium_anual">Premium Anual</option>
+              <option value="premium_vitalicio">Premium Vitalício</option>
+              <option value="ilimitada_anual">Ilimitada Anual</option>
+              <option value="ilimitada_vitalicia">Ilimitada Vitalícia</option>
+            </select>
+          </div>
+          <table>
+            <thead><tr><th>Nome</th><th>Email</th><th>Plano</th><th>Trial expira</th><th>Cadastro</th><th>Ações</th></tr></thead>
+            <tbody id="users-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--dim)">Carregando...</td></tr></tbody>
+          </table>
+          <div style="padding:12px 16px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:.78rem;color:var(--muted)" id="users-count-lbl">0 alunos</div>
+            <div style="display:flex;gap:6px" id="user-pagination"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTÕES -->
+      <div class="page" id="p-questions">
+        <div class="alert alert-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Para adicionar questões em massa, use o script Python + Claude API. Aqui você pode adicionar, editar e gerenciar individualmente.
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Banco de questões</div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="goTo('questions');loadQuestions()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                Atualizar
+              </button>
+              <button class="btn btn-primary" onclick="openAddQuestion()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nova questão
+              </button>
+            </div>
+          </div>
+          <div class="search-bar">
+            <input class="search-inp" type="text" placeholder="Buscar por lei, artigo ou concurso..." id="q-search" oninput="filterQuestions(this.value)">
+          </div>
+          <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>#</th><th>Lei</th><th>Artigo</th><th>Enunciado</th><th>Banca</th><th>Ano</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="q-tbody"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--dim)">Carregando...</td></tr></tbody>
+          </table>
+          </div>
+          <div style="padding:12px 16px;border-top:1px solid var(--bd);font-size:.78rem;color:var(--muted)" id="q-count-lbl">0 questões</div>
+        </div>
+      </div>
+
+      <!-- PRODUTOS -->
+      <div class="page" id="p-products">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Produtos e preços</div>
+            <button class="btn btn-primary" onclick="openAddProduct()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo produto
+            </button>
+          </div>
+          <table>
+            <thead><tr><th>ID</th><th>Nome</th><th>Tipo</th><th>Preço</th><th>Hotmart ID</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="products-tbody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--dim)">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EMAILS -->
+      <div class="page" id="p-emails">
+        <div class="tabs">
+          <div class="tab on" onclick="emailTab('templates')">Templates</div>
+          <div class="tab" onclick="emailTab('logs')">Histórico de envios</div>
+          <div class="tab" onclick="emailTab('config')">Configuração SMTP</div>
+        </div>
+
+        <div class="tab-panel on" id="tab-templates">
+          <div class="email-grid">
+            <div class="email-list">
+              <div class="email-item active" onclick="selectEmail('welcome')">
+                <div class="email-name">✉️ Boas-vindas</div>
+                <div class="email-sub">Enviado ao cadastrar conta</div>
+              </div>
+              <div class="email-item" onclick="selectEmail('trial_ending')">
+                <div class="email-name">⏳ Trial expirando</div>
+                <div class="email-sub">Enviado no dia 6 do trial</div>
+              </div>
+              <div class="email-item" onclick="selectEmail('trial_expired')">
+                <div class="email-name">🔒 Trial expirado</div>
+                <div class="email-sub">Enviado no dia 8</div>
+              </div>
+              <div class="email-item" onclick="selectEmail('purchase')">
+                <div class="email-name">🎉 Compra confirmada</div>
+                <div class="email-sub">Enviado após pagamento</div>
+              </div>
+              <div class="email-item" onclick="selectEmail('reset')">
+                <div class="email-name">🔑 Recuperar senha</div>
+                <div class="email-sub">Enviado no reset de senha</div>
+              </div>
+            </div>
+            <div>
+              <div class="email-editor">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                  <div style="font-size:.9rem;font-weight:700" id="email-template-name">✉️ Boas-vindas</div>
+                  <div style="display:flex;gap:8px">
+                    <button class="btn btn-secondary" onclick="previewEmail()">Pré-visualizar</button>
+                    <button class="btn btn-primary" onclick="saveEmailTemplate()">Salvar template</button>
+                  </div>
+                </div>
+                <div class="fg" style="margin-bottom:12px">
+                  <label>Assunto do e-mail</label>
+                  <input type="text" id="email-subject" value="Bem-vindo ao LeisecaQuest! Seu acesso está pronto 🚀">
+                </div>
+                <div class="fg">
+                  <label>Corpo do e-mail (HTML)</label>
+                  <textarea id="email-body" style="min-height:280px;font-family:monospace;font-size:.78rem"></textarea>
+                </div>
+                <div style="margin-top:12px;font-size:.75rem;color:var(--muted)">
+                  Variáveis disponíveis: <code>{{nome}}</code> <code>{{email}}</code> <code>{{plano}}</code> <code>{{trial_expira}}</code> <code>{{link_acesso}}</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-logs">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Histórico de e-mails enviados</div></div>
+            <table>
+              <thead><tr><th>Para</th><th>Template</th><th>Status</th><th>Enviado em</th></tr></thead>
+              <tbody id="email-logs">
+                <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--dim)">Nenhum e-mail enviado ainda. Configure o SMTP para começar.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-config">
+          <div class="card" style="max-width:560px">
+            <div class="card-hd"><div class="card-title">Configuração de e-mail (Resend)</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+              <div class="alert alert-info">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Recomendamos o <strong>Resend.com</strong> — gratuito até 3.000 e-mails/mês. Crie uma conta em resend.com e cole a API key abaixo.
+              </div>
+              <div class="fg"><label>Resend API Key</label><input type="password" id="smtp-key" placeholder="re_xxxxxxxxxxxx"></div>
+              <div class="fg"><label>E-mail remetente</label><input type="email" id="smtp-from" placeholder="noreply@leisecaquest.com.br" value="noreply@leisecaquest.com.br"></div>
+              <div class="fg"><label>Nome remetente</label><input type="text" id="smtp-name" placeholder="LeisecaQuest" value="LeisecaQuest"></div>
+              <button class="btn btn-primary" onclick="saveSmtpConfig()" style="align-self:flex-start">Salvar configuração</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISPAROS -->
+      <div class="page" id="p-broadcast">
+        <div class="alert alert-warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Use com cuidado. O disparo envia e-mail para todos os alunos selecionados.
+        </div>
+        <div class="card" style="max-width:660px">
+          <div class="card-hd"><div class="card-title">Novo disparo de e-mail</div></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div class="fg">
+              <label>Para quem enviar</label>
+              <select id="bc-audience">
+                <option value="all">Todos os alunos</option>
+                <option value="free">Somente plano gratuito</option>
+                <option value="trial">Somente em trial</option>
+                <option value="paid">Somente pagantes</option>
+                <option value="ilimitada_vitalicia">Somente Ilimitada Vitalícia</option>
+              </select>
+            </div>
+            <div class="fg"><label>Assunto</label><input type="text" id="bc-subject" placeholder="Ex: Nova Reta Final disponível — TJ-PE 2026"></div>
+            <div class="fg">
+              <label>Mensagem</label>
+              <textarea id="bc-body" style="min-height:180px" placeholder="Olá {{nome}},&#10;&#10;Temos novidades para você..."></textarea>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-secondary" onclick="previewBroadcast()">Pré-visualizar</button>
+              <button class="btn btn-primary" onclick="sendBroadcast()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Enviar disparo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEBHOOK -->
+      <div class="page" id="p-webhook">
+        <div class="card" style="max-width:700px">
+          <div class="card-hd"><div class="card-title">Configuração do Webhook Hotmart</div></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div class="alert alert-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              O webhook recebe notificações do Hotmart automaticamente quando um aluno compra, pede reembolso ou tem acesso expirado.
+            </div>
+
+            <div>
+              <div style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">URL do seu webhook</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <code style="flex:1;background:#f3f4f6;border:1px solid var(--bd);border-radius:7px;padding:10px 14px;font-size:.82rem;color:#111;word-break:break-all">https://SEU-BACKEND.railway.app/webhook/hotmart</code>
+                <button class="btn btn-secondary" onclick="copyWebhook()">Copiar</button>
+              </div>
+            </div>
+
+            <div style="font-size:.88rem;font-weight:600;margin-bottom:8px">Como configurar no Hotmart:</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">1</div>
+                <div style="font-size:.82rem;color:var(--muted)">Acesse o Hotmart → <strong style="color:#111">Ferramentas → Webhook</strong></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">2</div>
+                <div style="font-size:.82rem;color:var(--muted)">Cole a URL acima e selecione os eventos: <strong style="color:#111">PURCHASE_APPROVED, PURCHASE_REFUNDED, SUBSCRIPTION_CANCELLATION</strong></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">3</div>
+                <div style="font-size:.82rem;color:var(--muted)">Copie o <strong style="color:#111">Hotmart Token</strong> e configure no seu backend</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">4</div>
+                <div style="font-size:.82rem;color:var(--muted)">Clique em <strong style="color:#111">Testar webhook</strong> — o aluno de teste deve aparecer aqui em segundos</div>
+              </div>
+            </div>
+
+            <div class="fg">
+              <label>Hotmart Token (para validar requisições)</label>
+              <input type="text" id="hotmart-token" placeholder="Cole o token do Hotmart aqui">
+            </div>
+
+            <div>
+              <div style="font-size:.78rem;font-weight:600;margin-bottom:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Mapeamento produto Hotmart → Plano</div>
+              <table style="border:1px solid var(--bd);border-radius:8px;overflow:hidden">
+                <thead><tr><th>Produto no Hotmart</th><th>Plano na plataforma</th><th>Acesso</th></tr></thead>
+                <tbody id="product-mapping">
+                  <tr><td><input style="border:none;font-size:.78rem;width:100%;outline:none;background:transparent" placeholder="ID ou nome do produto Hotmart"></td><td><select style="border:none;font-size:.78rem;background:transparent;outline:none"><option>ilimitada_vitalicia</option><option>vmq_vitalicio</option><option>premium_anual</option><option>reta_final</option></select></td><td><span class="badge badge-purple">Vitalício</span></td></tr>
+                  <tr><td><input style="border:none;font-size:.78rem;width:100%;outline:none;background:transparent" placeholder="ID ou nome do produto Hotmart"></td><td><select style="border:none;font-size:.78rem;background:transparent;outline:none"><option>vmq_vitalicio</option><option>ilimitada_vitalicia</option><option>premium_anual</option></select></td><td><span class="badge badge-blue">Vitalício</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveWebhookConfig()" style="align-self:flex-start">Salvar configuração</button>
+          </div>
+        </div>
+
+        <div class="card" style="max-width:700px;margin-top:16px">
+          <div class="card-hd"><div class="card-title">Últimas notificações recebidas</div></div>
+          <table>
+            <thead><tr><th>Evento</th><th>Email</th><th>Produto</th><th>Status</th><th>Recebido</th></tr></thead>
+            <tbody id="webhook-logs">
+              <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--dim)">Nenhuma notificação recebida ainda.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODALS -->
+
+<!-- ADD/EDIT USER -->
+<div class="modal-bg" id="modal-user" onclick="if(event.target===this)closeModal('modal-user')">
+  <div class="modal">
+    <h3 id="modal-user-title">Adicionar aluno</h3>
+    <div class="form-grid">
+      <div class="fg"><label>Nome</label><input type="text" id="u-name" placeholder="Nome completo"></div>
+      <div class="fg"><label>Email</label><input type="email" id="u-email" placeholder="email@exemplo.com"></div>
+      <div class="fg"><label>Plano</label>
+        <select id="u-plan">
+          <option value="free">Gratuito</option>
+          <option value="vmq_vitalicio">VMQ Vitalício</option>
+          <option value="premium_anual">Premium Anual</option>
+          <option value="premium_vitalicio">Premium Vitalício</option>
+          <option value="ilimitada_anual">Ilimitada Anual</option>
+          <option value="ilimitada_vitalicia">Ilimitada Vitalícia</option>
+          <option value="reta_final">Reta Final</option>
+        </select>
+      </div>
+      <div class="fg"><label>Trial expira em</label><input type="date" id="u-trial"></div>
+      <div class="fg"><label>Plano expira em (vazio = vitalício)</label><input type="date" id="u-expires"></div>
+      <div class="fg"><label>Hotmart ID (opcional)</label><input type="text" id="u-hotmart" placeholder="ID da compra no Hotmart"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT QUESTION -->
+<div class="modal-bg" id="modal-question" onclick="if(event.target===this)closeModal('modal-question')">
+  <div class="modal" style="max-width:680px">
+    <h3 id="modal-q-title">Nova questão</h3>
+    <div class="form-grid">
+      <div class="fg"><label>Lei / Código</label><input type="text" id="q-lei" placeholder="Ex: Código Penal"></div>
+      <div class="fg"><label>Artigo</label><input type="text" id="q-artigo" placeholder="Ex: Art. 2º"></div>
+      <div class="fg"><label>Banca</label><input type="text" id="q-banca" placeholder="Ex: CESPE"></div>
+      <div class="fg"><label>Cargo</label><input type="text" id="q-cargo" placeholder="Ex: Juiz de Direito"></div>
+      <div class="fg"><label>Ano</label><input type="number" id="q-ano" placeholder="2023"></div>
+      <div class="fg"><label>Concurso</label><input type="text" id="q-concurso" placeholder="Ex: TJ-SP"></div>
+      <div class="fg span2"><label>Tipo</label>
+        <select id="q-tipo" onchange="toggleOpcoes()">
+          <option value="vf">Verdadeiro / Falso</option>
+          <option value="mc">Múltipla escolha</option>
+        </select>
+      </div>
+      <div class="fg span2"><label>Enunciado</label><textarea id="q-enunciado" placeholder="Digite o enunciado da questão..." style="min-height:100px"></textarea></div>
+      <div class="fg span2" id="opcoes-area" style="display:none">
+        <label>Opções (uma por linha)</label>
+        <textarea id="q-opcoes" placeholder="Opção A&#10;Opção B&#10;Opção C&#10;Opção D" style="min-height:80px"></textarea>
+      </div>
+      <div class="fg"><label>Gabarito</label>
+        <select id="q-gabarito">
+          <option value="0">0 — Verdadeiro / Opção A</option>
+          <option value="1">1 — Falso / Opção B</option>
+          <option value="2">2 — Opção C</option>
+          <option value="3">3 — Opção D</option>
+        </select>
+      </div>
+      <div class="fg"><label>Produto (opcional)</label>
+        <select id="q-product">
+          <option value="">Livre (VMQ geral)</option>
+        </select>
+      </div>
+      <div class="fg span2"><label>Justificativa / Fundamentação</label><textarea id="q-justificativa" placeholder="Explique o gabarito com base legal..." style="min-height:80px"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-question')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">Salvar questão</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT -->
+<div class="modal-bg" id="modal-product" onclick="if(event.target===this)closeModal('modal-product')">
+  <div class="modal">
+    <h3>Novo produto</h3>
+    <div class="form-grid">
+      <div class="fg"><label>ID (slug)</label><input type="text" id="p-id" placeholder="ex: reta-final-enam"></div>
+      <div class="fg"><label>Nome</label><input type="text" id="p-name" placeholder="Reta Final ENAM 2026.1"></div>
+      <div class="fg"><label>Tipo</label>
+        <select id="p-type">
+          <option value="assinatura">Assinatura</option>
+          <option value="reta_final">Reta Final</option>
+          <option value="simulado">Simulado</option>
+        </select>
+      </div>
+      <div class="fg"><label>Categoria</label>
+        <select id="p-cat">
+          <option value="">Geral</option>
+          <option value="juridica">Jurídica</option>
+          <option value="cartorio">Cartório</option>
+          <option value="policial">Policial</option>
+          <option value="fiscal">Fiscal</option>
+          <option value="trabalhista">Trabalhista</option>
+          <option value="procuradoria">Procuradoria</option>
+        </select>
+      </div>
+      <div class="fg"><label>Preço (centavos)</label><input type="number" id="p-price" placeholder="39700 = R$397,00"></div>
+      <div class="fg"><label>Hotmart ID</label><input type="text" id="p-hotmart" placeholder="ID do produto no Hotmart"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-product')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Salvar produto</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════
+// SUPABASE
+// ═══════════════════════════
+const SUPA_URL='https://iyjmpbqpifvzitulccky.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5am1wYnFwaWZ2eml0dWxjY2t5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTM1NjEsImV4cCI6MjA5NjA4OTU2MX0.VFV6Kx44ZxmzgPcqv7DC3DgRqVppug1IvdRy2C_O4uE';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+// ═══════════════════════════
+// AUTH
+// ═══════════════════════════
+// ADMIN EMAILS — adicione os emails de admin aqui
+const ADMIN_EMAILS=['clubemetaoficial@gmail.com','admin@leisecaquest.com.br'];
+
+window.addEventListener('DOMContentLoaded',async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session&&ADMIN_EMAILS.includes(session.user.email)){
+    showAdmin(session.user);
+  } else if(session){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('login-wrap').classList.add('show');
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('login-err').textContent='Sua conta não tem permissão de administrador.';
+  } else {
+    document.getElementById('loading').style.display='none';
+    document.getElementById('login-wrap').classList.add('show');
+  }
+});
+
+async function adminLogin(){
+  const email=document.getElementById('adm-email').value.trim();
+  const pwd=document.getElementById('adm-pwd').value;
+  const{error}=await sb.auth.signInWithPassword({email,password:pwd});
+  if(error){
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('login-err').textContent='Email ou senha incorretos.';
+    return;
+  }
+  const{data:{session}}=await sb.auth.getSession();
+  if(!ADMIN_EMAILS.includes(session.user.email)){
+    await sb.auth.signOut();
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('login-err').textContent='Sua conta não tem permissão de administrador.';
+    return;
+  }
+  showAdmin(session.user);
+}
+
+function showAdmin(user){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('login-wrap').classList.remove('show');
+  document.getElementById('app').classList.add('show');
+  const initials=(user.email||'A').substring(0,1).toUpperCase();
+  document.getElementById('adm-av').textContent=initials;
+  document.getElementById('adm-name').textContent=user.email;
+  loadOverview();loadUsers();loadQuestions();loadProducts();
+}
+
+async function adminLogout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// ═══════════════════════════
+// NAVIGATION
+// ═══════════════════════════
+const TITLES={overview:'Visão geral',users:'Alunos',questions:'Questões',products:'Produtos',emails:'E-mails',broadcast:'Disparos',webhook:'Webhook Hotmart'};
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  document.getElementById('p-'+id).classList.add('show');
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('nav-'+id)?.classList.add('active');
+  document.getElementById('page-title').textContent=TITLES[id]||id;
+}
+
+// ═══════════════════════════
+// OVERVIEW
+// ═══════════════════════════
+async function loadOverview(){
+  // Users count
+  const{count:uc}=await sb.from('profiles').select('*',{count:'exact',head:true});
+  document.getElementById('ov-users').textContent=uc||0;
+  document.getElementById('sb-user-count').textContent=uc||0;
+
+  // Questions count
+  const{count:qc}=await sb.from('questions').select('*',{count:'exact',head:true});
+  document.getElementById('ov-questions').textContent=qc||0;
+  document.getElementById('sb-q-count').textContent=qc||0;
+
+  // Answers count
+  const{count:ac}=await sb.from('user_answers').select('*',{count:'exact',head:true});
+  document.getElementById('ov-answers').textContent=ac||0;
+
+  // Recent users
+  const{data:users}=await sb.from('profiles').select('*').order('created_at',{ascending:false}).limit(5);
+  const tbody=document.getElementById('recent-users');
+  if(!users||!users.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--dim)">Nenhum aluno ainda</td></tr>';return;}
+  tbody.innerHTML=users.map(u=>`
+    <tr>
+      <td style="font-weight:500">${u.name||'—'}</td>
+      <td style="color:var(--muted)">${u.email}</td>
+      <td>${planBadge(u.plan)}</td>
+      <td style="color:var(--muted)">${fmtDate(u.created_at)}</td>
+      <td>${u.trial_expires_at?trialBadge(u.trial_expires_at):'—'}</td>
+    </tr>`).join('');
+
+  // Plan breakdown
+  const plans={};
+  const{data:allProfiles}=await sb.from('profiles').select('plan');
+  (allProfiles||[]).forEach(p=>{plans[p.plan]=(plans[p.plan]||0)+1;});
+  const total=Object.values(plans).reduce((a,b)=>a+b,0)||1;
+  const planLabels={free:'Gratuito',vmq_vitalicio:'VMQ Vitalício',premium_anual:'Premium Anual',premium_vitalicio:'Premium Vitalício',ilimitada_anual:'Ilimitada Anual',ilimitada_vitalicia:'Ilimitada Vitalícia'};
+  const colors={free:'#9ca3af',vmq_vitalicio:'#1a9fd4',premium_anual:'#f97316',premium_vitalicio:'#ea580c',ilimitada_anual:'#7c3aed',ilimitada_vitalicia:'#16a34a'};
+  document.getElementById('plan-breakdown').innerHTML=Object.entries(plans).map(([plan,cnt])=>`
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-size:.78rem;width:120px;color:var(--muted);flex-shrink:0">${planLabels[plan]||plan}</div>
+      <div style="flex:1;height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden">
+        <div style="height:100%;background:${colors[plan]||'#9ca3af'};width:${Math.round(cnt/total*100)}%;border-radius:4px"></div>
+      </div>
+      <div style="font-size:.78rem;font-weight:600;width:28px;text-align:right">${cnt}</div>
+    </div>`).join('');
+
+  // Bar chart signups (mock last 7 days)
+  const days=['D-6','D-5','D-4','D-3','D-2','Ontem','Hoje'];
+  const vals=[0,0,0,0,0,0,uc>0?1:0];
+  const mx=Math.max(...vals,1);
+  document.getElementById('chart-signups').innerHTML=days.map((d,i)=>`
+    <div class="bar-wrap">
+      <div class="bar" style="height:${Math.round(vals[i]/mx*100)}%;background:${vals[i]>0?'#1a9fd4':'#e5e7eb'}"></div>
+      <div class="bar-lbl">${d}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════
+// USERS
+// ═══════════════════════════
+let ALL_USERS=[];
+let userPage=1;const USER_PP=20;
+
+async function loadUsers(){
+  const{data}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  ALL_USERS=data||[];
+  renderUsers(ALL_USERS);
+}
+
+function renderUsers(users){
+  const tbody=document.getElementById('users-tbody');
+  document.getElementById('users-count-lbl').textContent=`${users.length} alunos`;
+  if(!users.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--dim)">Nenhum aluno encontrado</td></tr>';return;}
+  const slice=users.slice((userPage-1)*USER_PP,userPage*USER_PP);
+  tbody.innerHTML=slice.map(u=>`
+    <tr>
+      <td style="font-weight:500">${u.name||'—'}</td>
+      <td style="color:var(--muted);font-size:.76rem">${u.email}</td>
+      <td>${planBadge(u.plan)}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${u.trial_expires_at?trialBadge(u.trial_expires_at):'—'}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${fmtDate(u.created_at)}</td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-secondary" style="padding:4px 8px;font-size:.72rem" onclick="editUser('${u.id}','${u.name||''}','${u.email}','${u.plan}','${u.trial_expires_at||''}','${u.plan_expires_at||''}')">Editar</button>
+          <button class="btn" style="padding:4px 8px;font-size:.72rem;background:#f0fdf4;color:#16a34a;border:1px solid #86efac" onclick="sendEmailToUser('${u.email}','${u.name||''}')">E-mail</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterUsers(q){
+  const f=ALL_USERS.filter(u=>(u.name||'').toLowerCase().includes(q.toLowerCase())||(u.email||'').toLowerCase().includes(q.toLowerCase()));
+  userPage=1;renderUsers(f);
+}
+function filterUsersByPlan(plan){
+  const f=plan?ALL_USERS.filter(u=>u.plan===plan):ALL_USERS;
+  userPage=1;renderUsers(f);
+}
+
+let editingUserId=null;
+function openAddUser(){editingUserId=null;document.getElementById('modal-user-title').textContent='Adicionar aluno';document.getElementById('u-name').value='';document.getElementById('u-email').value='';document.getElementById('u-plan').value='free';document.getElementById('u-trial').value='';document.getElementById('u-expires').value='';document.getElementById('u-hotmart').value='';document.getElementById('modal-user').classList.add('show');}
+function editUser(id,name,email,plan,trial,expires){editingUserId=id;document.getElementById('modal-user-title').textContent='Editar aluno';document.getElementById('u-name').value=name;document.getElementById('u-email').value=email;document.getElementById('u-plan').value=plan;document.getElementById('u-trial').value=trial?trial.split('T')[0]:'';document.getElementById('u-expires').value=expires?expires.split('T')[0]:'';document.getElementById('modal-user').classList.add('show');}
+
+async function saveUser(){
+  const data={name:document.getElementById('u-name').value,plan:document.getElementById('u-plan').value,trial_expires_at:document.getElementById('u-trial').value||null,plan_expires_at:document.getElementById('u-expires').value||null,hotmart_id:document.getElementById('u-hotmart').value||null,updated_at:new Date().toISOString()};
+  if(editingUserId){
+    await sb.from('profiles').update(data).eq('id',editingUserId);
+    showToast('Aluno atualizado!','success');
+  }
+  closeModal('modal-user');loadUsers();loadOverview();
+}
+
+function sendEmailToUser(email,name){
+  alert(`Em breve: enviar e-mail para ${name||email}\n\nConfigure o SMTP em E-mails → Configuração para ativar este recurso.`);
+}
+
+// ═══════════════════════════
+// QUESTIONS
+// ═══════════════════════════
+let ALL_QUESTIONS=[];
+let editingQId=null;
+
+async function loadQuestions(){
+  const{data}=await sb.from('questions').select('*').order('created_at',{ascending:false}).limit(200);
+  ALL_QUESTIONS=data||[];
+  renderQuestions(ALL_QUESTIONS);
+}
+
+function renderQuestions(qs){
+  document.getElementById('q-count-lbl').textContent=`${qs.length} questões`;
+  const tbody=document.getElementById('q-tbody');
+  if(!qs.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--dim)">Nenhuma questão cadastrada</td></tr>';return;}
+  tbody.innerHTML=qs.slice(0,100).map((q,i)=>`
+    <tr class="q-row">
+      <td style="color:var(--dim);font-size:.72rem">${i+1}</td>
+      <td style="font-size:.76rem;font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${q.lei||'—'}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${q.artigo||'—'}</td>
+      <td style="font-size:.76rem;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${q.enunciado}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${q.banca||'—'}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${q.ano||'—'}</td>
+      <td><span class="badge ${q.active?'badge-green':'badge-gray'}">${q.active?'Ativo':'Inativo'}</span></td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-secondary" style="padding:4px 8px;font-size:.72rem" onclick="editQuestion('${q.id}')">Editar</button>
+          <button class="btn btn-danger" style="padding:4px 8px;font-size:.72rem" onclick="deleteQuestion('${q.id}')">Del</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterQuestions(q){
+  const f=ALL_QUESTIONS.filter(x=>(x.lei||'').toLowerCase().includes(q.toLowerCase())||(x.enunciado||'').toLowerCase().includes(q.toLowerCase())||(x.artigo||'').toLowerCase().includes(q.toLowerCase()));
+  renderQuestions(f);
+}
+
+function toggleOpcoes(){
+  const tipo=document.getElementById('q-tipo').value;
+  document.getElementById('opcoes-area').style.display=tipo==='mc'?'flex':'none';
+}
+
+function openAddQuestion(){
+  editingQId=null;
+  document.getElementById('modal-q-title').textContent='Nova questão';
+  ['q-lei','q-artigo','q-banca','q-cargo','q-ano','q-concurso','q-enunciado','q-justificativa','q-opcoes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('q-tipo').value='vf';
+  document.getElementById('q-gabarito').value='0';
+  document.getElementById('opcoes-area').style.display='none';
+  document.getElementById('modal-question').classList.add('show');
+}
+
+function editQuestion(id){
+  const q=ALL_QUESTIONS.find(x=>x.id===id);if(!q)return;
+  editingQId=id;
+  document.getElementById('modal-q-title').textContent='Editar questão';
+  document.getElementById('q-lei').value=q.lei||'';
+  document.getElementById('q-artigo').value=q.artigo||'';
+  document.getElementById('q-banca').value=q.banca||'';
+  document.getElementById('q-cargo').value=q.cargo||'';
+  document.getElementById('q-ano').value=q.ano||'';
+  document.getElementById('q-concurso').value=q.concurso||'';
+  document.getElementById('q-enunciado').value=q.enunciado||'';
+  document.getElementById('q-justificativa').value=q.justificativa||'';
+  document.getElementById('q-tipo').value=q.tipo||'vf';
+  document.getElementById('q-gabarito').value=q.gabarito||0;
+  toggleOpcoes();
+  document.getElementById('modal-question').classList.add('show');
+}
+
+async function saveQuestion(){
+  const tipo=document.getElementById('q-tipo').value;
+  const opcoesRaw=document.getElementById('q-opcoes').value;
+  const opcoes=tipo==='mc'?opcoesRaw.split('\n').map(s=>s.trim()).filter(Boolean):null;
+  const data={
+    lei:document.getElementById('q-lei').value,
+    artigo:document.getElementById('q-artigo').value,
+    banca:document.getElementById('q-banca').value,
+    cargo:document.getElementById('q-cargo').value,
+    ano:parseInt(document.getElementById('q-ano').value)||null,
+    concurso:document.getElementById('q-concurso').value,
+    enunciado:document.getElementById('q-enunciado').value,
+    justificativa:document.getElementById('q-justificativa').value,
+    tipo,opcoes,
+    gabarito:parseInt(document.getElementById('q-gabarito').value),
+    active:true,
+    updated_at:new Date().toISOString()
+  };
+  if(editingQId){
+    await sb.from('questions').update(data).eq('id',editingQId);
+    showToast('Questão atualizada!','success');
+  } else {
+    await sb.from('questions').insert(data);
+    showToast('Questão criada!','success');
+  }
+  closeModal('modal-question');loadQuestions();loadOverview();
+}
+
+async function deleteQuestion(id){
+  if(!confirm('Excluir esta questão?'))return;
+  await sb.from('questions').delete().eq('id',id);
+  showToast('Questão excluída','success');
+  loadQuestions();
+}
+
+// ═══════════════════════════
+// PRODUCTS
+// ═══════════════════════════
+async function loadProducts(){
+  const{data}=await sb.from('products').select('*').order('created_at',{ascending:false});
+  const tbody=document.getElementById('products-tbody');
+  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--dim)">Nenhum produto cadastrado</td></tr>';return;}
+  tbody.innerHTML=data.map(p=>`
+    <tr>
+      <td style="font-size:.76rem;font-family:monospace;color:var(--blue)">${p.id}</td>
+      <td style="font-weight:500">${p.name}</td>
+      <td><span class="badge badge-blue">${p.type}</span></td>
+      <td style="font-weight:600">${fmtPrice(p.price_cents)}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${p.hotmart_id||'—'}</td>
+      <td><span class="badge ${p.active?'badge-green':'badge-gray'}">${p.active?'Ativo':'Inativo'}</span></td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-secondary" style="padding:4px 8px;font-size:.72rem" onclick="alert('Editar produto em breve')">Editar</button>
+          <button class="btn btn-danger" style="padding:4px 8px;font-size:.72rem" onclick="toggleProduct('${p.id}',${p.active})">${p.active?'Desativar':'Ativar'}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+  // populate product select in question modal
+  const sel=document.getElementById('q-product');
+  sel.innerHTML='<option value="">Livre (VMQ geral)</option>'+data.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function openAddProduct(){document.getElementById('modal-product').classList.add('show');}
+async function saveProduct(){
+  const data={id:document.getElementById('p-id').value,name:document.getElementById('p-name').value,type:document.getElementById('p-type').value,category:document.getElementById('p-cat').value||null,price_cents:parseInt(document.getElementById('p-price').value)||0,hotmart_id:document.getElementById('p-hotmart').value||null,active:true};
+  const{error}=await sb.from('products').insert(data);
+  if(error){showToast('Erro: '+error.message,'error');return;}
+  showToast('Produto criado!','success');closeModal('modal-product');loadProducts();
+}
+async function toggleProduct(id,active){
+  await sb.from('products').update({active:!active}).eq('id',id);
+  loadProducts();
+}
+
+// ═══════════════════════════
+// EMAILS
+// ═══════════════════════════
+const EMAIL_TEMPLATES={
+  welcome:{
+    name:'✉️ Boas-vindas',
+    subject:'Bem-vindo ao LeisecaQuest! Seu acesso está pronto 🚀',
+    body:`<!DOCTYPE html>
+<html><body style="font-family:Inter,system-ui,sans-serif;background:#f3f4f6;padding:20px">
+<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+  <div style="background:#1a9fd4;padding:28px;text-align:center">
+    <div style="font-size:1.4rem;font-weight:800;color:#fff">LeisecaQuest</div>
+    <div style="font-size:.85rem;color:rgba(255,255,255,.8);margin-top:4px">Domine a lei seca</div>
+  </div>
+  <div style="padding:28px">
+    <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:12px">Olá, {{nome}}! 👋</h2>
+    <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:16px">
+      Sua conta no LeisecaQuest foi criada com sucesso! Você tem <strong>7 dias de acesso completo</strong> para explorar a plataforma.
+    </p>
+    <div style="background:#e8f6fb;border-radius:10px;padding:16px;margin-bottom:20px">
+      <div style="font-size:.82rem;font-weight:700;color:#1a9fd4;margin-bottom:8px">✅ O que você pode fazer agora:</div>
+      <ul style="font-size:.82rem;color:#374151;line-height:1.8;padding-left:16px">
+        <li>Responder questões no Vade Mecum de Questões</li>
+        <li>Fazer o simulado de amostra com 150 questões</li>
+        <li>Ver o Raio-X da Lei Seca</li>
+        <li>Explorar as Retas Finais disponíveis</li>
+      </ul>
+    </div>
+    <a href="https://clubemeta.github.io/leisecaquest" style="display:block;background:#1a9fd4;color:#fff;text-align:center;padding:14px;border-radius:8px;font-weight:700;font-size:.9rem;text-decoration:none;margin-bottom:16px">
+      🚀 Acessar a plataforma
+    </a>
+    <p style="font-size:.78rem;color:#9ca3af;text-align:center">
+      Seu trial expira em {{trial_expira}}. Após isso, o acesso gratuito tem limite de 50 questões/dia.
+    </p>
+  </div>
+  <div style="background:#f9fafb;padding:16px;text-align:center;font-size:.72rem;color:#9ca3af">
+    LeisecaQuest • Dúvidas? WhatsApp (55) 99225-1020
+  </div>
+</div>
+</body></html>`
+  },
+  trial_ending:{
+    name:'⏳ Trial expirando',
+    subject:'Seu acesso completo expira amanhã — garanta agora ⏳',
+    body:`<!DOCTYPE html>
+<html><body style="font-family:Inter,system-ui,sans-serif;background:#f3f4f6;padding:20px">
+<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+  <div style="background:linear-gradient(135deg,#ea580c,#f97316);padding:28px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:6px">⏳</div>
+    <div style="font-size:1.1rem;font-weight:800;color:#fff">Seu trial expira amanhã!</div>
+  </div>
+  <div style="padding:28px">
+    <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:16px">
+      Olá, <strong>{{nome}}</strong>! Seu período de trial termina <strong>amanhã</strong>. Não perca o acesso ao conteúdo que você já começou a usar!
+    </p>
+    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:16px;margin-bottom:20px">
+      <div style="font-weight:700;color:#c2410c;margin-bottom:8px">🔥 Ilimitada Vitalícia — menor preço da história</div>
+      <div style="font-size:2rem;font-weight:800;color:#111">R$ 797<span style="font-size:1rem;font-weight:400;color:#6b7280"> uma vez</span></div>
+      <div style="font-size:.78rem;color:#6b7280;margin-top:4px">Acesso vitalício • Todos os Retas Finais • Todos os futuros lançamentos</div>
+    </div>
+    <a href="https://hotmart.com/leisecaquest" style="display:block;background:#ea580c;color:#fff;text-align:center;padding:14px;border-radius:8px;font-weight:700;font-size:.9rem;text-decoration:none;margin-bottom:12px">
+      Garantir meu acesso agora →
+    </a>
+    <a href="https://clubemeta.github.io/leisecaquest" style="display:block;border:1px solid #e5e7eb;color:#374151;text-align:center;padding:12px;border-radius:8px;font-size:.84rem;text-decoration:none">
+      Continuar estudando hoje
+    </a>
+  </div>
+</div>
+</body></html>`
+  },
+  trial_expired:{
+    name:'🔒 Trial expirado',
+    subject:'Seu trial expirou — continue de onde parou',
+    body:`<!DOCTYPE html>
+<html><body style="font-family:Inter,system-ui,sans-serif;background:#f3f4f6;padding:20px">
+<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+  <div style="background:#111827;padding:28px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:6px">🔒</div>
+    <div style="font-size:1rem;font-weight:700;color:#fff">Seu período gratuito encerrou</div>
+  </div>
+  <div style="padding:28px">
+    <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:20px">
+      Olá, <strong>{{nome}}</strong>! Seu trial acabou, mas você ainda pode acessar a plataforma com o plano gratuito (50 questões/dia). Para continuar sem limites:
+    </p>
+    <a href="https://hotmart.com/leisecaquest" style="display:block;background:#1a9fd4;color:#fff;text-align:center;padding:14px;border-radius:8px;font-weight:700;text-decoration:none">
+      Ver planos a partir de R$ 237 →
+    </a>
+  </div>
+</div>
+</body></html>`
+  },
+  purchase:{
+    name:'🎉 Compra confirmada',
+    subject:'🎉 Compra confirmada! Seu acesso está liberado',
+    body:`<!DOCTYPE html>
+<html><body style="font-family:Inter,system-ui,sans-serif;background:#f3f4f6;padding:20px">
+<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+  <div style="background:linear-gradient(135deg,#16a34a,#22c55e);padding:28px;text-align:center">
+    <div style="font-size:2.5rem">🎉</div>
+    <div style="font-size:1.1rem;font-weight:800;color:#fff;margin-top:6px">Pagamento confirmado!</div>
+  </div>
+  <div style="padding:28px">
+    <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:16px">
+      Olá, <strong>{{nome}}</strong>! Seu acesso ao <strong>{{plano}}</strong> foi liberado com sucesso. Pode começar a estudar agora mesmo!
+    </p>
+    <a href="https://clubemeta.github.io/leisecaquest" style="display:block;background:#16a34a;color:#fff;text-align:center;padding:14px;border-radius:8px;font-weight:700;text-decoration:none">
+      🚀 Acessar a plataforma agora
+    </a>
+  </div>
+</div>
+</body></html>`
+  },
+  reset:{
+    name:'🔑 Recuperar senha',
+    subject:'Redefinição de senha — LeisecaQuest',
+    body:`<!DOCTYPE html>
+<html><body style="font-family:Inter,system-ui,sans-serif;background:#f3f4f6;padding:20px">
+<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+  <div style="padding:28px">
+    <h2>Redefinir sua senha</h2>
+    <p style="color:#374151;font-size:.88rem;line-height:1.7;margin:12px 0 20px">
+      Recebemos uma solicitação para redefinir a senha da sua conta. Clique no botão abaixo:
+    </p>
+    <a href="{{link_acesso}}" style="display:block;background:#1a9fd4;color:#fff;text-align:center;padding:14px;border-radius:8px;font-weight:700;text-decoration:none">
+      Redefinir minha senha
+    </a>
+    <p style="font-size:.75rem;color:#9ca3af;margin-top:16px;text-align:center">
+      Se você não solicitou isso, ignore este e-mail.
+    </p>
+  </div>
+</div>
+</body></html>`
+  }
+};
+
+let currentEmailKey='welcome';
+
+function emailTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',['templates','logs','config'][i]===id));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+}
+
+function selectEmail(key){
+  currentEmailKey=key;
+  document.querySelectorAll('.email-item').forEach(i=>i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const t=EMAIL_TEMPLATES[key];
+  document.getElementById('email-template-name').textContent=t.name;
+  document.getElementById('email-subject').value=t.subject;
+  document.getElementById('email-body').value=t.body;
+}
+
+// Init first template
+setTimeout(()=>{
+  document.getElementById('email-subject').value=EMAIL_TEMPLATES.welcome.subject;
+  document.getElementById('email-body').value=EMAIL_TEMPLATES.welcome.body;
+},500);
+
+function previewEmail(){
+  const html=document.getElementById('email-body').value;
+  const w=window.open('','_blank','width=640,height=700');
+  w.document.write(html);w.document.close();
+}
+
+function saveEmailTemplate(){
+  EMAIL_TEMPLATES[currentEmailKey].subject=document.getElementById('email-subject').value;
+  EMAIL_TEMPLATES[currentEmailKey].body=document.getElementById('email-body').value;
+  showToast('Template salvo localmente!','success');
+}
+
+function saveSmtpConfig(){
+  const key=document.getElementById('smtp-key').value;
+  const from=document.getElementById('smtp-from').value;
+  const name=document.getElementById('smtp-name').value;
+  localStorage.setItem('lq_smtp',JSON.stringify({key,from,name}));
+  showToast('Configuração salva! Adicione a key no backend Python para disparos automáticos.','success');
+}
+
+function sendBroadcast(){
+  const audience=document.getElementById('bc-audience').value;
+  const subject=document.getElementById('bc-subject').value;
+  const body=document.getElementById('bc-body').value;
+  if(!subject||!body){showToast('Preencha assunto e mensagem','error');return;}
+  if(!confirm(`Enviar e-mail para: ${audience}\n\nAssunto: ${subject}\n\nConfirmar?`))return;
+  showToast('Disparo agendado! (Configure o backend Python para envios reais via Resend)','success');
+}
+
+function previewBroadcast(){
+  const body=document.getElementById('bc-body').value;
+  alert('Preview:\n\n'+body);
+}
+
+// ═══════════════════════════
+// WEBHOOK
+// ═══════════════════════════
+function copyWebhook(){
+  navigator.clipboard.writeText('https://SEU-BACKEND.railway.app/webhook/hotmart');
+  showToast('URL copiada!','success');
+}
+function saveWebhookConfig(){
+  const token=document.getElementById('hotmart-token').value;
+  localStorage.setItem('lq_hotmart_token',token);
+  showToast('Token salvo! Configure no backend Python.','success');
+}
+
+// ═══════════════════════════
+// HELPERS
+// ═══════════════════════════
+function planBadge(plan){
+  const map={free:['badge-gray','Gratuito'],vmq_vitalicio:['badge-blue','VMQ Vitalício'],premium_anual:['badge-orange','Premium Anual'],premium_vitalicio:['badge-orange','Premium Vitalício'],ilimitada_anual:['badge-purple','Ilimitada Anual'],ilimitada_vitalicia:['badge-green','Ilimitada Vitalícia'],reta_final:['badge-blue','Reta Final']};
+  const[cls,lbl]=map[plan]||['badge-gray',plan];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+
+function trialBadge(date){
+  const days=Math.ceil((new Date(date)-new Date())/86400000);
+  if(days<0)return `<span class="badge badge-red">Expirado</span>`;
+  if(days<=2)return `<span class="badge badge-orange">${days}d restantes</span>`;
+  return `<span class="badge badge-blue">${days}d restantes</span>`;
+}
+
+function fmtDate(d){
+  if(!d)return '—';
+  return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+}
+
+function fmtPrice(cents){
+  if(!cents)return '—';
+  return 'R$ '+(cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+let toastTimeout;
+function showToast(msg,type='success'){
+  const existing=document.getElementById('toast');
+  if(existing)existing.remove();
+  const t=document.createElement('div');
+  t.id='toast';
+  const colors={success:'#16a34a',error:'#dc2626',info:'#1a9fd4'};
+  t.style.cssText=`position:fixed;bottom:24px;right:24px;background:${colors[type]||'#111'};color:#fff;padding:12px 18px;border-radius:8px;font-size:.82rem;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slideIn .2s ease`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>t.remove(),3500);
+}
+</script>
+<style>
+@keyframes slideIn{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+</style>
