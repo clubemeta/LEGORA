@@ -483,8 +483,8 @@ tr:hover td{background:#fafafa}
             <div class="card-hd"><div class="card-title">Configuração Resend (SMTP)</div></div>
             <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
               <div class="alert al-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Crie sua conta em <strong>resend.com</strong> — gratuito até 3.000 e-mails/mês. Cole a API key abaixo e os e-mails automáticos funcionarão via backend Python.</div>
-              <div class="fg"><label>Resend API Key</label><input type="password" id="smtp-key" placeholder="re_5REsHEcB_NwMeEsQsttavxp7ezvCXmzBN"></div>
-              <div class="fg"><label>E-mail remetente</label><input type="email" id="smtp-from" value="resend._domainkey.clubemeta"></div>
+              <div class="fg"><label>Resend API Key</label><input type="password" id="smtp-key" placeholder="re_xxxxxxxxxxxx"></div>
+              <div class="fg"><label>E-mail remetente</label><input type="email" id="smtp-from" value="noreply@leisecaquest.com.br"></div>
               <div class="fg"><label>Nome remetente</label><input type="text" id="smtp-name" value="LeisecaQuest"></div>
               <div class="fg"><label>URL da plataforma (para links nos e-mails)</label><input type="text" id="smtp-url" value="https://clubemeta.github.io/leisecaquest"></div>
               <button class="btn btn-p" style="align-self:flex-start" onclick="saveSmtp()">Salvar configuração</button>
@@ -1182,18 +1182,14 @@ function savePx(type){
   showToast(val?type.toUpperCase()+' salvo e ativo!':'Pixel removido','success');
 }
 function updatePixelCode(px){
-  let code='<!-- LeisecaQuest Pixels -->
-';
-  if(px.ga4)code+=`<script async src="https://www.googletagmanager.com/gtag/js?id=${px.ga4}"><\/script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${px.ga4}');<\/script>
-`;
-  if(px.meta)code+=`<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${px.meta}');fbq('track','PageView');<\/script>
-`;
-  if(px.tiktok)code+=`<script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=['page','track','identify'];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e){var o=d.createElement('script');o.type='text/javascript';o.async=!0;o.src='https://analytics.tiktok.com/i18n/pixel/events.js?sdkid='+e+'&lib=ttq';d.getElementsByTagName('script')[0].parentNode.insertBefore(o,d.getElementsByTagName('script')[0])};ttq.load('${px.tiktok}');ttq.page();}(window,document,'ttq');<\/script>
-`;
-  if(px.gtm)code+=`<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${px.gtm}');<\/script>
-`;
-  if(!Object.values(px).some(Boolean))code='<!-- Configure os pixels acima -->';
-  document.getElementById('pixel-code-preview').textContent=code;
+  var code = '';
+  if(px.ga4) code += '<!-- GA4 -->\n<script async src="https://www.googletagmanager.com/gtag/js?id='+px.ga4+'"></s'+'cript>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","'+px.ga4+'");</s'+'cript>\n';
+  if(px.meta) code += '<!-- Meta Pixel -->\n<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","'+px.meta+'");fbq("track","PageView");</s'+'cript>\n';
+  if(px.tiktok) code += '<!-- TikTok Pixel -->\n<script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.load=function(e){var o=d.createElement("script");o.type="text/javascript";o.async=!0;o.src="https://analytics.tiktok.com/i18n/pixel/events.js?sdkid="+e;d.getElementsByTagName("script")[0].parentNode.insertBefore(o,d.getElementsByTagName("script")[0])};ttq.load("'+px.tiktok+'");ttq.page();}(window,document,"ttq");</s'+'cript>\n';
+  if(px.gtm) code += '<!-- GTM -->\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);})(window,document,"script","dataLayer","'+px.gtm+'");</s'+'cript>\n';
+  if(!code) code = '<!-- Configure os pixels acima -->';
+  var el = document.getElementById('pixel-code-preview');
+  if(el) el.textContent = code;
 }
 function copyPixelCode(){navigator.clipboard.writeText(document.getElementById('pixel-code-preview').textContent);showToast('Código copiado! Cole no <head> da plataforma.','success');}
 
