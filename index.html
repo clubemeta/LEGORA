@@ -644,11 +644,70 @@ tr:last-child td{border-bottom:none}
 
       <!-- CADERNOS -->
       <div class="page" id="p-cadernos">
-        <div style="text-align:center;padding:60px 20px;color:var(--dim)">
-          <div style="font-size:2rem;margin-bottom:12px">📚</div>
-          <div style="font-size:.88rem;font-weight:500;margin-bottom:6px;color:#111">Nenhum caderno criado</div>
-          <div style="font-size:.78rem">Crie cadernos para organizar suas questões favoritas.</div>
-          <button class="btn-filter" style="margin:16px auto 0;display:block;width:auto;padding:8px 20px">+ Criar caderno</button>
+        <!-- LISTA DE CADERNOS -->
+        <div id="cad-lista-view">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <div style="font-size:.82rem;color:var(--muted)" id="cad-count-lbl">Carregando...</div>
+            <button class="btn-filter" onclick="openCadModal()" style="padding:8px 16px;display:flex;align-items:center;gap:6px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo caderno
+            </button>
+          </div>
+          <div id="cad-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"></div>
+        </div>
+
+        <!-- QUESTÕES DO CADERNO -->
+        <div id="cad-detalhe-view" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <button onclick="closeCadDetalhe()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--bd);border-radius:6px;background:#fff;cursor:pointer;font-size:.78rem;color:var(--muted)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="15 18 9 12 15 6"/></svg>
+              Voltar
+            </button>
+            <div style="flex:1">
+              <div style="font-size:.97rem;font-weight:700" id="cad-detalhe-nome"></div>
+              <div style="font-size:.72rem;color:var(--muted)" id="cad-detalhe-info"></div>
+            </div>
+            <button onclick="deleteCad()" style="padding:6px 12px;border:1px solid #fca5a5;border-radius:6px;background:var(--red-bg);color:var(--red);cursor:pointer;font-size:.75rem;font-weight:600">
+              🗑 Excluir caderno
+            </button>
+          </div>
+          <div id="cad-q-list"></div>
+          <div id="cad-empty-q" style="display:none;text-align:center;padding:40px 20px;color:var(--dim)">
+            <div style="font-size:1.5rem;margin-bottom:10px">📭</div>
+            <div style="font-size:.85rem;font-weight:500;margin-bottom:6px">Nenhuma questão neste caderno</div>
+            <div style="font-size:.78rem">Ao responder questões no VMQ, clique em "Cadernos" embaixo da questão para adicionar aqui.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL CRIAR CADERNO -->
+      <div class="modal-bg" id="cad-modal" onclick="if(event.target===this)closeCadModal()">
+        <div class="modal" style="max-width:380px">
+          <button class="modal-x" onclick="closeCadModal()">✕</button>
+          <div class="modal-icon">📚</div>
+          <div class="modal-title" id="cad-modal-title">Novo caderno</div>
+          <div style="margin-bottom:14px">
+            <input type="text" id="cad-nome-inp" placeholder="Nome do caderno (ex: CP — Parte Geral)" maxlength="60"
+              style="width:100%;padding:10px 13px;border:1.5px solid var(--bd2);border-radius:8px;font-size:.88rem;outline:none;margin-bottom:8px"
+              onkeydown="if(event.key==='Enter')saveCad()"
+              onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd2)'">
+            <div style="font-size:.72rem;color:var(--muted)">Máximo 60 caracteres</div>
+          </div>
+          <button class="modal-btn blue" onclick="saveCad()">Criar caderno</button>
+        </div>
+      </div>
+
+      <!-- MODAL ADD QUESTÃO AO CADERNO -->
+      <div class="modal-bg" id="add-q-modal" onclick="if(event.target===this)closeAddQModal()">
+        <div class="modal" style="max-width:360px">
+          <button class="modal-x" onclick="closeAddQModal()">✕</button>
+          <div class="modal-title">Adicionar ao caderno</div>
+          <div class="modal-desc">Escolha em qual caderno adicionar esta questão:</div>
+          <div id="add-q-cad-list" style="display:flex;flex-direction:column;gap:6px;margin:14px 0;max-height:220px;overflow-y:auto"></div>
+          <button class="btn-filter" onclick="openCadModalFromQ()" style="width:100%;padding:9px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Criar novo caderno
+          </button>
         </div>
       </div>
 
@@ -1996,4 +2055,845 @@ window.navTo = function(id){
   const bnId=map[id];
   if(bnId){const b=document.getElementById(bnId);if(b)b.classList.add('active');}
 };
+</script>
+<!-- ═══════════════════════════════════════════════
+  PATCH: Dark mode + Acessibilidade + Upsell Banner + Fix Mobile Login
+═══════════════════════════════════════════════ -->
+<style>
+
+/* ── FIX: Bottom nav e plataforma ocultos no login ── */
+#platform { display: none !important; }
+#platform.show { display: flex !important; }
+#bottom-nav { display: none !important; }
+body.platform-active #bottom-nav { display: flex !important; }
+#tour-overlay { display: none; }
+#tour-overlay.active { display: block; }
+
+/* ── DARK MODE TOKENS ── */
+:root {
+  --dm-bg: #0f172a;
+  --dm-surface: #1e293b;
+  --dm-surface2: #263450;
+  --dm-border: #334155;
+  --dm-text: #f1f5f9;
+  --dm-muted: #94a3b8;
+  --dm-dim: #64748b;
+}
+
+/* Dark mode aplicado */
+body.dark-mode {
+  background: var(--dm-bg) !important;
+  color: var(--dm-text) !important;
+}
+body.dark-mode .sb { background: #0f172a !important; border-color: var(--dm-border) !important; }
+body.dark-mode .sb-logo-txt { color: var(--dm-text) !important; }
+body.dark-mode .sb-acc-hd { color: var(--dm-muted) !important; }
+body.dark-mode .sb-acc-hd:hover { background: var(--dm-surface) !important; color: var(--dm-text) !important; }
+body.dark-mode .sb-sub { color: var(--dm-muted) !important; }
+body.dark-mode .sb-sub:hover { background: var(--dm-surface) !important; color: var(--dm-text) !important; }
+body.dark-mode .sb-sub.active { background: rgba(26,159,212,.2) !important; color: var(--blue) !important; }
+body.dark-mode .sb-link { color: var(--dm-muted) !important; }
+body.dark-mode .sb-link:hover { background: var(--dm-surface) !important; color: var(--dm-text) !important; }
+body.dark-mode .sb-user:hover { background: var(--dm-surface) !important; }
+body.dark-mode .sb-uname { color: var(--dm-text) !important; }
+body.dark-mode .sb-urole { color: var(--dm-dim) !important; }
+body.dark-mode .topbar { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .topbar h1 { color: var(--dm-text) !important; }
+body.dark-mode .tb-btn { background: var(--dm-surface2) !important; border-color: var(--dm-border) !important; color: var(--dm-muted) !important; }
+body.dark-mode .tb-btn:hover { background: var(--dm-surface) !important; color: var(--dm-text) !important; }
+body.dark-mode .tb-uname { color: var(--dm-text) !important; }
+body.dark-mode .content { background: var(--dm-bg) !important; }
+body.dark-mode .stat { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .stat-val { color: var(--dm-text) !important; }
+body.dark-mode .stat-lbl { color: var(--dm-muted) !important; }
+body.dark-mode .chart-card { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .chart-title { color: var(--dm-text) !important; }
+body.dark-mode .cl { color: var(--dm-muted) !important; }
+body.dark-mode .sim-card { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .sim-title { color: var(--dm-text) !important; }
+body.dark-mode .sim-link { color: var(--blue) !important; }
+body.dark-mode th { background: var(--dm-surface2) !important; color: var(--dm-dim) !important; border-color: var(--dm-border) !important; }
+body.dark-mode td { color: var(--dm-muted) !important; border-color: var(--dm-border) !important; }
+body.dark-mode tr:hover td { background: var(--dm-surface2) !important; }
+body.dark-mode .donut-card { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .donut-title { color: var(--dm-text) !important; }
+body.dark-mode .dl { color: var(--dm-muted) !important; }
+body.dark-mode .vmq-filters { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .vmq-sel,
+body.dark-mode .vmq-inp,
+body.dark-mode .mode-sel,
+body.dark-mode .qty-sel { background: var(--dm-surface2) !important; border-color: var(--dm-border) !important; color: var(--dm-text) !important; }
+body.dark-mode .vmq-meta { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .vmq-count { color: var(--dm-text) !important; }
+body.dark-mode .chip { background: var(--dm-surface2) !important; border-color: var(--dm-border) !important; color: var(--dm-muted) !important; }
+body.dark-mode .chip.active { background: rgba(26,159,212,.2) !important; color: var(--blue) !important; border-color: var(--blue) !important; }
+body.dark-mode .btn-filter { background: var(--blue) !important; color: #fff !important; }
+body.dark-mode .q-card { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .q-ref { background: rgba(26,159,212,.15) !important; color: var(--blue) !important; }
+body.dark-mode .q-text { color: var(--dm-text) !important; }
+body.dark-mode .q-opt { border-color: var(--dm-border) !important; color: var(--dm-text) !important; }
+body.dark-mode .q-opt:hover { background: rgba(26,159,212,.1) !important; border-color: var(--blue) !important; }
+body.dark-mode .q-footer { border-color: var(--dm-border) !important; }
+body.dark-mode .qf-btn { color: var(--dm-muted) !important; }
+body.dark-mode .qf-btn:hover { background: var(--dm-surface2) !important; color: var(--dm-text) !important; }
+body.dark-mode .disc-list { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .disc-item { border-color: var(--dm-border) !important; }
+body.dark-mode .disc-item:hover { background: var(--dm-surface2) !important; }
+body.dark-mode .disc-name { color: var(--dm-text) !important; }
+body.dark-mode .disc-num { color: var(--dm-dim) !important; }
+body.dark-mode .pg-btn { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; color: var(--dm-muted) !important; }
+body.dark-mode .pg-btn.active { background: var(--blue) !important; color: #fff !important; }
+body.dark-mode .sim-item { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .sim-item-name { color: var(--dm-text) !important; }
+body.dark-mode .sim-item-sub { color: var(--dm-muted) !important; }
+body.dark-mode .sim-run { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .rf-item { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .rf-item-name { color: var(--dm-text) !important; }
+body.dark-mode .rf-item-sub { color: var(--dm-muted) !important; }
+body.dark-mode .bottom-nav-dm { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode #bottom-nav { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .bn-item { color: var(--dm-dim) !important; }
+body.dark-mode .bn-item.active { color: var(--blue) !important; }
+body.dark-mode .modal { background: var(--dm-surface) !important; }
+body.dark-mode .modal-title { color: var(--dm-text) !important; }
+body.dark-mode .modal-desc { color: var(--dm-muted) !important; }
+body.dark-mode .drawer { background: var(--dm-surface) !important; }
+body.dark-mode .drawer-hd { border-color: var(--dm-border) !important; }
+body.dark-mode .drawer-title { color: var(--dm-text) !important; }
+body.dark-mode .drawer-body { background: var(--dm-surface) !important; }
+body.dark-mode .df-sel { background: var(--dm-surface2) !important; border-color: var(--dm-border) !important; color: var(--dm-text) !important; }
+body.dark-mode .drawer-ft { border-color: var(--dm-border) !important; }
+body.dark-mode .d-clear { background: var(--dm-surface2) !important; color: var(--dm-muted) !important; }
+body.dark-mode .prof-menu { background: var(--dm-surface) !important; border-color: var(--dm-border) !important; }
+body.dark-mode .pm-item { color: var(--dm-text) !important; }
+body.dark-mode .pm-item:hover { background: var(--dm-surface2) !important; }
+body.dark-mode .pm-div { background: var(--dm-border) !important; }
+body.dark-mode .trial-banner { /* keep orange */ }
+body.dark-mode .vmq-label { color: var(--dm-muted) !important; }
+body.dark-mode .sz-btn { background: var(--dm-surface2) !important; border-color: var(--dm-border) !important; color: var(--dm-muted) !important; }
+body.dark-mode .sz-btn.active { background: rgba(26,159,212,.2) !important; color: var(--blue) !important; }
+body.dark-mode .vmq-tab-row .chip-box { background: rgba(26,159,212,.2) !important; }
+
+/* ── DARK MODE TOGGLE BUTTON ── */
+#dark-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 8px;
+  background: transparent; border: 1px solid var(--bd);
+  cursor: pointer; font-size: 1rem; transition: .15s;
+  flex-shrink: 0;
+}
+#dark-toggle:hover { background: #f3f4f6; }
+body.dark-mode #dark-toggle { border-color: var(--dm-border); color: var(--dm-text); }
+body.dark-mode #dark-toggle:hover { background: var(--dm-surface2); }
+
+/* ── ACESSIBILIDADE ── */
+/* Fonte maior */
+body.font-lg { font-size: 16px !important; }
+body.font-lg .q-text { font-size: 1rem !important; }
+body.font-lg .q-opt { font-size: .92rem !important; }
+body.font-lg .disc-name { font-size: .9rem !important; }
+body.font-lg .stat-val { font-size: 1.8rem !important; }
+
+/* Alto contraste */
+body.high-contrast {
+  --blue: #0066cc !important;
+  --green: #006600 !important;
+  --red: #cc0000 !important;
+}
+body.high-contrast .q-opt.ok { background: #d4edda !important; color: #004400 !important; border-color: #006600 !important; }
+body.high-contrast .q-opt.ng { background: #f8d7da !important; color: #440000 !important; border-color: #cc0000 !important; }
+
+/* Painel de acessibilidade */
+#a11y-panel {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #fff; border: 1px solid var(--bd); border-radius: 16px;
+  padding: 24px; z-index: 600; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,.2);
+  display: none;
+}
+#a11y-panel.open { display: block; }
+body.dark-mode #a11y-panel { background: var(--dm-surface); border-color: var(--dm-border); color: var(--dm-text); }
+.a11y-title { font-size: .92rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+.a11y-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bd); }
+body.dark-mode .a11y-row { border-color: var(--dm-border); }
+.a11y-row:last-child { border-bottom: none; }
+.a11y-lbl { font-size: .84rem; font-weight: 500; }
+.a11y-sub { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+.toggle-sw {
+  width: 44px; height: 24px; border-radius: 12px; background: #e5e7eb;
+  position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; border: none;
+}
+.toggle-sw.on { background: var(--blue); }
+.toggle-sw::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.toggle-sw.on::after { left: 23px; }
+.font-size-ctrl { display: flex; gap: 6px; align-items: center; }
+.font-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--bd); background: #fff; font-size: .82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+body.dark-mode .font-btn { background: var(--dm-surface2); border-color: var(--dm-border); color: var(--dm-text); }
+.font-btn:hover { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+
+/* ── UPSELL VITALÍCIO BANNER ── */
+.vitalicio-banner {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  border-radius: 12px; padding: 16px 18px;
+  margin-bottom: 18px; display: none;
+  position: relative; overflow: hidden;
+}
+.vitalicio-banner.show { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.vitalicio-banner::before {
+  content: '∞'; position: absolute; right: -10px; top: -20px;
+  font-size: 7rem; color: rgba(255,255,255,.06); font-weight: 900; line-height: 1;
+  pointer-events: none;
+}
+.vb-icon { font-size: 1.8rem; flex-shrink: 0; }
+.vb-text { flex: 1; min-width: 160px; }
+.vb-title { font-size: .9rem; font-weight: 800; color: #fff; margin-bottom: 3px; }
+.vb-desc { font-size: .76rem; color: rgba(255,255,255,.8); line-height: 1.5; }
+.vb-price { font-size: .72rem; color: rgba(255,255,255,.65); margin-top: 2px; }
+.vb-btn {
+  background: #fff; color: #7c3aed;
+  padding: 10px 18px; border-radius: 8px;
+  font-size: .8rem; font-weight: 800; border: none; cursor: pointer;
+  white-space: nowrap; transition: .15s; flex-shrink: 0;
+}
+.vb-btn:hover { background: #f3e8ff; transform: scale(1.02); }
+.vb-close {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: none; color: rgba(255,255,255,.5);
+  font-size: .9rem; cursor: pointer; line-height: 1;
+}
+.vb-close:hover { color: #fff; }
+
+/* ── FONT SIZE PERSIST ── */
+.font-size-display { font-size: .82rem; font-weight: 700; color: var(--muted); width: 24px; text-align: center; }
+</style>
+
+<!-- DARK TOGGLE no topbar -->
+<script>
+// Injetar dark toggle no topbar quando plataforma carregar
+function injectDarkToggle(){
+  const tbr = document.getElementById('tb-actions');
+  if(!tbr) return;
+  if(document.getElementById('dark-toggle')) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'dark-toggle';
+  btn.title = 'Alternar modo escuro';
+  btn.innerHTML = '🌙';
+  btn.onclick = toggleDark;
+  tbr.insertBefore(btn, tbr.firstChild);
+
+  const a11yBtn = document.createElement('button');
+  a11yBtn.id = 'a11y-btn';
+  a11yBtn.title = 'Acessibilidade';
+  a11yBtn.style.cssText = 'width:36px;height:36px;border-radius:8px;background:transparent;border:1px solid var(--bd);cursor:pointer;font-size:1rem;flex-shrink:0;';
+  a11yBtn.innerHTML = '♿';
+  a11yBtn.onclick = toggleA11y;
+  tbr.insertBefore(a11yBtn, tbr.firstChild);
+}
+
+// Dark mode
+function toggleDark(){
+  document.body.classList.toggle('dark-mode');
+  const on = document.body.classList.contains('dark-mode');
+  const btn = document.getElementById('dark-toggle');
+  if(btn) btn.innerHTML = on ? '☀️' : '🌙';
+  localStorage.setItem('lq_dark', on ? '1' : '0');
+}
+function applyDark(){
+  if(localStorage.getItem('lq_dark')==='1'){
+    document.body.classList.add('dark-mode');
+    const btn = document.getElementById('dark-toggle');
+    if(btn) btn.innerHTML = '☀️';
+  }
+}
+
+// Accessibility panel
+function toggleA11y(){
+  document.getElementById('a11y-panel').classList.toggle('open');
+}
+function closeA11y(){
+  document.getElementById('a11y-panel').classList.remove('open');
+}
+
+// Font size
+let fontSize = parseInt(localStorage.getItem('lq_font') || '14');
+function applyFont(){
+  document.body.style.fontSize = fontSize + 'px';
+  const el = document.getElementById('font-display');
+  if(el) el.textContent = fontSize + 'px';
+}
+function changeFontSize(delta){
+  fontSize = Math.min(20, Math.max(12, fontSize + delta));
+  localStorage.setItem('lq_font', fontSize);
+  applyFont();
+}
+
+// High contrast
+function toggleContrast(){
+  document.body.classList.toggle('high-contrast');
+  const on = document.body.classList.contains('high-contrast');
+  localStorage.setItem('lq_contrast', on ? '1' : '0');
+  const sw = document.getElementById('sw-contrast');
+  if(sw) sw.classList.toggle('on', on);
+}
+function applyContrast(){
+  if(localStorage.getItem('lq_contrast')==='1'){
+    document.body.classList.add('high-contrast');
+    const sw = document.getElementById('sw-contrast');
+    if(sw) sw.classList.add('on');
+  }
+}
+
+// Larger text shortcut
+function toggleLargeFont(){
+  document.body.classList.toggle('font-lg');
+  const on = document.body.classList.contains('font-lg');
+  localStorage.setItem('lq_font_lg', on ? '1' : '0');
+  const sw = document.getElementById('sw-font-lg');
+  if(sw) sw.classList.toggle('on', on);
+}
+function applyFontLg(){
+  if(localStorage.getItem('lq_font_lg')==='1'){
+    document.body.classList.add('font-lg');
+    const sw = document.getElementById('sw-font-lg');
+    if(sw) sw.classList.add('on');
+  }
+}
+
+// Upsell vitalício banner
+function showVitalicioBanner(){
+  if(!PROFILE) return;
+  const plan = PROFILE.plan;
+  // Não mostrar para quem já tem vitalício
+  const vit = ['ilimitada_vitalicia', 'premium_vitalicio'];
+  if(vit.includes(plan)) return;
+  // Não mostrar se fechou hoje
+  const closed = localStorage.getItem('lq_vit_closed');
+  if(closed && (Date.now() - parseInt(closed)) < 86400000) return;
+  const banner = document.getElementById('vitalicio-banner');
+  if(banner) banner.classList.add('show');
+}
+function closeVitalicioBanner(){
+  const banner = document.getElementById('vitalicio-banner');
+  if(banner) banner.classList.remove('show');
+  localStorage.setItem('lq_vit_closed', Date.now());
+}
+
+// Override initPlatform to inject UI after load
+const __origInit2 = window.initPlatform;
+window.initPlatform = function(){
+  if(__origInit2) __origInit2();
+  setTimeout(() => {
+    injectDarkToggle();
+    applyDark();
+    applyFont();
+    applyContrast();
+    applyFontLg();
+    showVitalicioBanner();
+    // Fix bottom nav visibility
+    document.body.classList.add('platform-active');
+  }, 300);
+};
+
+// Override showLogin to ensure bottom nav hidden
+const __origShowLogin2 = window.showLogin;
+window.showLogin = function(){
+  if(__origShowLogin2) __origShowLogin2();
+  document.body.classList.remove('platform-active');
+  document.getElementById('bottom-nav').style.display = 'none';
+};
+
+// Override showPlatform
+const __origShowPlatform2 = window.showPlatform;
+window.showPlatform = function(){
+  if(__origShowPlatform2) __origShowPlatform2();
+  document.body.classList.add('platform-active');
+};
+</script>
+
+<!-- ACCESSIBILITY PANEL -->
+<div id="a11y-panel">
+  <div class="a11y-title">
+    ♿ Acessibilidade
+    <button onclick="closeA11y()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted)">✕</button>
+  </div>
+
+  <div class="a11y-row">
+    <div>
+      <div class="a11y-lbl">🌙 Modo escuro</div>
+      <div class="a11y-sub">Fundo escuro — melhor para estudar à noite</div>
+    </div>
+    <button class="toggle-sw" id="sw-dark" onclick="toggleDark();this.classList.toggle('on')"></button>
+  </div>
+
+  <div class="a11y-row">
+    <div>
+      <div class="a11y-lbl">📝 Texto maior</div>
+      <div class="a11y-sub">Aumenta o tamanho das questões</div>
+    </div>
+    <button class="toggle-sw" id="sw-font-lg" onclick="toggleLargeFont()"></button>
+  </div>
+
+  <div class="a11y-row">
+    <div>
+      <div class="a11y-lbl">🎨 Alto contraste</div>
+      <div class="a11y-sub">Cores mais fortes para baixa visão</div>
+    </div>
+    <button class="toggle-sw" id="sw-contrast" onclick="toggleContrast()"></button>
+  </div>
+
+  <div class="a11y-row">
+    <div>
+      <div class="a11y-lbl">🔠 Tamanho da fonte</div>
+      <div class="a11y-sub">Ajuste fino do texto</div>
+    </div>
+    <div class="font-size-ctrl">
+      <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+      <span class="font-size-display" id="font-display">14px</span>
+      <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)">
+    <button onclick="localStorage.removeItem('lq_dark');localStorage.removeItem('lq_font');localStorage.removeItem('lq_contrast');localStorage.removeItem('lq_font_lg');location.reload()" style="font-size:.75rem;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline">
+      Redefinir configurações
+    </button>
+  </div>
+</div>
+
+<!-- UPSELL VITALÍCIO BANNER (injeta dentro do .content em cada página) -->
+<template id="tpl-vitalicio-banner">
+  <div class="vitalicio-banner" id="vitalicio-banner">
+    <button class="vb-close" onclick="closeVitalicioBanner()">✕</button>
+    <div class="vb-icon">∞</div>
+    <div class="vb-text">
+      <div class="vb-title">Garanta acesso vitalício — pague uma vez, estude para sempre</div>
+      <div class="vb-desc">Você tem um plano com validade. Com a Ilimitada Vitalícia você nunca mais paga renovação e acessa todos os futuros lançamentos sem custo adicional.</div>
+      <div class="vb-price">Ilimitada Vitalícia · R$ 797 · pagamento único · garantia de 7 dias</div>
+    </div>
+    <button class="vb-btn" onclick="showUpsell('ilimitada')">Quero a Vitalícia →</button>
+  </div>
+</template>
+
+<script>
+// Injetar banner no topo do dashboard
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const tpl = document.getElementById('tpl-vitalicio-banner');
+    const dashPage = document.getElementById('p-desempenho');
+    if(tpl && dashPage && !document.getElementById('vitalicio-banner')){
+      const clone = tpl.content.cloneNode(true);
+      dashPage.insertBefore(clone, dashPage.firstChild);
+    }
+    // Também patch do toggle dark para sincronizar com a11y panel
+    const sw = document.getElementById('sw-dark');
+    if(sw && document.body.classList.contains('dark-mode')) sw.classList.add('on');
+  }, 800);
+});
+
+// Apply preferences on page load
+applyDark();
+applyFont();
+</script>
+<!-- ═══════════════════════════════════════════════
+  CADERNOS — Implementação completa com Supabase
+═══════════════════════════════════════════════ -->
+<style>
+.cad-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:8px;position:relative}
+.cad-card:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(26,159,212,.1);transform:translateY(-1px)}
+.cad-card-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.cad-card-nome{font-size:.88rem;font-weight:700;color:#111;line-height:1.3}
+.cad-card-info{font-size:.72rem;color:var(--muted)}
+.cad-card-menu{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dim);font-size:.9rem;border:none;background:transparent;transition:.12s}
+.cad-card-menu:hover{background:#f3f4f6;color:#111}
+.cad-card-empty{background:#f9fafb;border:1.5px dashed var(--bd2)}
+.cad-card-empty:hover{border-color:var(--blue);background:var(--blue-bg)}
+
+/* Questão no caderno */
+.cad-q-item{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;margin-bottom:8px;position:relative}
+.cad-q-ref{font-size:.7rem;color:var(--blue);background:var(--blue-bg);border-radius:4px;padding:2px 7px;display:inline-block;margin-bottom:6px}
+.cad-q-text{font-size:.83rem;line-height:1.6;color:#111;margin-bottom:10px}
+.cad-q-remove{position:absolute;top:10px;right:10px;background:var(--red-bg);border:none;border-radius:5px;padding:3px 7px;font-size:.68rem;font-weight:600;color:var(--red);cursor:pointer}
+.cad-q-remove:hover{background:#fee2e2}
+
+/* Chips de cor para cadernos */
+.cad-colors{display:flex;gap:6px;margin-top:4px}
+.cad-color{width:20px;height:20px;border-radius:50%;cursor:pointer;transition:.12s;border:2.5px solid transparent}
+.cad-color.sel{border-color:#111;transform:scale(1.2)}
+</style>
+
+<script>
+// ═══════════════════════════════════════════════
+// CADERNOS — Estado global
+// ═══════════════════════════════════════════════
+let CADERNOS = [];
+let CAD_ATUAL = null; // caderno aberto
+let Q_PARA_CADERNO = null; // questão pendente para adicionar
+let cadEditando = null; // id caderno sendo editado
+
+const CAD_CORES = [
+  {bg:'#dbeafe',ico:'📘',label:'Azul'},
+  {bg:'#dcfce7',ico:'📗',label:'Verde'},
+  {bg:'#fef3c7',ico:'📒',label:'Amarelo'},
+  {bg:'#fee2e2',ico:'📕',label:'Vermelho'},
+  {bg:'#f3e8ff',ico:'📓',label:'Roxo'},
+  {bg:'#ffedd5',ico:'📙',label:'Laranja'},
+];
+let cadCorSel = 0;
+
+// ═══════════════════════════════════════════════
+// CARREGAR CADERNOS DO SUPABASE
+// ═══════════════════════════════════════════════
+async function loadCadernos() {
+  if (!USER) return;
+  
+  const { data, error } = await sb
+    .from('cadernos')
+    .select(`*, caderno_questoes(count)`)
+    .eq('user_id', USER.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    // Tabela pode não existir ainda — mostra empty state
+    console.warn('Cadernos:', error.message);
+    CADERNOS = [];
+  } else {
+    CADERNOS = data || [];
+  }
+  renderCadernos();
+}
+
+function renderCadernos() {
+  const grid = document.getElementById('cad-grid');
+  const lbl = document.getElementById('cad-count-lbl');
+  if (!grid) return;
+  
+  lbl.textContent = `${CADERNOS.length} caderno${CADERNOS.length !== 1 ? 's' : ''}`;
+  
+  if (!CADERNOS.length) {
+    grid.innerHTML = `
+      <div class="cad-card cad-card-empty" onclick="openCadModal()" style="min-height:110px;align-items:center;justify-content:center;flex-direction:row;gap:10px">
+        <div style="font-size:1.4rem">📚</div>
+        <div>
+          <div style="font-size:.84rem;font-weight:600;color:var(--muted)">Nenhum caderno ainda</div>
+          <div style="font-size:.72rem;color:var(--dim)">Clique para criar o primeiro</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = CADERNOS.map(c => {
+    const cor = CAD_CORES[c.cor_idx || 0];
+    const qtd = c.caderno_questoes?.[0]?.count || 0;
+    return `
+      <div class="cad-card" onclick="openCadDetalhe('${c.id}')">
+        <button class="cad-card-menu" onclick="event.stopPropagation();cadMenu('${c.id}')" title="Opções">⋯</button>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="cad-card-icon" style="background:${cor.bg}">${cor.ico}</div>
+          <div style="min-width:0">
+            <div class="cad-card-nome">${escHtml(c.nome)}</div>
+            <div class="cad-card-info">${qtd} questão${qtd !== 1 ? 'ões' : ''}</div>
+          </div>
+        </div>
+        <div style="height:3px;background:#f3f4f6;border-radius:2px;overflow:hidden">
+          <div style="height:100%;background:${cor.ico === '📘' ? 'var(--blue)' : '#16a34a'};width:${Math.min(qtd * 5, 100)}%;border-radius:2px;transition:.5s"></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--dim)">${fmtDataCad(c.created_at)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// CRIAR / EDITAR CADERNO
+// ═══════════════════════════════════════════════
+function openCadModal(cadId = null) {
+  cadEditando = cadId;
+  cadCorSel = 0;
+  const cad = cadId ? CADERNOS.find(c => c.id === cadId) : null;
+  
+  document.getElementById('cad-modal-title').textContent = cadId ? 'Editar caderno' : 'Novo caderno';
+  document.getElementById('cad-nome-inp').value = cad ? cad.nome : '';
+  if (cad) cadCorSel = cad.cor_idx || 0;
+  
+  // Adicionar seletor de cores
+  const modal = document.querySelector('#cad-modal .modal');
+  let colorPicker = document.getElementById('cad-color-picker');
+  if (!colorPicker) {
+    colorPicker = document.createElement('div');
+    colorPicker.id = 'cad-color-picker';
+    colorPicker.className = 'cad-colors';
+    colorPicker.style.marginBottom = '12px';
+    modal.querySelector('#cad-nome-inp').parentElement.after(colorPicker);
+  }
+  colorPicker.innerHTML = CAD_CORES.map((c, i) => `
+    <div class="cad-color ${i === cadCorSel ? 'sel' : ''}" 
+      style="background:${c.bg}" title="${c.label}"
+      onclick="selCadCor(${i})"></div>`).join('');
+  
+  document.getElementById('cad-modal').classList.add('show');
+  setTimeout(() => document.getElementById('cad-nome-inp').focus(), 100);
+}
+
+function openCadModalFromQ() {
+  closeAddQModal();
+  openCadModal();
+}
+
+function selCadCor(idx) {
+  cadCorSel = idx;
+  document.querySelectorAll('.cad-color').forEach((el, i) => {
+    el.classList.toggle('sel', i === idx);
+  });
+}
+
+function closeCadModal() {
+  document.getElementById('cad-modal').classList.remove('show');
+  cadEditando = null;
+}
+
+async function saveCad() {
+  const nome = document.getElementById('cad-nome-inp').value.trim();
+  if (!nome) { document.getElementById('cad-nome-inp').focus(); return; }
+  if (!USER) { showUpsell('cadernos'); return; }
+
+  const btn = document.querySelector('#cad-modal .modal-btn');
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+
+  if (cadEditando) {
+    const { error } = await sb.from('cadernos')
+      .update({ nome, cor_idx: cadCorSel, updated_at: new Date().toISOString() })
+      .eq('id', cadEditando).eq('user_id', USER.id);
+    if (error) { btn.textContent = 'Criar caderno'; btn.disabled = false; return; }
+  } else {
+    const { error } = await sb.from('cadernos')
+      .insert({ user_id: USER.id, nome, cor_idx: cadCorSel });
+    if (error) { btn.textContent = 'Criar caderno'; btn.disabled = false; console.error(error); return; }
+  }
+
+  btn.textContent = 'Criar caderno'; btn.disabled = false;
+  closeCadModal();
+  await loadCadernos();
+
+  // Se tem questão pendente, adiciona ao novo caderno
+  if (Q_PARA_CADERNO && !cadEditando) {
+    const newCad = CADERNOS[0];
+    if (newCad) await addQtoCad(newCad.id, Q_PARA_CADERNO);
+    Q_PARA_CADERNO = null;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// MENU DO CADERNO
+// ═══════════════════════════════════════════════
+function cadMenu(cadId) {
+  const cad = CADERNOS.find(c => c.id === cadId);
+  if (!cad) return;
+  const action = confirm(`Caderno: "${cad.nome}"\n\nClique OK para editar ou Cancelar para excluir.\n(Para excluir: cancele aqui e use o botão vermelho dentro do caderno)`);
+  if (action) openCadModal(cadId);
+}
+
+// ═══════════════════════════════════════════════
+// DETALHE DO CADERNO
+// ═══════════════════════════════════════════════
+async function openCadDetalhe(cadId) {
+  CAD_ATUAL = CADERNOS.find(c => c.id === cadId);
+  if (!CAD_ATUAL) return;
+
+  document.getElementById('cad-lista-view').style.display = 'none';
+  document.getElementById('cad-detalhe-view').style.display = 'block';
+  document.getElementById('cad-detalhe-nome').textContent = CAD_ATUAL.nome;
+  document.getElementById('cad-detalhe-info').textContent = 'Carregando questões...';
+  document.getElementById('cad-q-list').innerHTML = '';
+
+  // Carregar questões do caderno
+  const { data, error } = await sb
+    .from('caderno_questoes')
+    .select(`*, questions(*)`)
+    .eq('caderno_id', cadId)
+    .order('added_at', { ascending: false });
+
+  const qs = data || [];
+  document.getElementById('cad-detalhe-info').textContent = `${qs.length} questão${qs.length !== 1 ? 'ões' : ''}`;
+
+  if (!qs.length) {
+    document.getElementById('cad-empty-q').style.display = 'block';
+    return;
+  }
+  document.getElementById('cad-empty-q').style.display = 'none';
+  document.getElementById('cad-q-list').innerHTML = qs.map(cq => {
+    const q = cq.questions;
+    if (!q) return '';
+    return `
+      <div class="cad-q-item">
+        <button class="cad-q-remove" onclick="removeQdoCad('${cq.id}')">✕ Remover</button>
+        <div class="cad-q-ref">${q.artigo || ''} ${q.lei || ''}</div>
+        <div class="cad-q-text">${q.enunciado}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:.7rem;color:var(--muted)">${q.banca || '—'} ${q.ano || ''}</span>
+          <span style="font-size:.7rem;color:var(--muted)">${q.cargo || '—'}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function closeCadDetalhe() {
+  CAD_ATUAL = null;
+  document.getElementById('cad-lista-view').style.display = 'block';
+  document.getElementById('cad-detalhe-view').style.display = 'none';
+  loadCadernos();
+}
+
+async function deleteCad() {
+  if (!CAD_ATUAL) return;
+  if (!confirm(`Excluir o caderno "${CAD_ATUAL.nome}"? Todas as questões serão removidas.`)) return;
+  await sb.from('cadernos').delete().eq('id', CAD_ATUAL.id).eq('user_id', USER.id);
+  closeCadDetalhe();
+}
+
+async function removeQdoCad(cqId) {
+  if (!confirm('Remover esta questão do caderno?')) return;
+  await sb.from('caderno_questoes').delete().eq('id', cqId);
+  openCadDetalhe(CAD_ATUAL.id);
+}
+
+// ═══════════════════════════════════════════════
+// ADICIONAR QUESTÃO AO CADERNO (do VMQ)
+// ═══════════════════════════════════════════════
+async function showAddQModal(questionId) {
+  if (!USER) { showUpsell('cadernos'); return; }
+  Q_PARA_CADERNO = questionId;
+
+  // Carregar cadernos se necessário
+  if (!CADERNOS.length) await loadCadernos();
+
+  const list = document.getElementById('add-q-cad-list');
+  if (!CADERNOS.length) {
+    list.innerHTML = `<div style="text-align:center;padding:16px;color:var(--dim);font-size:.82rem">Nenhum caderno criado ainda</div>`;
+  } else {
+    list.innerHTML = CADERNOS.map(c => {
+      const cor = CAD_CORES[c.cor_idx || 0];
+      return `
+        <div onclick="addQtoCad('${c.id}','${questionId}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;transition:.12s" onmouseover="this.style.borderColor='var(--blue)';this.style.background='var(--blue-bg)'" onmouseout="this.style.borderColor='var(--bd)';this.style.background='#fff'">
+          <span style="font-size:1.1rem">${cor.ico}</span>
+          <span style="font-size:.84rem;font-weight:500">${escHtml(c.nome)}</span>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('add-q-modal').classList.add('show');
+}
+
+function closeAddQModal() {
+  document.getElementById('add-q-modal').classList.remove('show');
+}
+
+async function addQtoCad(cadId, questionId) {
+  closeAddQModal();
+  if (!USER || !cadId || !questionId) return;
+
+  // Verificar se já existe
+  const { data: exists } = await sb.from('caderno_questoes')
+    .select('id').eq('caderno_id', cadId).eq('question_id', questionId).single();
+
+  if (exists) {
+    showToastCad('✅ Questão já está neste caderno!', 'info');
+    return;
+  }
+
+  const { error } = await sb.from('caderno_questoes')
+    .insert({ caderno_id: cadId, question_id: questionId, user_id: USER.id });
+
+  if (error) {
+    showToastCad('❌ Erro ao adicionar questão', 'error');
+  } else {
+    showToastCad('✅ Questão adicionada ao caderno!', 'success');
+    Q_PARA_CADERNO = null;
+  }
+}
+
+function showToastCad(msg, type) {
+  // Usa o toast existente ou cria um temporário
+  if (window.showToast) { showToast && showToast(msg, type); return; }
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:${type==='success'?'#16a34a':'#dc2626'};color:#fff;padding:10px 18px;border-radius:8px;font-size:.8rem;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2)`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+// ═══════════════════════════════════════════════
+// HELPER: adicionar botão de caderno nas questões
+// ═══════════════════════════════════════════════
+const _origBuildQ = window.buildQ;
+if (_origBuildQ) {
+  window.buildQ = function(q, idx) {
+    let html = _origBuildQ(q, idx);
+    // Substituir o botão de caderno placeholder por um funcional
+    html = html.replace(
+      /onclick="[^"]*"\s*><svg[^<]*<path d="M4 19\.5A2\.5[^"]*<\/svg>Cadernos<\/div>/,
+      `onclick="showAddQModal('${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Cadernos</div>`
+    );
+    return html;
+  };
+}
+
+// ═══════════════════════════════════════════════
+// SQL PARA CRIAR TABELAS DE CADERNOS
+// ═══════════════════════════════════════════════
+// Cole no Supabase SQL Editor:
+/*
+CREATE TABLE IF NOT EXISTS public.cadernos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  nome TEXT NOT NULL,
+  cor_idx INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.caderno_questoes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  caderno_id UUID NOT NULL REFERENCES public.cadernos(id) ON DELETE CASCADE,
+  question_id UUID NOT NULL REFERENCES public.questions(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  added_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(caderno_id, question_id)
+);
+
+ALTER TABLE public.cadernos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.caderno_questoes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "cadernos_self" ON public.cadernos FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "caderno_questoes_self" ON public.caderno_questoes FOR ALL USING (auth.uid() = user_id);
+
+GRANT ALL ON public.cadernos TO authenticated;
+GRANT ALL ON public.caderno_questoes TO authenticated;
+*/
+
+// ═══════════════════════════════════════════════
+// UTILITÁRIOS
+// ═══════════════════════════════════════════════
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDataCad(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+// Hook: carregar cadernos quando plataforma inicia
+const _origInitPlatform3 = window.initPlatform;
+window.initPlatform = function() {
+  if (_origInitPlatform3) _origInitPlatform3();
+  setTimeout(loadCadernos, 800);
+};
+
+// Hook: carregar quando navega para cadernos
+const _origNavTo3 = window.navTo;
+window.navTo = function(id) {
+  if (_origNavTo3) _origNavTo3(id);
+  if (id === 'cadernos') setTimeout(loadCadernos, 100);
+};
+
+// Também adiciona o SQL de cadernos ao SQL de conteúdo
+console.log('%c📚 LeisecaQuest Cadernos carregado', 'color:#1a9fd4;font-weight:bold');
 </script>
