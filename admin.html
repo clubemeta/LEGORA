@@ -186,8 +186,20 @@ tr:hover td{background:#fafafa}
     <p>Acesso restrito a administradores.</p>
     <div class="err-box" id="login-err"></div>
     <div class="lf"><label>Email</label><input type="email" id="adm-email" placeholder="seu@email.com"></div>
-    <div class="lf"><label>Senha</label><input type="password" id="adm-pwd" placeholder="Senha" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <div class="lf">
+      <label>Senha</label>
+      <div style="position:relative">
+        <input type="password" id="adm-pwd" placeholder="Senha" onkeydown="if(event.key==='Enter')adminLogin()" style="width:100%;padding:10px 44px 10px 13px;border:1px solid var(--bd2);border-radius:7px;font-size:.88rem;outline:none;transition:border-color .15s">
+        <button onclick="togglePwdVis()" type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0;line-height:1" id="pwd-eye">👁</button>
+      </div>
+    </div>
+    <div style="font-size:.74rem;color:var(--muted);margin-bottom:12px;padding:8px 10px;background:#f9fafb;border-radius:6px;border:1px solid var(--bd)">
+      📧 <strong>Admins:</strong> clubemetaoficial@gmail.com · thayslorita@gmail.com
+    </div>
     <button class="login-btn" onclick="adminLogin()">Entrar no painel</button>
+    <div style="margin-top:10px;text-align:center">
+      <a onclick="forgotPwd()" style="font-size:.76rem;color:var(--blue);cursor:pointer;text-decoration:underline">Esqueceu a senha?</a>
+    </div>
   </div>
 </div>
 
@@ -787,6 +799,28 @@ function showLogin(err){
   document.getElementById('login-wrap').classList.add('show');
   if(err){document.getElementById('login-err').style.display='block';document.getElementById('login-err').textContent=err;}
 }
+function togglePwdVis(){
+  const inp = document.getElementById('adm-pwd');
+  const eye = document.getElementById('pwd-eye');
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    eye.textContent = '👁';
+  }
+}
+
+async function forgotPwd(){
+  const email = document.getElementById('adm-email').value.trim();
+  if(!email){ alert('Digite seu email no campo acima primeiro.'); return; }
+  const {error} = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://clubemeta.github.io/leisecaquest/leisecaquest-admin.html'
+  });
+  if(error){ alert('Erro: ' + error.message); return; }
+  alert('✅ E-mail de recuperação enviado para ' + email + '\nVerifique sua caixa de entrada.');
+}
+
 async function adminLogin(){
   const email=document.getElementById('adm-email').value.trim();
   const pwd=document.getElementById('adm-pwd').value;
