@@ -594,16 +594,16 @@ tr:last-child td{border-bottom:none}
               <div class="vmq-tab-row">
                 <span class="vmq-label">Comentários:</span>
                 <div class="chip active">Todos</div>
-                <div class="chip lock">🔒 Meus comentários</div>
-                <div class="chip lock">🔒 Minhas anotações</div>
+                <div class="chip lock" onclick="showFT('💬 Disponível após responder questões com comentários')">🔒 Meus comentários</div>
+                <div class="chip lock" onclick="showFT('📌 Disponível após salvar lembretes')">🔒 Minhas anotações</div>
               </div>
               <div class="vmq-tab-row">
                 <span class="vmq-label">Questões:</span>
                 <div class="chip active" onclick="chipActive(this)">Todas</div>
-                <div class="chip lock">🔒 Acertei</div>
-                <div class="chip lock">🔒 Errei</div>
+                <div class="chip" onclick="chipActive(this)">Acertei</div>
+                <div class="chip" onclick="chipActive(this)">Errei</div>
                 <div class="chip" onclick="chipActive(this)">Resolvidas</div>
-                <div class="chip lock">🔒 Não resolvidas</div>
+                <div class="chip" onclick="chipActive(this)">Não resolvidas</div>
               </div>
               <div class="vmq-tab-row">
                 <span class="vmq-label">Modo:</span>
@@ -1230,12 +1230,12 @@ function buildQ(q,idx){
     ${ans===undefined?`<button class="q-answer" onclick="answerQ('${q.id}')">Responder</button>`:''}
     ${fb}
     <div class="q-footer">
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Comentários</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Cadernos</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>Lembrete</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Reportar erro</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Histórico de Respostas</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Estatísticas</div>
+      <div class="qf-btn" onclick="openFeat('comentarios','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Comentários</div>
+      <div class="qf-btn" onclick="addQToCad('${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Cadernos</div>
+      <div class="qf-btn" onclick="openFeat('lembrete','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>Lembrete</div>
+      <div class="qf-btn" onclick="openFeat('erro','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Reportar erro</div>
+      <div class="qf-btn" onclick="openFeat('historico','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Histórico de Respostas</div>
+      <div class="qf-btn" onclick="openFeat('stats','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Estatísticas</div>
     </div>
   </div>`;
 }
@@ -1390,11 +1390,12 @@ function renderRetas(){
     {id:'sefaz-ce',name:'SEFAZ-CE 2026',sub:'Auditor Fiscal',cat:'fiscal'},
     {id:'trt-sp',name:'TRT-SP 2025',sub:'Analista e Técnico',cat:'trabalhista'},
     {id:'pc-df',name:'PC-DF',sub:'Delegado de Polícia',cat:'policial'},
+    {id:'tjce-2026',name:'TJ-CE 2026',sub:'Analista e Técnico Judiciário',cat:'juridica'},
   ];
   const hasAll=hasAccess('retas');
   document.getElementById('rf-list').innerHTML=retas.map(r=>{
     const owned=hasAll;
-    return `<div class="rf-item ${owned?'owned-rf':'locked-rf'}" onclick="${owned?'alert(\'Reta Final \'+\''+r.name+'\'+\' — Conteúdo em breve!\')': "showUpsell('retas')"}">
+    return `<div class="rf-item ${owned?'owned-rf':'locked-rf'}" onclick="${owned?`openRetaFinal('${r.id}','${r.name}')`: "showUpsell('retas')"}">
       <div class="rf-item-info">
         <div class="rf-item-name">${r.name}</div>
         <div class="rf-item-sub">${r.sub}</div>
@@ -1409,6 +1410,33 @@ function renderRetas(){
     </div>
     <button onclick="showUpsell('ilimitada')" style="padding:8px 18px;background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver Ilimitada →</button>
   </div>`;
+}
+
+function openRetaFinal(id, name){
+  // Busca questões da reta final no Supabase
+  var productId='reta-final-'+id;
+  if(id==='tjce-2026') productId='reta-final-tjce-2026';
+  if(!window.sb){alert('Erro de conexão.');return;}
+  var title=document.getElementById('page-title');
+  if(title) title.textContent='Reta Final: '+name;
+  var content=document.getElementById('qlist');
+  var qPage=document.getElementById('p-questoes');
+  if(qPage) qPage.classList.add('show');
+  document.querySelectorAll('.page').forEach(function(p){if(p.id!=='p-questoes')p.classList.remove('show');});
+  if(content) content.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">Carregando questões da '+name+'...</div>';
+  window.sb.from('questions').select('*').eq('product_id',productId).eq('active',true).limit(100).then(function(res){
+    var data=res.data||[];
+    if(!data.length){
+      if(content) content.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">Nenhuma questão encontrada para '+name+'.</div>';
+      return;
+    }
+    window.QUESTIONS=data;
+    if(document.getElementById('q-count')) document.getElementById('q-count').textContent=data.length;
+    if(content) content.innerHTML=data.map(buildQ).join('');
+    showFT('✅ '+data.length+' questões carregadas — '+name);
+  }).catch(function(e){
+    if(content) content.innerHTML='<div style="text-align:center;padding:40px;color:var(--red)">Erro ao carregar questões.</div>';
+  });
 }
 
 // ═══════════════════════════════════════════════
@@ -1924,8 +1952,13 @@ function showFT(msg){
   setTimeout(function(){t.style.opacity='0';t.style.transition='.3s';setTimeout(function(){t.remove();},300);},2200);
 }
 
-
-// ── PERFIL MODAL ──
+// ── ADICIONAR QUESTÃO AO CADERNO ──
+function addQToCad(qId){
+  if(!window.USER){showUpsell('cadernos');return;}
+  window.FEAT_QID=qId;
+  if(typeof openAddQModal==='function'){openAddQModal(qId);}
+  else{navTo('cadernos');showFT('📚 Abra um caderno e adicione a questão.');}
+}
 function openProfileModal(){
   closeProfile();
   var p=window.PROFILE;if(!p)return;
