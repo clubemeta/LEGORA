@@ -474,7 +474,7 @@ tr:last-child td{border-bottom:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <span>Retas Finais</span>
         </div>
-        <div class="sb-link" onclick="alert('Tour em breve!')">
+        <div class="sb-link" onclick="startTour()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <span>Tour explicativo</span>
         </div>
@@ -488,7 +488,7 @@ tr:last-child td{border-bottom:none}
           <div class="sb-urole" id="sb-plan">—</div>
         </div>
       </div>
-      <div class="sb-opinion">
+      <div class="sb-opinion" onclick="openOpinion()" style="cursor:pointer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         Dê sua opinião!
       </div>
@@ -823,14 +823,14 @@ tr:last-child td{border-bottom:none}
 
 <!-- PROFILE MENU -->
 <div class="prof-menu" id="pmenu">
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu perfil</div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Informações Pessoais</div>
+  <div class="pm-item" onclick="openProfileModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu perfil</div>
+  <div class="pm-item" onclick="openProfileModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Informações Pessoais</div>
   <div class="pm-div"></div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Fale conosco</div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Ir para o site</div>
+  <div class="pm-item" onclick="openContact()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Fale conosco</div>
+  <div class="pm-item" onclick="window.open('https://www.decorandoaleiseca.com.br','_blank');closeProfile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Ir para o site</div>
   <div class="pm-div"></div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>Configurações</div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</div>
+  <div class="pm-item" onclick="openA11y();closeProfile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>Configurações</div>
+  <div class="pm-item" onclick="openNotifPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</div>
   <div class="pm-div"></div>
   <div class="pm-item red" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</div>
 </div>
@@ -1126,12 +1126,15 @@ function toggleAcc(id){
 // STATS & CHART
 // ═══════════════════════════════════════════════
 async function loadStats(){
-  // Load from Supabase if logged in
   if(USER){
-    const {data}=await sb.from('user_stats').select('*').eq('user_id',USER.id).single();
-    if(data){
-      S.stats={t:data.total_respondidas||0,u:data.unicas||0,c:data.corretas||0,e:data.erradas||0};
-    }
+    try{
+      const {data}=await sb.from('user_answers').select('correta').eq('user_id',USER.id);
+      if(data&&data.length){
+        const t=data.length;
+        const c=data.filter(a=>a.correta).length;
+        S.stats={t,u:t,c,e:t-c};
+      }
+    }catch(e){/* user_answers indisponível */}
   }
   updateStats();
 }
@@ -1921,10 +1924,118 @@ function showFT(msg){
   setTimeout(function(){t.style.opacity='0';t.style.transition='.3s';setTimeout(function(){t.remove();},300);},2200);
 }
 
-// ── INICIALIZAÇÃO: aplicar prefs + vitalício banner ──
-document.addEventListener('DOMContentLoaded', function(){
-  applyPrefsExtra();
-});
+
+// ── PERFIL MODAL ──
+function openProfileModal(){
+  closeProfile();
+  var p=window.PROFILE;if(!p)return;
+  var planLabels={free:'Gratuito',vmq_vitalicio:'VMQ Vitalício',premium_anual:'Premium Anual',premium_vitalicio:'Premium Vitalício',ilimitada_anual:'Ilimitada Anual',ilimitada_vitalicia:'Ilimitada Vitalícia',reta_final:'Reta Final'};
+  var since=new Date(p.created_at||Date.now()).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  var m=document.getElementById('prof-modal-bg');
+  if(!m){
+    m=document.createElement('div');
+    m.id='prof-modal-bg';
+    m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center';
+    m.onclick=function(e){if(e.target===m)m.remove();};
+    document.body.appendChild(m);
+  }
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px;max-width:340px;width:calc(100vw - 32px);position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)">'+
+    '<button onclick="document.getElementById(\'prof-modal-bg\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:#9ca3af;cursor:pointer">✕</button>'+
+    '<div style="width:56px;height:56px;border-radius:50%;background:#1a9fd4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;margin:0 auto 14px">'+
+      (p.name||p.email).substring(0,2).toUpperCase()+
+    '</div>'+
+    '<h3 style="text-align:center;font-size:1rem;font-weight:700;margin-bottom:4px">'+(p.name||'Usuário')+'</h3>'+
+    '<p style="text-align:center;font-size:.78rem;color:#6b7280;margin-bottom:18px">'+p.email+'</p>'+
+    '<div style="background:#f9fafb;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">'+
+      '<div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:#6b7280">Plano</span><span style="font-weight:600;color:#1a9fd4">'+(planLabels[p.plan]||p.plan)+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:#6b7280">Membro desde</span><span style="font-weight:500">'+since+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:#6b7280">ID</span><span style="font-weight:400;font-size:.7rem;color:#9ca3af">'+p.id.substring(0,8)+'...</span></div>'+
+    '</div>'+
+  '</div>';
+  m.style.display='flex';
+}
+
+// ── CONTATO ──
+function openContact(){
+  closeProfile();
+  var wpp='https://wa.me/5585999999999?text=Ol%C3%A1%2C+vim+pelo+LeisecaQuest+e+preciso+de+ajuda!';
+  var email='mailto:contato@decorandoaleiseca.com.br?subject=Suporte+LeisecaQuest';
+  var m=document.createElement('div');
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center';
+  m.onclick=function(e){if(e.target===m)m.remove();};
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px;max-width:320px;width:calc(100vw - 32px);position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)">'+
+    '<button onclick="this.closest(\'div[style]\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:#9ca3af;cursor:pointer">✕</button>'+
+    '<div style="font-size:2rem;text-align:center;margin-bottom:12px">💬</div>'+
+    '<h3 style="text-align:center;font-size:.95rem;font-weight:700;margin-bottom:6px">Fale conosco</h3>'+
+    '<p style="text-align:center;font-size:.8rem;color:#6b7280;margin-bottom:18px">Escolha como prefere entrar em contato</p>'+
+    '<a href="'+wpp+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:8px;background:#25d366;color:#fff;text-decoration:none;font-size:.88rem;font-weight:700;margin-bottom:8px">'+
+      '<svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px"><path d="M17.47 14.38c-.28-.14-1.64-.8-1.9-.9-.25-.09-.43-.14-.62.14-.18.28-.72.9-.88 1.08-.17.18-.33.2-.61.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.4-1.66-1.56-1.94-.17-.28-.02-.43.12-.57.13-.12.28-.33.42-.5.14-.17.18-.28.28-.47.09-.18.05-.35-.02-.49-.07-.14-.62-1.5-.85-2.05-.22-.54-.45-.46-.62-.47h-.52c-.18 0-.47.07-.72.33-.24.26-.94.92-.94 2.24 0 1.31.97 2.58 1.1 2.76.14.18 1.9 2.89 4.6 4.05.64.28 1.14.44 1.53.56.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.8-1.27.22-.63.22-1.17.16-1.27-.07-.1-.24-.17-.52-.31z"/><path d="M12 1.5C6.2 1.5 1.5 6.2 1.5 12c0 1.93.52 3.74 1.43 5.29L1.5 22.5l5.36-1.41A10.44 10.44 0 0012 22.5C17.8 22.5 22.5 17.8 22.5 12S17.8 1.5 12 1.5zm0 19.08c-1.73 0-3.33-.48-4.71-1.3l-.34-.2-3.18.84.85-3.1-.22-.35A8.57 8.57 0 013.42 12C3.42 7.28 7.28 3.42 12 3.42S20.58 7.28 20.58 12 16.72 20.58 12 20.58z"/></svg>'+
+      'WhatsApp'+
+    '</a>'+
+    '<a href="'+email+'" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:8px;background:#f3f4f6;color:#374151;text-decoration:none;font-size:.88rem;font-weight:600">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'+
+      'E-mail'+
+    '</a>'+
+  '</div>';
+  document.body.appendChild(m);
+}
+
+// ── NOTIFICAÇÕES ──
+function openNotifPanel(){
+  closeProfile();
+  var m=document.createElement('div');
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center';
+  m.onclick=function(e){if(e.target===m)m.remove();};
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:24px;max-width:340px;width:calc(100vw - 32px);position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:80vh;overflow-y:auto">'+
+    '<button onclick="this.closest(\'div[style]\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:#9ca3af;cursor:pointer">✕</button>'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:#1a9fd4"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:.9rem;font-weight:700">Notificações</span></div>'+
+    '<div style="text-align:center;padding:30px 0;color:#9ca3af">'+
+      '<div style="font-size:2rem;margin-bottom:10px">🔔</div>'+
+      '<div style="font-size:.85rem;font-weight:500;color:#6b7280">Nenhuma notificação por enquanto</div>'+
+      '<div style="font-size:.75rem;color:#9ca3af;margin-top:4px">As novidades da plataforma aparecerão aqui</div>'+
+    '</div>'+
+    '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px;font-size:.78rem;color:#0369a1;line-height:1.5;margin-top:8px">'+
+      '📅 <strong>Próxima prova TJ-CE 2026:</strong> 09/08/2026 — Banca FCC'+
+    '</div>'+
+  '</div>';
+  document.body.appendChild(m);
+}
+
+// ── OPINIÃO / FEEDBACK ──
+function openOpinion(){
+  var m=document.createElement('div');
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center';
+  m.onclick=function(e){if(e.target===m)m.remove();};
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px;max-width:380px;width:calc(100vw - 32px);position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)">'+
+    '<button onclick="this.closest(\'div[style]\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:#9ca3af;cursor:pointer">✕</button>'+
+    '<div style="font-size:2rem;text-align:center;margin-bottom:10px">⭐</div>'+
+    '<h3 style="text-align:center;font-size:.95rem;font-weight:700;margin-bottom:6px">Dê sua opinião!</h3>'+
+    '<p style="text-align:center;font-size:.8rem;color:#6b7280;margin-bottom:16px">Sua opinião nos ajuda a melhorar o LeisecaQuest</p>'+
+    '<div style="display:flex;justify-content:center;gap:10px;margin-bottom:16px" id="star-row">'+
+      [1,2,3,4,5].map(i=>'<span style="font-size:1.8rem;cursor:pointer" onmouseover="hoverStars('+i+')" onmouseout="hoverStars(0)" onclick="selStar('+i+')" data-star="'+i+'">☆</span>').join('')+
+    '</div>'+
+    '<textarea id="opn-txt" placeholder="Conte como podemos melhorar..." style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:.82rem;font-family:inherit;resize:none;height:80px;outline:none;margin-bottom:12px" onfocus="this.style.borderColor=\'#1a9fd4\'" onblur="this.style.borderColor=\'#e5e7eb\'"></textarea>'+
+    '<button onclick="sendOpinion()" style="width:100%;padding:11px;border-radius:8px;background:#1a9fd4;color:#fff;font-size:.88rem;font-weight:700;border:none;cursor:pointer">Enviar opinião</button>'+
+  '</div>';
+  document.body.appendChild(m);
+}
+var _selStar=0;
+function hoverStars(n){
+  document.querySelectorAll('#star-row span').forEach(function(s,i){s.textContent=i<n?'★':'☆';s.style.color=i<n?'#f59e0b':'#9ca3af';});
+}
+function selStar(n){_selStar=n;hoverStars(n);}
+async function sendOpinion(){
+  var txt=document.getElementById('opn-txt')?.value.trim()||'';
+  if(!_selStar){showFT('⭐ Escolha uma nota antes de enviar');return;}
+  if(window.sb&&window.USER){
+    try{
+      await window.sb.from('feedback').insert({user_id:USER.id,nota:_selStar,texto:txt}).catch(()=>{});
+    }catch(e){}
+  }
+  document.querySelector('#star-row')?.closest('div[style]')?.remove();
+  showFT('✅ Obrigado pelo seu feedback!');
+}
+
 
 // Patch qf-btns após questões renderizadas
 // Hook no buildQ existente para adicionar funcionalidades
