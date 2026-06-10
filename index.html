@@ -964,6 +964,7 @@ function showPlatform(){
   document.getElementById('platform').style.display='block';
   document.body.classList.add('platform-active');
   initPlatform();
+  setTimeout(loadBanners, 800); // carrega banners após o init
 }
 
 function showLogin(){
@@ -2095,7 +2096,70 @@ function addQToCad(qId){
   if(typeof openAddQModal==='function'){openAddQModal(qId);}
   else{navTo('cadernos');showFT('📚 Abra um caderno e adicione a questão.');}
 }
-// ── CONFIGURAÇÕES MODAL ──
+// ── BANNERS PROMOCIONAIS ──
+var BANNERS_CACHE=[];
+async function loadBanners(){
+  if(!window.sb||!window.USER)return;
+  try{
+    const{data}=await window.sb.from('banners').select('*').eq('ativo',true).order('ordem',{ascending:true});
+    BANNERS_CACHE=data||[];
+    renderBannersAll();
+  }catch(e){}
+}
+
+function getBannersFor(posicao){
+  var plan=(window.PROFILE&&window.PROFILE.plan)||'free';
+  return BANNERS_CACHE.filter(function(b){
+    var p=b.posicao||'todas';
+    var match=(p==='todas'||p===posicao);
+    var planOk=!b.planos_alvo||b.planos_alvo.length===0||b.planos_alvo.includes(plan);
+    return match&&planOk;
+  });
+}
+
+function buildBannerEl(b){
+  var el=document.createElement('div');
+  el.style.cssText='border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin:10px 0;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;flex-wrap:wrap';
+  el.style.background=b.cor_fundo||'#eff6ff';
+  el.innerHTML=
+    '<div style="font-size:1.6rem;flex-shrink:0">'+(b.emoji||'🎯')+'</div>'+
+    '<div style="flex:1;min-width:120px">'+
+      '<div style="font-size:.84rem;font-weight:700;color:'+(b.cor_texto||'#1e40af')+'">'+(b.titulo||'')+'</div>'+
+      (b.descricao?'<div style="font-size:.74rem;color:'+(b.cor_texto||'#1e40af')+';opacity:.85;margin-top:2px">'+b.descricao+'</div>':'')+
+    '</div>'+
+    (b.cta_url?'<a href="'+(b.cta_url)+'" target="_blank" onclick="event.stopPropagation()" style="background:'+(b.cor_btn||'#1a9fd4')+';color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block">'+(b.cta_texto||'Ver oferta →')+'</a>':'');
+  if(b.cta_url)el.onclick=function(){window.open(b.cta_url,'_blank');};
+  return el;
+}
+
+function renderBannersAll(){
+  // Dashboard
+  var dbBanners=getBannersFor('dashboard');
+  var dbEl=document.getElementById('dash-banners');
+  if(!dbEl){dbEl=document.createElement('div');dbEl.id='dash-banners';var dbg=document.getElementById('p-desempenho');if(dbg)dbg.appendChild(dbEl);}
+  dbEl.innerHTML='';dbBanners.forEach(function(b){dbEl.appendChild(buildBannerEl(b));});
+
+  // Questões
+  var qBanners=getBannersFor('questoes');
+  var qEl=document.getElementById('questoes-banners');
+  if(!qEl){qEl=document.createElement('div');qEl.id='questoes-banners';var qp=document.getElementById('vmq-banners-zone');if(qp)qp.appendChild(qEl);}
+  if(qEl){qEl.innerHTML='';qBanners.forEach(function(b){qEl.appendChild(buildBannerEl(b));});}
+
+  // Retas
+  var rBanners=getBannersFor('retas');
+  var rEl=document.getElementById('retas-banners');
+  if(!rEl){rEl=document.createElement('div');rEl.id='retas-banners';var rfList=document.getElementById('rf-list');if(rfList&&rfList.parentNode)rfList.parentNode.insertBefore(rEl,rfList);}
+  if(rEl){rEl.innerHTML='';rBanners.forEach(function(b){rEl.appendChild(buildBannerEl(b));});}
+}
+
+function refreshBannersOnPage(pagina){
+  var banners=getBannersFor(pagina);
+  var elId=pagina+'-banners';
+  var el=document.getElementById(elId);
+  if(!el)return;
+  el.innerHTML='';
+  banners.forEach(function(b){el.appendChild(buildBannerEl(b));});
+}
 function openConfigModal(){
   closeProfile();
   var isDark=document.body.classList.contains('dark-mode');
