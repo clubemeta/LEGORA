@@ -506,31 +506,50 @@ tr:hover td{background:#fafafa}
               <label class="sinp-label">Produto / Concurso</label>
               <select id="ai-product" class="ssel">
                 <option value="reta-final-tjce-2026">Reta Final TJ-CE 2026</option>
+                <option value="reta-final-enam-2026">Reta Final ENAM 2026.1</option>
+              </select>
+            </div>
+            <div>
+              <label class="sinp-label">Tipo de questão</label>
+              <select id="ai-tipo" class="ssel" onchange="onTipoChange(this.value)">
+                <option value="vf">Verdadeiro/Falso (TJ-CE, FCC)</option>
+                <option value="mc">Múltipla escolha A-E (ENAM, FGV)</option>
               </select>
             </div>
             <div>
               <label class="sinp-label">Lei / Disciplina</label>
               <select id="ai-lei" class="ssel">
-                <option value="Constituição Federal/88">Constituição Federal/88</option>
-                <option value="Código Civil">Código Civil</option>
-                <option value="Código Penal">Código Penal</option>
-                <option value="Código de Processo Civil">Código de Processo Civil</option>
-                <option value="Código de Processo Penal">Código de Processo Penal</option>
-                <option value="Lei 8.112/90">Lei 8.112/90 — Estatuto Servidores</option>
-                <option value="Lei 14.133/21 - Nova Lei de Licitações">Lei 14.133/21 — Licitações</option>
-                <option value="Lei 8.429/92 - Improbidade Administrativa">Lei 8.429/92 — Improbidade (LIA)</option>
-                <option value="Lei 9.784/99 - Processo Administrativo">Lei 9.784/99 — Processo Adm.</option>
-                <option value="Lei 12.527/11 - Lei de Acesso à Informação">Lei 12.527/11 — LAI</option>
-                <option value="Lei 13.709/18 - LGPD">Lei 13.709/18 — LGPD</option>
-                <option value="Lei 13.869/19 - Abuso de Autoridade">Lei 13.869/19 — Abuso de Autoridade</option>
-                <option value="Lei 11.340/06 - Lei Maria da Penha">Lei 11.340/06 — Maria da Penha</option>
-                <option value="Lei 11.343/06 - Lei de Drogas">Lei 11.343/06 — Lei de Drogas</option>
-                <option value="Lei 9.613/98 - Lavagem de Dinheiro">Lei 9.613/98 — Lavagem de Dinheiro ⚠️</option>
-                <option value="Lei 7.210/84 - Lei de Execução Penal">Lei 7.210/84 — LEP ⚠️</option>
-                <option value="Lei 9.099/95 - Juizados Especiais">Lei 9.099/95 — Juizados Especiais ⚠️</option>
-                <option value="Lei 8.987/95 - Concessões">Lei 8.987/95 — Concessões</option>
-                <option value="Lei Estadual 16.397/17 - Organização Judiciária CE">Lei 16.397/17 — Org. Judiciária CE ⚠️</option>
-                <option value="Lei Estadual 9.826/74 - Estatuto CE">Lei 9.826/74 — Estatuto CE ⚠️</option>
+                <optgroup label="── TJCE (FCC · V/F) ──">
+                  <option value="Constituição Federal/88">Constituição Federal/88</option>
+                  <option value="Código Civil">Código Civil</option>
+                  <option value="Código Penal">Código Penal</option>
+                  <option value="Código de Processo Civil">Código de Processo Civil</option>
+                  <option value="Código de Processo Penal">Código de Processo Penal</option>
+                  <option value="Lei 8.112/90">Lei 8.112/90 — Estatuto Servidores</option>
+                  <option value="Lei 14.133/21 - Nova Lei de Licitações">Lei 14.133/21 — Licitações</option>
+                  <option value="Lei 8.429/92 - Improbidade Administrativa">Lei 8.429/92 — Improbidade</option>
+                  <option value="Lei 9.784/99 - Processo Administrativo">Lei 9.784/99 — Processo Adm.</option>
+                  <option value="Lei 12.527/11 - Lei de Acesso à Informação">Lei 12.527/11 — LAI</option>
+                  <option value="Lei 13.709/18 - LGPD">Lei 13.709/18 — LGPD</option>
+                  <option value="Lei 13.869/19 - Abuso de Autoridade">Lei 13.869/19 — Abuso de Autoridade</option>
+                  <option value="Lei 11.340/06 - Lei Maria da Penha">Lei 11.340/06 — Maria da Penha</option>
+                  <option value="Lei 11.343/06 - Lei de Drogas">Lei 11.343/06 — Lei de Drogas</option>
+                  <option value="Lei 9.613/98 - Lavagem de Dinheiro">Lei 9.613/98 — Lavagem de Dinheiro</option>
+                  <option value="Lei 7.210/84 - Lei de Execução Penal">Lei 7.210/84 — LEP</option>
+                  <option value="Lei 9.099/95 - Juizados Especiais">Lei 9.099/95 — Juizados Especiais</option>
+                  <option value="Lei Estadual 16.397/17 - Organização Judiciária CE">Lei 16.397/17 — Org. Judiciária CE</option>
+                  <option value="Lei Estadual 9.826/74 - Estatuto CE">Lei 9.826/74 — Estatuto CE</option>
+                </optgroup>
+                <optgroup label="── ENAM (FGV · Múltipla Escolha) ──">
+                  <option value="Direito Constitucional">Dir. Constitucional — 20% (16q)</option>
+                  <option value="Direito Penal">Direito Penal — 15% (12q)</option>
+                  <option value="Direito Civil">Direito Civil — 15% (12q)</option>
+                  <option value="Direito Processual Civil">Dir. Processual Civil — 15% (12q)</option>
+                  <option value="Direito Administrativo">Dir. Administrativo — 12,5% (10q)</option>
+                  <option value="Direitos Humanos">Direitos Humanos — 7,5% (6q)</option>
+                  <option value="Direito Empresarial">Dir. Empresarial — 7,5% (6q)</option>
+                  <option value="Formação Humanística">Formação Humanística — 7,5% (6q)</option>
+                </optgroup>
               </select>
             </div>
             <div>
@@ -572,6 +591,38 @@ tr:hover td{background:#fafafa}
             <button class="btn btn-s" onclick="aprovarTodas()" id="ai-approve-all" style="display:none">✅ Aprovar todas e salvar</button>
             <button class="btn btn-s" onclick="document.getElementById('ai-results').innerHTML='';document.getElementById('ai-approve-all').style.display='none'" id="ai-clear" style="display:none">🗑 Limpar</button>
             <span id="ai-status" style="font-size:.78rem;color:var(--muted)"></span>
+          </div>
+        </div>
+
+        <!-- Contexto do Edital (colapsável) -->
+        <div class="card" style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:2px 0" onclick="toggleEditalCtx()">
+            <div>
+              <div style="font-size:.84rem;font-weight:700">📄 Contexto do Edital (opcional mas recomendado)</div>
+              <div style="font-size:.73rem;color:var(--muted);margin-top:2px">Cole o trecho do edital da lei escolhida para questões mais precisas</div>
+            </div>
+            <svg id="edital-ctx-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;transform:rotate(0deg);transition:.2s"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div id="edital-ctx-body" style="display:none;margin-top:12px">
+            <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+              <button class="btn btn-s" style="font-size:.74rem;padding:4px 10px" onclick="document.getElementById('edital-file-input').click()">
+                📎 Upload PDF/TXT
+              </button>
+              <input type="file" id="edital-file-input" accept=".pdf,.txt,.doc,.docx" style="display:none" onchange="loadEditalFile(this)">
+              <button class="btn btn-s" style="font-size:.74rem;padding:4px 10px" onclick="document.getElementById('edital-ctx-txt').value='';showToast('Contexto limpo','success')">
+                🗑 Limpar
+              </button>
+              <span id="edital-file-name" style="font-size:.73rem;color:var(--muted);align-self:center"></span>
+            </div>
+            <textarea id="edital-ctx-txt" class="sinp" rows="8" 
+              placeholder="Cole aqui o trecho do edital com o conteúdo programático da lei escolhida...
+
+Exemplo:
+DIREITO PENAL: Princípios aplicáveis ao Direito Penal. Aplicação da lei penal. A lei penal no tempo e no espaço. Crimes contra a pessoa. Crimes Contra o Patrimônio. Crimes contra a fé pública. Crimes contra a dignidade sexual..."
+              style="font-size:.78rem;resize:vertical;min-height:120px;font-family:monospace"></textarea>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:4px">
+              O conteúdo colado será usado como contexto extra pelo Claude para gerar questões mais alinhadas ao edital específico.
+            </div>
           </div>
         </div>
 
@@ -1601,7 +1652,42 @@ async function toggleProd(id,active){await sb.from('products').update({active:!a
 // ══════════════════════════════════════════
 // GERADOR DE QUESTÕES COM IA (Claude API)
 // ══════════════════════════════════════════
+function toggleEditalCtx(){
+  var body=document.getElementById('edital-ctx-body');
+  var chev=document.getElementById('edital-ctx-chev');
+  var open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  if(chev)chev.style.transform=open?'rotate(0deg)':'rotate(180deg)';
+}
+
+async function loadEditalFile(input){
+  var file=input.files[0];if(!file)return;
+  var nameEl=document.getElementById('edital-file-name');
+  nameEl.textContent='📄 '+file.name+' (carregando...)';
+  try{
+    if(!file.name.endsWith('.pdf')){
+      var text=await file.text();
+      document.getElementById('edital-ctx-txt').value=text.slice(0,10000);
+      nameEl.textContent='✅ '+file.name+' ('+Math.round(text.length/1000)+'k chars carregados)';
+    } else {
+      nameEl.textContent='⚠️ PDF detectado — cole o texto manualmente para melhor resultado';
+      document.getElementById('edital-ctx-txt').value='';
+    }
+  }catch(e){nameEl.textContent='❌ Erro: '+e.message;}
+}
+
 var AI_GENERATED = [];
+
+function onTipoChange(tipo){
+  var falsoRow=document.getElementById('ai-falso-row');
+  if(falsoRow)falsoRow.style.display=tipo==='mc'?'none':'';
+  var productSel=document.getElementById('ai-product');
+  if(tipo==='mc'&&productSel)productSel.value='reta-final-enam-2026';
+  if(tipo==='vf'&&productSel)productSel.value='reta-final-tjce-2026';
+  // Auto-select cargo
+  var cargoSel=document.getElementById('ai-cargo');
+  if(tipo==='mc'&&cargoSel)cargoSel.value='Magistratura';
+}
 
 function initAIGen(){
   // populate products in select
@@ -1632,7 +1718,11 @@ async function gerarQuestoes(){
   const nFalso = Math.round(qty * pctFalso / 100);
   const nVerd = qty - nFalso;
 
-  const systemPrompt = `Você é um especialista em questões de concursos públicos da área jurídica, com expertise em questões estilo FCC (Fundação Carlos Chagas) para o TJ-CE.
+  const tipo = document.getElementById('ai-tipo')?.value || 'vf';
+  const isMC = tipo === 'mc';
+  const editalCtx = (document.getElementById('edital-ctx-txt')?.value||'').trim();
+
+  const systemPromptVF = `Você é um especialista em questões de concursos públicos da área jurídica, com expertise em questões estilo FCC (Fundação Carlos Chagas) para o TJ-CE.
 
 Regras obrigatórias:
 1. Gere questões de Verdadeiro/Falso sobre artigos específicos da lei
@@ -1640,24 +1730,52 @@ Regras obrigatórias:
 3. Questões VERDADEIRAS: reproduzem ou parafraseiam fielmente o texto legal
 4. Questões FALSAS: contêm erro sutil mas claro (número errado, palavra trocada, negação indevida)
 5. Justificativa: explica objetivamente o gabarito com referência ao dispositivo
-6. Estilo FCC: assertivo, sem pegadinhas de interpretação, foco na letra da lei
-7. Retorne APENAS JSON válido, sem markdown, sem texto fora do array
+6. Estilo FCC: assertivo, foco na letra da lei
+7. Retorne APENAS JSON válido, sem markdown
 
-Formato obrigatório (array JSON):
-[
-  {
-    "artigo": "Art. X",
-    "enunciado": "Texto da assertiva...",
-    "gabarito": 0,
-    "justificativa": "Correto. Art. X dispõe que..."
-  }
-]
-gabarito: 0 = Verdadeiro, 1 = Falso`;
+Formato (array JSON):
+[{"artigo":"Art. X","enunciado":"Texto...","gabarito":0,"justificativa":"Correto. Art. X..."}]
+gabarito: 0=Verdadeiro, 1=Falso`;
 
-  const userPrompt = `Gere exatamente ${qty} questões sobre "${lei}" para o cargo de ${cargo} do TJ-CE 2026 (FCC).
+  const systemPromptMC = `Você é um especialista em questões de concursos públicos da área jurídica, com expertise em questões estilo FGV para o ENAM (Exame Nacional da Magistratura).
+
+Regras obrigatórias:
+1. Gere questões de múltipla escolha com EXATAMENTE 5 alternativas (A, B, C, D, E)
+2. Cada questão deve ter um enunciado claro e 5 alternativas onde APENAS UMA é correta
+3. As alternativas incorretas devem ser plausíveis mas claramente erradas para quem conhece o assunto
+4. Padrão FGV: questões longas, com transcrição de dispositivos legais ou situações concretas
+5. Inclua referência ao artigo/dispositivo no campo artigo
+6. A justificativa deve explicar POR QUE a alternativa correta está certa E por que as demais estão erradas
+7. Retorne APENAS JSON válido, sem markdown
+
+Formato (array JSON):
+[{
+  "artigo": "Art. X",
+  "enunciado": "Texto completo da questão...",
+  "opcoes": ["(A) texto", "(B) texto", "(C) texto", "(D) texto", "(E) texto"],
+  "gabarito": 0,
+  "justificativa": "A alternativa (A) está correta porque... As demais estão erradas porque..."
+}]
+gabarito: índice da alternativa correta (0=A, 1=B, 2=C, 3=D, 4=E)`;
+
+  const systemPrompt = isMC ? systemPromptMC : systemPromptVF;
+  const contextBlock = editalCtx ? `\n\nContexto do edital:\n---\n${editalCtx.slice(0,3000)}\n---\n` : '';
+
+  let userPrompt;
+  if(isMC){
+    userPrompt = `Gere exatamente ${qty} questões de múltipla escolha sobre "${lei}" para o ENAM 2026.1 (FGV), nível de dificuldade para magistratura.${contextBlock}
+${tema ? `Foque especificamente em: ${tema}` : ''}
+Varie os temas abordados dentro da disciplina. Não repita o mesmo artigo/tema duas vezes.
+As questões devem ser do nível exigido pelo ENAM: interpretação jurídica aprofundada, não apenas memorização de artigos.`;
+  } else {
+    const pctFalso = parseInt(document.getElementById('ai-falso')?.value||'40');
+    const nFalso = Math.round(qty * pctFalso / 100);
+    const nVerd = qty - nFalso;
+    userPrompt = `Gere exatamente ${qty} questões sobre "${lei}" para o cargo de ${cargo} do TJ-CE 2026 (FCC).${contextBlock}
 ${tema ? `Foque especificamente em: ${tema}` : ''}
 Distribuição: ${nVerd} questões VERDADEIRAS (gabarito 0) e ${nFalso} questões FALSAS (gabarito 1).
 Varie os artigos abordados. Não repita o mesmo artigo.`;
+  }
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1691,11 +1809,11 @@ Varie os artigos abordados. Não repita o mesmo artigo.`;
     AI_GENERATED = questoes.map(q => ({
       ...q,
       lei: lei,
-      banca: 'FCC',
-      cargo: cargo,
+      banca: isMC ? 'FGV' : 'FCC',
+      cargo: isMC ? 'Magistratura' : cargo,
       ano: 2026,
-      concurso: 'Reta Final TJ-CE 2026',
-      tipo: 'vf',
+      concurso: isMC ? 'Reta Final ENAM 2026.1' : 'Reta Final TJ-CE 2026',
+      tipo: isMC ? 'mc' : 'vf',
       active: true,
       product_id: productId,
       _approved: true
@@ -1720,39 +1838,49 @@ Varie os artigos abordados. Não repita o mesmo artigo.`;
 
 function renderAIResults(qs){
   const el = document.getElementById('ai-results');
-  const vCount = qs.filter(q=>q.gabarito===0).length;
-  const fCount = qs.filter(q=>q.gabarito===1).length;
+  const isMC = qs[0]?.tipo === 'mc';
+  const vCount = isMC ? 0 : qs.filter(q=>q.gabarito===0).length;
+  const fCount = isMC ? 0 : qs.filter(q=>q.gabarito===1).length;
+  const letters = ['A','B','C','D','E'];
 
   el.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
       <div style="font-size:.84rem;font-weight:700">${qs.length} questões geradas</div>
-      <span class="badge b-gr">✓ ${vCount} Verdadeiras</span>
-      <span class="badge b-or">✗ ${fCount} Falsas</span>
-      <div style="font-size:.75rem;color:var(--muted);margin-left:auto">Revise, edite e aprove individualmente ou clique em "Aprovar todas"</div>
+      ${isMC
+        ? `<span class="badge b-bl">Múltipla Escolha (A-E)</span><span class="badge b-or">ENAM / FGV</span>`
+        : `<span class="badge b-gr">✓ ${vCount} Verdadeiras</span><span class="badge b-or">✗ ${fCount} Falsas</span>`}
+      <div style="font-size:.75rem;color:var(--muted);margin-left:auto">Revise e aprove individualmente ou clique em "Aprovar todas"</div>
     </div>
-    ${qs.map((q,i) => `
-    <div class="card q-ai-card" id="qai-${i}" style="margin-bottom:10px;border-left:4px solid ${q.gabarito===0?'#16a34a':'#ea580c'}">
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-          <span class="badge ${q.gabarito===0?'b-gr':'b-or'}" style="font-size:.7rem">${q.gabarito===0?'V':'F'}</span>
-          <span style="font-size:.7rem;color:var(--muted);text-align:center">#${i+1}</span>
-        </div>
-        <div style="flex:1">
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
-            <span style="font-size:.74rem;background:#e0e7ff;color:#3730a3;border-radius:4px;padding:1px 8px;font-weight:600">${q.artigo||''}</span>
-            <span style="font-size:.72rem;color:var(--muted)">${q.lei||''}</span>
-            <span style="font-size:.72rem;color:var(--muted)">• ${q.cargo||''}</span>
+    ${qs.map((q,i) => {
+      const gabaLbl = isMC ? `(${letters[q.gabarito]}) correta` : (q.gabarito===0?'Verdadeiro':'Falso');
+      const gabaColor = isMC ? '#7c3aed' : (q.gabarito===0?'#16a34a':'#ea580c');
+      const opcHTML = isMC && q.opcoes ? q.opcoes.map((o,oi)=>`
+        <div style="font-size:.78rem;padding:4px 8px;border-radius:4px;margin-bottom:3px;background:${oi===q.gabarito?'#f0fdf4':'var(--surface2)'};color:${oi===q.gabarito?'#166534':'inherit'};font-weight:${oi===q.gabarito?'600':'400'}">${o}</div>
+      `).join('') : '';
+      return `
+      <div class="card q-ai-card" id="qai-${i}" style="margin-bottom:10px;border-left:4px solid ${gabaColor}">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+            <span class="badge" style="font-size:.7rem;background:${gabaColor}1a;color:${gabaColor}">${gabaLbl}</span>
+            <span style="font-size:.7rem;color:var(--muted);text-align:center">#${i+1}</span>
           </div>
-          <div style="font-size:.84rem;margin-bottom:8px;line-height:1.5" id="enun-${i}">${q.enunciado}</div>
-          <div style="font-size:.76rem;color:var(--muted);line-height:1.5;background:var(--surface2);border-radius:6px;padding:8px" id="just-${i}">${q.justificativa}</div>
+          <div style="flex:1">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+              <span style="font-size:.74rem;background:#e0e7ff;color:#3730a3;border-radius:4px;padding:1px 8px;font-weight:600">${q.artigo||''}</span>
+              <span style="font-size:.72rem;color:var(--muted)">${q.lei||''}</span>
+            </div>
+            <div style="font-size:.84rem;margin-bottom:8px;line-height:1.5" id="enun-${i}">${q.enunciado}</div>
+            ${opcHTML}
+            <div style="font-size:.76rem;color:var(--muted);line-height:1.5;background:var(--surface2);border-radius:6px;padding:8px;margin-top:6px" id="just-${i}">${q.justificativa}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+            <button class="btn btn-s" style="padding:3px 8px;font-size:.7rem" onclick="editQAI(${i})" title="Editar">✏️</button>
+            <button class="btn btn-d" style="padding:3px 8px;font-size:.7rem;background:#fee2e2;color:#991b1b;border-color:#fca5a5" onclick="removeQAI(${i})" title="Remover">🗑</button>
+            <button class="btn" id="save-${i}" style="padding:3px 8px;font-size:.7rem;background:#dcfce7;color:#166534;border-color:#86efac" onclick="salvarUmaQAI(${i})" title="Salvar">💾</button>
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-          <button class="btn btn-s" style="padding:3px 8px;font-size:.7rem" onclick="editQAI(${i})" title="Editar">✏️</button>
-          <button class="btn btn-d" style="padding:3px 8px;font-size:.7rem;background:#fee2e2;color:#991b1b;border-color:#fca5a5" onclick="removeQAI(${i})" title="Remover">🗑</button>
-          <button class="btn" id="save-${i}" style="padding:3px 8px;font-size:.7rem;background:#dcfce7;color:#166534;border-color:#86efac" onclick="salvarUmaQAI(${i})" title="Salvar esta">💾</button>
-        </div>
-      </div>
-    </div>`).join('')}`;
+      </div>`;
+    }).join('')}`;
 }
 
 function editQAI(i){
@@ -1782,21 +1910,25 @@ function removeQAI(i){
   }
 }
 
+function _buildSaveRow(q){
+  var row={
+    lei:q.lei, artigo:q.artigo, banca:q.banca, cargo:q.cargo,
+    ano:q.ano, concurso:q.concurso, enunciado:q.enunciado,
+    tipo:q.tipo||'vf', gabarito:q.gabarito, justificativa:q.justificativa,
+    active:true, product_id:q.product_id
+  };
+  if(q.tipo==='mc'&&q.opcoes)row.opcoes=q.opcoes;
+  return row;
+}
+
 async function salvarUmaQAI(i){
   const q = AI_GENERATED[i];
   const btn = document.getElementById('save-'+i);
-  btn.textContent = '⏳';
-  btn.disabled = true;
+  btn.textContent = '⏳'; btn.disabled = true;
   try {
-    const {error} = await sb.from('questions').insert({
-      lei: q.lei, artigo: q.artigo, banca: q.banca, cargo: q.cargo,
-      ano: q.ano, concurso: q.concurso, enunciado: q.enunciado,
-      tipo: q.tipo, gabarito: q.gabarito, justificativa: q.justificativa,
-      active: true, product_id: q.product_id
-    });
+    const {error} = await sb.from('questions').insert(_buildSaveRow(q));
     if(error) throw error;
-    btn.textContent = '✅';
-    btn.style.background = '#16a34a'; btn.style.color = '#fff';
+    btn.textContent = '✅'; btn.style.background = '#16a34a'; btn.style.color = '#fff';
     document.getElementById('qai-'+i).style.opacity = '0.5';
     showToast('Questão salva!','success');
   } catch(e){
@@ -1812,12 +1944,7 @@ async function aprovarTodas(){
   const btn = document.getElementById('ai-approve-all');
   btn.disabled = true; btn.textContent = '⏳ Salvando...';
 
-  const rows = AI_GENERATED.map(q => ({
-    lei: q.lei, artigo: q.artigo, banca: q.banca, cargo: q.cargo,
-    ano: q.ano, concurso: q.concurso, enunciado: q.enunciado,
-    tipo: q.tipo, gabarito: q.gabarito, justificativa: q.justificativa,
-    active: true, product_id: q.product_id
-  }));
+  const rows = AI_GENERATED.map(_buildSaveRow);
 
   try {
     const {error} = await sb.from('questions').insert(rows);
