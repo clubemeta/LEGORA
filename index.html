@@ -789,6 +789,30 @@ tr:last-child td{border-bottom:none}
 
 </div><!-- /app -->
 
+<!-- BOTTOM NAV MOBILE -->
+<nav id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;height:60px;background:#fff;border-top:1px solid #e5e7eb;display:none;align-items:center;justify-content:space-around;z-index:300;padding:0 4px">
+  <div class="bn-item active" id="bn-dashboard" onclick="navTo('desempenho');bnActive(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+    <span>Dashboard</span>
+  </div>
+  <div class="bn-item" id="bn-questoes" onclick="navTo('questoes');bnActive(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span>Questões</span>
+  </div>
+  <div class="bn-item" id="bn-simulados" onclick="navTo('simulados');bnActive(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>Simulados</span>
+  </div>
+  <div class="bn-item" id="bn-retas" onclick="navTo('retas');bnActive(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span>Retas</span>
+  </div>
+  <div class="bn-item" id="bn-perfil" onclick="toggleProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Perfil</span>
+  </div>
+</nav>
+
 <!-- UPSELL MODAL -->
 <div class="modal-bg" id="upsell-modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -829,7 +853,7 @@ tr:last-child td{border-bottom:none}
   <div class="pm-item" onclick="openContact()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Fale conosco</div>
   <div class="pm-item" onclick="window.open('https://www.decorandoaleiseca.com.br','_blank');closeProfile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Ir para o site</div>
   <div class="pm-div"></div>
-  <div class="pm-item" onclick="openA11y();closeProfile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>Configurações</div>
+  <div class="pm-item" onclick="openConfigModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>Configurações</div>
   <div class="pm-item" onclick="openNotifPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</div>
   <div class="pm-div"></div>
   <div class="pm-item red" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</div>
@@ -842,6 +866,7 @@ tr:last-child td{border-bottom:none}
 const SUPA_URL = 'https://iyjmpbqpifvzitulccky.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5am1wYnFwaWZ2eml0dWxjY2t5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTM1NjEsImV4cCI6MjA5NjA4OTU2MX0.VFV6Kx44ZxmzgPcqv7DC3DgRqVppug1IvdRy2C_O4uE';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+window.sb = sb; // expõe para todos os scripts da página
 
 // ═══════════════════════════════════════════════
 // STATE
@@ -919,10 +944,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 sb.auth.onAuthStateChange(async (event, session) => {
   if (event === 'SIGNED_IN' && session) {
     USER = session.user;
+    window.USER = USER;
     await loadProfile();
     showPlatform();
   } else if (event === 'SIGNED_OUT') {
     USER = null; PROFILE = null;
+    window.USER = null; window.PROFILE = null;
     showLogin();
   }
 });
@@ -930,19 +957,26 @@ sb.auth.onAuthStateChange(async (event, session) => {
 // ═══════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════
-function showLogin(){
-  document.getElementById('loading').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('login').style.display='flex';
-  document.getElementById('platform').style.display='none';
-}
-
 function showPlatform(){
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('login').style.display='none';
   document.getElementById('platform').style.display='block';
+  document.body.classList.add('platform-active');
   initPlatform();
+}
+
+function showLogin(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('platform').style.display='none';
+  document.body.classList.remove('platform-active');
+}
+
+function bnActive(el){
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
 }
 
 function switchAuth(tab){
@@ -1014,6 +1048,8 @@ async function loadProfile(){
   const {data,error}=await sb.from('profiles').select('*').eq('id',USER.id).single();
   if(data) PROFILE=data;
   else PROFILE={id:USER.id,email:USER.email,name:USER.email.split('@')[0],plan:'free',trial_expires_at:null};
+  window.USER = USER;       // expõe para o segundo script
+  window.PROFILE = PROFILE; // expõe para o segundo script
   updateProfileUI();
 }
 
@@ -1270,9 +1306,34 @@ async function answerQ(qId){
   card.replaceWith(tmp.firstChild);
 }
 
-function chipActive(btn){
+async function chipActive(btn){
   btn.closest('.vmq-tab-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
+  const txt=btn.textContent.trim();
+  const allQ=window.QUESTIONS||[];
+  if(txt==='Todas'){renderQList(allQ);return;}
+  if(!window.USER||!window.sb){showFT('⚠️ Faça login para filtrar por respostas');return;}
+  showFT('⏳ Filtrando...');
+  try{
+    const {data:ans}=await window.sb.from('user_answers').select('question_id,correta').eq('user_id',window.USER.id);
+    const answered=new Set((ans||[]).map(a=>a.question_id));
+    const correct=new Set((ans||[]).filter(a=>a.correta).map(a=>a.question_id));
+    const wrong=new Set((ans||[]).filter(a=>!a.correta).map(a=>a.question_id));
+    let filtered=allQ;
+    if(txt==='Acertei')filtered=allQ.filter(q=>correct.has(q.id));
+    else if(txt==='Errei')filtered=allQ.filter(q=>wrong.has(q.id));
+    else if(txt==='Resolvidas')filtered=allQ.filter(q=>answered.has(q.id));
+    else if(txt==='Não resolvidas')filtered=allQ.filter(q=>!answered.has(q.id));
+    renderQList(filtered);
+    showFT('✅ '+filtered.length+' questões encontradas');
+  }catch(e){showFT('❌ Erro ao filtrar: '+e.message);}
+}
+
+function renderQList(qs){
+  const el=document.getElementById('qlist');if(!el)return;
+  const ct=document.getElementById('q-count');if(ct)ct.textContent=qs.length;
+  if(!qs.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">Nenhuma questão encontrada com esse filtro.</div>';return;}
+  el.innerHTML=qs.map(buildQ).join('');
 }
 
 // ═══════════════════════════════════════════════
@@ -1521,7 +1582,7 @@ function startTimer(){
   },1000);
 }
 function fmt(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
-function finishSim(){
+async function finishSim(){
   clearInterval(simTimer);
   let ac=0;
   simState.qs.forEach((q,i)=>{if(simState.ans[i]===q.gabarito)ac++;});
@@ -1535,6 +1596,18 @@ function finishSim(){
   document.getElementById('result-tempo').textContent=fmt(elapsed);
   S.stats.t+=total;S.stats.c+=ac;S.stats.e+=(total-ac);
   updateStats();
+  // Salvar respostas no Supabase
+  if(window.sb&&window.USER&&simState.qs.length){
+    const rows=simState.qs
+      .map(function(q,i){
+        if(simState.ans[i]===undefined||simState.ans[i]===null)return null;
+        return{user_id:window.USER.id,question_id:q.id,resposta:simState.ans[i],correta:simState.ans[i]===q.gabarito};
+      })
+      .filter(Boolean);
+    if(rows.length){
+      window.sb.from('user_answers').upsert(rows,{onConflict:'user_id,question_id'}).catch(function(){});
+    }
+  }
 }
 function exitSim(){
   clearInterval(simTimer);simState=null;
@@ -1588,13 +1661,76 @@ html{-webkit-tap-highlight-color:transparent}
 button,a,[onclick]{min-height:44px}
 .vmq-sel,.vmq-inp,.mode-sel,.qty-sel,.df-sel,.disc-search{font-size:16px!important}
 
-/* Bottom nav hidden por padrão */
-#bottom-nav{display:none!important}
-body.platform-active #bottom-nav{display:flex!important}
+/* ── BOTTOM NAV ── */
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;font-size:.6rem;font-weight:500;color:#9ca3af;cursor:pointer;border-radius:8px;transition:.12s;min-height:auto;flex:1;text-align:center}
+.bn-item.active{color:#1a9fd4}
+.bn-item svg{flex-shrink:0}
 
-/* Login: esconder bottom nav */
-#login ~ #bottom-nav,
-body:not(.platform-active) #bottom-nav{display:none!important}
+/* ── BOTTOM NAV: hidden by default, shown on mobile when platform active ── */
+#bottom-nav{display:none!important}
+
+@media(max-width:767px){
+  body.platform-active #bottom-nav{display:flex!important}
+  
+  /* Em mobile: esconder sidebar, mostrar só o conteúdo */
+  .sb{display:none}
+  .sb.open{display:flex!important;position:fixed;left:0;top:0;bottom:0;z-index:200;width:200px}
+  
+  /* Topbar no mobile */
+  .topbar{padding:0 12px}
+  .ham{display:flex!important}
+  
+  /* Content: deixar espaço para o bottom nav */
+  .content{padding:12px;padding-bottom:72px}
+  
+  /* Platform: full width */
+  #platform{flex-direction:column}
+  .main{width:100%;min-width:0}
+  
+  /* Login: empilhado no mobile */
+  #login{flex-direction:column}
+  .ll{flex:none;padding:32px 20px}
+  .lr{flex:none;min-height:200px}
+  
+  /* Questões: card mobile-friendly */
+  .q-card{padding:14px}
+  .q-footer{gap:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .q-footer::-webkit-scrollbar{display:none}
+  .qf-btn{font-size:.62rem;padding:6px 3px;flex-shrink:0;min-height:auto;gap:2px;flex-direction:column}
+  .qf-btn svg{width:14px;height:14px}
+
+  /* Stats dashboard: 2 colunas no mobile */
+  .dash-stats{grid-template-columns:repeat(2,1fr)}
+  
+  /* Dashboard bottom: empilhado */
+  .dash-bottom{grid-template-columns:1fr}
+  
+  /* VMQ filtros: 2 colunas */
+  .vmq-row{grid-template-columns:1fr 1fr}
+  
+  /* Drawer: full width no mobile */
+  .drawer{width:100%;max-width:100%}
+  
+  /* Chips: scroll horizontal */
+  .vmq-tab-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .vmq-tab-row::-webkit-scrollbar{display:none}
+  
+  /* Feat modals: bottom sheet */
+  .feat-modal{align-items:flex-end}
+  .feat-box{border-radius:20px 20px 0 0;margin:0}
+  
+  /* Profile menu */
+  .prof-menu{right:8px;left:8px;max-width:none}
+  
+  /* Topbar name: hide on small */
+  .tb-uname{display:none}
+}
+
+@media(min-width:768px){
+  .ham{display:none!important}
+  #bottom-nav{display:none!important}
+  .sb{display:flex!important;position:static}
+}
 
 /* DARK MODE */
 body.dark-mode{background:#0f172a!important;color:#f1f5f9!important}
@@ -1959,6 +2095,31 @@ function addQToCad(qId){
   if(typeof openAddQModal==='function'){openAddQModal(qId);}
   else{navTo('cadernos');showFT('📚 Abra um caderno e adicione a questão.');}
 }
+// ── CONFIGURAÇÕES MODAL ──
+function openConfigModal(){
+  closeProfile();
+  var isDark=document.body.classList.contains('dark-mode');
+  var isLg=document.body.classList.contains('font-lg');
+  var isHC=document.body.classList.contains('high-contrast');
+  var m=document.createElement('div');
+  m.id='config-modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center';
+  m.onclick=function(e){if(e.target===m)m.remove();};
+  function sw(on,fn){return '<div onclick="'+fn+'" style="width:40px;height:22px;border-radius:11px;background:'+(on?'#1a9fd4':'#d1d5db')+';cursor:pointer;position:relative;transition:.2s;flex-shrink:0;border:none"><div style="position:absolute;top:3px;left:'+(on?'21px':'3px')+';width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>';}
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:24px;max-width:340px;width:calc(100vw - 32px);position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)">'+
+    '<button onclick="document.getElementById(\'config-modal\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:#9ca3af;cursor:pointer">✕</button>'+
+    '<h3 style="font-size:.95rem;font-weight:700;margin-bottom:18px">⚙️ Configurações</h3>'+
+    '<div style="display:flex;flex-direction:column;gap:12px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:8px"><div><div style="font-size:.84rem;font-weight:600">Modo escuro</div><div style="font-size:.72rem;color:#6b7280">Tema dark</div></div>'+sw(isDark,'toggleDark();this.style.background=document.body.classList.contains(\'dark-mode\')?\'#1a9fd4\':\'#d1d5db\'')+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:8px"><div><div style="font-size:.84rem;font-weight:600">Fonte grande</div><div style="font-size:.72rem;color:#6b7280">Aumenta o texto</div></div>'+sw(isLg,'toggleLg();this.style.background=document.body.classList.contains(\'font-lg\')?\'#1a9fd4\':\'#d1d5db\'')+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:8px"><div><div style="font-size:.84rem;font-weight:600">Alto contraste</div><div style="font-size:.72rem;color:#6b7280">Acessibilidade</div></div>'+sw(isHC,'toggleHC();this.style.background=document.body.classList.contains(\'high-contrast\')?\'#1a9fd4\':\'#d1d5db\'')+'</div>'+
+      '<div style="padding:12px;background:#f9fafb;border-radius:8px"><div style="font-size:.84rem;font-weight:600;margin-bottom:8px">Tamanho da fonte</div><div style="display:flex;align-items:center;gap:10px"><button onclick="adjFont(-1)" style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;font-weight:700">−</button><span id="font-sz" style="font-size:.84rem;font-weight:600;min-width:24px;text-align:center">'+fontSize+'</span><button onclick="adjFont(1)" style="width:32px;height:32px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;font-weight:700">+</button></div></div>'+
+      '<button onclick="resetA11y()" style="width:100%;padding:10px;border:1px solid #fca5a5;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:.82rem;font-weight:600;cursor:pointer">🔄 Restaurar padrões</button>'+
+    '</div></div>';
+  document.body.appendChild(m);
+}
+
+// ── PERFIL MODAL ──
 function openProfileModal(){
   closeProfile();
   var p=window.PROFILE;if(!p)return;
@@ -2034,8 +2195,16 @@ function openNotifPanel(){
   document.body.appendChild(m);
 }
 
-// ── OPINIÃO / FEEDBACK ──
+// ── OPINIÃO / FEEDBACK → Google Forms (DLS) ──
+// Para trocar o link: altere a constante abaixo
+var OPINION_FORM_URL = 'https://forms.gle/COLE_SEU_LINK_AQUI'; // <- substitua pelo link do Forms
+
 function openOpinion(){
+  if(OPINION_FORM_URL && OPINION_FORM_URL !== 'https://forms.gle/COLE_SEU_LINK_AQUI'){
+    window.open(OPINION_FORM_URL, '_blank');
+    return;
+  }
+  // Fallback: modal interno se não tiver URL configurada
   var m=document.createElement('div');
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center';
   m.onclick=function(e){if(e.target===m)m.remove();};
@@ -2043,30 +2212,10 @@ function openOpinion(){
     '<button onclick="this.closest(\'div[style]\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:#9ca3af;cursor:pointer">✕</button>'+
     '<div style="font-size:2rem;text-align:center;margin-bottom:10px">⭐</div>'+
     '<h3 style="text-align:center;font-size:.95rem;font-weight:700;margin-bottom:6px">Dê sua opinião!</h3>'+
-    '<p style="text-align:center;font-size:.8rem;color:#6b7280;margin-bottom:16px">Sua opinião nos ajuda a melhorar o LeisecaQuest</p>'+
-    '<div style="display:flex;justify-content:center;gap:10px;margin-bottom:16px" id="star-row">'+
-      [1,2,3,4,5].map(i=>'<span style="font-size:1.8rem;cursor:pointer" onmouseover="hoverStars('+i+')" onmouseout="hoverStars(0)" onclick="selStar('+i+')" data-star="'+i+'">☆</span>').join('')+
-    '</div>'+
-    '<textarea id="opn-txt" placeholder="Conte como podemos melhorar..." style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:.82rem;font-family:inherit;resize:none;height:80px;outline:none;margin-bottom:12px" onfocus="this.style.borderColor=\'#1a9fd4\'" onblur="this.style.borderColor=\'#e5e7eb\'"></textarea>'+
-    '<button onclick="sendOpinion()" style="width:100%;padding:11px;border-radius:8px;background:#1a9fd4;color:#fff;font-size:.88rem;font-weight:700;border:none;cursor:pointer">Enviar opinião</button>'+
+    '<p style="text-align:center;font-size:.8rem;color:#6b7280;margin-bottom:16px">Configure o link do Google Forms acima para ativar.</p>'+
+    '<button onclick="this.closest(\'div[style]\').remove()" style="width:100%;padding:11px;border-radius:8px;background:#1a9fd4;color:#fff;font-size:.88rem;font-weight:700;border:none;cursor:pointer">Entendido</button>'+
   '</div>';
   document.body.appendChild(m);
-}
-var _selStar=0;
-function hoverStars(n){
-  document.querySelectorAll('#star-row span').forEach(function(s,i){s.textContent=i<n?'★':'☆';s.style.color=i<n?'#f59e0b':'#9ca3af';});
-}
-function selStar(n){_selStar=n;hoverStars(n);}
-async function sendOpinion(){
-  var txt=document.getElementById('opn-txt')?.value.trim()||'';
-  if(!_selStar){showFT('⭐ Escolha uma nota antes de enviar');return;}
-  if(window.sb&&window.USER){
-    try{
-      await window.sb.from('feedback').insert({user_id:USER.id,nota:_selStar,texto:txt}).catch(()=>{});
-    }catch(e){}
-  }
-  document.querySelector('#star-row')?.closest('div[style]')?.remove();
-  showFT('✅ Obrigado pelo seu feedback!');
 }
 
 
