@@ -253,6 +253,10 @@ tr:hover td{background:#fafafa}
       </div>
 
       <div class="sb-sec">Comunicação</div>
+      <div class="sb-item" id="nav-banners" onclick="goTo('banners')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Banners & Ofertas
+      </div>
       <div class="sb-item" id="nav-emails" onclick="goTo('emails')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         Templates de E-mail
@@ -483,6 +487,128 @@ tr:hover td{background:#fafafa}
           <div class="tbl-wrap">
             <table><thead><tr><th>ID</th><th>Nome</th><th>Tipo</th><th>Preço</th><th>Hotmart ID</th><th>Alunos</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody id="prod-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BANNERS & OFERTAS -->
+      <div class="page" id="p-banners">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">Banners & Ofertas</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Exibidos para alunos na plataforma — desktop e mobile</div>
+            </div>
+            <button class="btn btn-p" onclick="openAddBanner()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo banner
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de banners -->
+        <div id="banner-list" style="display:flex;flex-direction:column;gap:12px">
+          <div style="text-align:center;padding:40px;color:var(--muted)">Carregando banners...</div>
+        </div>
+
+        <!-- Modal: adicionar/editar banner -->
+        <div class="modal-bg" id="m-banner" onclick="if(event.target===this)closeM('m-banner')">
+          <div class="modal-box" style="max-width:520px">
+            <div class="modal-hd">
+              <div class="modal-title" id="banner-modal-title">Novo banner</div>
+              <button class="modal-close" onclick="closeM('m-banner')">✕</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px">
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div>
+                  <label class="sinp-label">Emoji/ícone</label>
+                  <input id="bn-emoji" class="sinp" value="🎯" placeholder="🎯" maxlength="4" style="font-size:1.2rem">
+                </div>
+                <div>
+                  <label class="sinp-label">Posição</label>
+                  <select id="bn-posicao" class="ssel">
+                    <option value="todas">Em todas as páginas</option>
+                    <option value="dashboard">Dashboard</option>
+                    <option value="questoes">Durante as questões</option>
+                    <option value="retas">Página de Retas Finais</option>
+                    <option value="sidebar">Sidebar (fixo)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="sinp-label">Título do banner *</label>
+                <input id="bn-titulo" class="sinp" placeholder="Ex: Reta Final TJ-CE 2026">
+              </div>
+              <div>
+                <label class="sinp-label">Descrição</label>
+                <textarea id="bn-desc" class="sinp" rows="2" placeholder="Ex: Prova em 09/08. 502 questões estilo FCC." style="resize:vertical"></textarea>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div>
+                  <label class="sinp-label">Texto do botão</label>
+                  <input id="bn-cta" class="sinp" value="Ver oferta →" placeholder="Ver oferta →">
+                </div>
+                <div>
+                  <label class="sinp-label">URL do botão (Hotmart)</label>
+                  <input id="bn-url" class="sinp" type="url" placeholder="https://go.hotmart.com/...">
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                <div>
+                  <label class="sinp-label">Cor fundo</label>
+                  <input id="bn-cor-fundo" type="color" value="#eff6ff" class="sinp" style="height:38px;padding:4px">
+                </div>
+                <div>
+                  <label class="sinp-label">Cor texto</label>
+                  <input id="bn-cor-texto" type="color" value="#1e40af" class="sinp" style="height:38px;padding:4px">
+                </div>
+                <div>
+                  <label class="sinp-label">Cor botão</label>
+                  <input id="bn-cor-btn" type="color" value="#1a9fd4" class="sinp" style="height:38px;padding:4px">
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div>
+                  <label class="sinp-label">Produto relacionado</label>
+                  <select id="bn-product" class="ssel">
+                    <option value="">Nenhum (oferta geral)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="sinp-label">Mostrar para planos</label>
+                  <select id="bn-planos" class="ssel" multiple style="height:80px">
+                    <option value="free" selected>Gratuito</option>
+                    <option value="vmq_vitalicio">VMQ Vitalício</option>
+                    <option value="premium_anual">Premium Anual</option>
+                    <option value="premium_vitalicio">Premium Vitalício</option>
+                    <option value="ilimitada_anual">Ilimitada Anual</option>
+                    <option value="ilimitada_vitalicia">Ilimitada Vitalícia</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Preview -->
+              <div>
+                <label class="sinp-label">Preview do banner</label>
+                <div id="banner-preview" style="border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;background:#eff6ff;margin-top:4px">
+                  <div id="prev-emoji" style="font-size:1.8rem">🎯</div>
+                  <div style="flex:1">
+                    <div id="prev-title" style="font-size:.85rem;font-weight:700;color:#1e40af">Título do banner</div>
+                    <div id="prev-desc" style="font-size:.75rem;color:#1e40af;margin-top:2px;opacity:.8">Descrição do banner</div>
+                  </div>
+                  <button id="prev-btn" style="background:#1a9fd4;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver oferta →</button>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+                <button class="btn btn-s" onclick="closeM('m-banner')">Cancelar</button>
+                <button class="btn btn-p" onclick="saveBanner()">Salvar banner</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -923,7 +1049,7 @@ function showApp(user){
 async function adminLogout(){await sb.auth.signOut();location.reload();}
 
 // ── NAV ──
-const TITLES={overview:'Dashboard',revenue:'Receita',users:'Todos os alunos',trials:'Em trial',paid:'Pagantes',questions:'Questões',products:'Produtos',simulados:'Simulados',emails:'Templates de E-mail',broadcast:'Disparos',notifications:'Notificações push',pixels:'Pixels & Analytics',webhook:'Webhook Hotmart',settings:'Configurações'};
+const TITLES={overview:'Dashboard',revenue:'Receita',users:'Todos os alunos',trials:'Em trial',paid:'Pagantes',questions:'Questões',products:'Produtos',simulados:'Simulados',banners:'Banners & Ofertas',emails:'Templates de E-mail',broadcast:'Disparos',notifications:'Notificações push',pixels:'Pixels & Analytics',webhook:'Webhook Hotmart',settings:'Configurações'};
 function goTo(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
   document.getElementById('p-'+id).classList.add('show');
@@ -931,6 +1057,7 @@ function goTo(id){
   document.getElementById('nav-'+id)?.classList.add('active');
   document.getElementById('page-title').textContent=TITLES[id]||id;
   document.getElementById('tb-acts').innerHTML='';
+  if(id==='banners')loadBannersAdmin();
 }
 
 // ── LOAD ALL ──
@@ -1375,6 +1502,158 @@ async function saveProd(){
   showToast('Produto criado!','success');closeM('m-prod');loadProducts();
 }
 async function toggleProd(id,active){await sb.from('products').update({active:!active}).eq('id',id);loadProducts();}
+
+// ── BANNERS ──
+let ALL_BANNERS=[];
+let editBannerId=null;
+
+async function loadBannersAdmin(){
+  const{data}=await sb.from('banners').select('*').order('ordem',{ascending:true});
+  ALL_BANNERS=data||[];
+  renderBannerList();
+  // populate product select in banner modal
+  const sel=document.getElementById('bn-product');
+  if(sel&&ALL_PROD.length){
+    sel.innerHTML='<option value="">Nenhum (oferta geral)</option>'+ALL_PROD.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  }
+}
+
+function renderBannerList(){
+  const el=document.getElementById('banner-list');
+  if(!ALL_BANNERS.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum banner criado ainda. Clique em <strong>Novo banner</strong> para começar.</div>';
+    return;
+  }
+  el.innerHTML=ALL_BANNERS.map(b=>`
+    <div class="card" style="padding:14px 16px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="width:40px;height:40px;border-radius:8px;background:${b.cor_fundo};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">${b.emoji||'🎯'}</div>
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:.88rem;font-weight:700">${b.titulo}</div>
+          <div style="font-size:.74rem;color:var(--muted);margin-top:2px">${b.descricao||''}</div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+            <span class="badge b-bl" style="font-size:.65rem">${b.posicao||'todas'}</span>
+            ${(b.planos_alvo||[]).map(p=>`<span class="badge b-gy" style="font-size:.65rem">${p}</span>`).join('')}
+            ${b.cta_url?`<span class="badge b-gr" style="font-size:.65rem">✓ Link Hotmart</span>`:`<span class="badge b-or" style="font-size:.65rem">⚠ Sem link</span>`}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+          <span class="badge ${b.ativo?'b-gr':'b-gy'}" style="font-size:.7rem">${b.ativo?'Ativo':'Inativo'}</span>
+          <button class="btn btn-s" style="padding:4px 10px;font-size:.72rem" onclick="editBanner('${b.id}')">✏️ Editar</button>
+          <button class="btn ${b.ativo?'btn-d':'btn-p'}" style="padding:4px 10px;font-size:.72rem" onclick="toggleBanner('${b.id}',${b.ativo})">${b.ativo?'Pausar':'Ativar'}</button>
+          <button class="btn btn-d" style="padding:4px 10px;font-size:.72rem;background:#fee2e2;color:#991b1b;border-color:#fca5a5" onclick="deleteBanner('${b.id}')">🗑</button>
+        </div>
+      </div>
+      <!-- mini preview -->
+      <div style="margin-top:12px;border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;background:${b.cor_fundo}">
+        <div style="font-size:1.4rem">${b.emoji||'🎯'}</div>
+        <div style="flex:1">
+          <div style="font-size:.8rem;font-weight:700;color:${b.cor_texto||'#1e40af'}">${b.titulo}</div>
+          ${b.descricao?`<div style="font-size:.7rem;color:${b.cor_texto||'#1e40af'};opacity:.8;margin-top:2px">${b.descricao}</div>`:''}
+        </div>
+        <button style="background:${b.cor_btn||'#1a9fd4'};color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">${b.cta_texto||'Ver oferta →'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function openAddBanner(){
+  editBannerId=null;
+  document.getElementById('banner-modal-title').textContent='Novo banner';
+  ['bn-titulo','bn-desc','bn-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('bn-emoji').value='🎯';
+  document.getElementById('bn-cta').value='Ver oferta →';
+  document.getElementById('bn-posicao').value='todas';
+  document.getElementById('bn-cor-fundo').value='#eff6ff';
+  document.getElementById('bn-cor-texto').value='#1e40af';
+  document.getElementById('bn-cor-btn').value='#1a9fd4';
+  document.getElementById('bn-product').value='';
+  updateBannerPreview();
+  document.getElementById('m-banner').classList.add('show');
+}
+
+function editBanner(id){
+  const b=ALL_BANNERS.find(x=>x.id===id);if(!b)return;
+  editBannerId=id;
+  document.getElementById('banner-modal-title').textContent='Editar banner';
+  document.getElementById('bn-titulo').value=b.titulo||'';
+  document.getElementById('bn-desc').value=b.descricao||'';
+  document.getElementById('bn-emoji').value=b.emoji||'🎯';
+  document.getElementById('bn-cta').value=b.cta_texto||'Ver oferta →';
+  document.getElementById('bn-url').value=b.cta_url||'';
+  document.getElementById('bn-posicao').value=b.posicao||'todas';
+  document.getElementById('bn-cor-fundo').value=b.cor_fundo||'#eff6ff';
+  document.getElementById('bn-cor-texto').value=b.cor_texto||'#1e40af';
+  document.getElementById('bn-cor-btn').value=b.cor_btn||'#1a9fd4';
+  document.getElementById('bn-product').value=b.product_id||'';
+  // select planos
+  const sel=document.getElementById('bn-planos');
+  Array.from(sel.options).forEach(o=>o.selected=(b.planos_alvo||[]).includes(o.value));
+  updateBannerPreview();
+  document.getElementById('m-banner').classList.add('show');
+}
+
+function updateBannerPreview(){
+  const t=document.getElementById('bn-titulo')?.value||'Título do banner';
+  const d=document.getElementById('bn-desc')?.value||'Descrição do banner';
+  const cta=document.getElementById('bn-cta')?.value||'Ver oferta →';
+  const e=document.getElementById('bn-emoji')?.value||'🎯';
+  const cf=document.getElementById('bn-cor-fundo')?.value||'#eff6ff';
+  const ct=document.getElementById('bn-cor-texto')?.value||'#1e40af';
+  const cb=document.getElementById('bn-cor-btn')?.value||'#1a9fd4';
+  const p=document.getElementById('banner-preview');if(!p)return;
+  p.style.background=cf;
+  document.getElementById('prev-emoji').textContent=e;
+  document.getElementById('prev-title').textContent=t;document.getElementById('prev-title').style.color=ct;
+  document.getElementById('prev-desc').textContent=d;document.getElementById('prev-desc').style.color=ct;
+  const btn=document.getElementById('prev-btn');btn.textContent=cta;btn.style.background=cb;
+}
+// Live preview
+['bn-titulo','bn-desc','bn-emoji','bn-cta','bn-cor-fundo','bn-cor-texto','bn-cor-btn'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('input',updateBannerPreview);
+});
+
+async function saveBanner(){
+  const planosSel=Array.from(document.getElementById('bn-planos').selectedOptions).map(o=>o.value);
+  const data={
+    titulo:document.getElementById('bn-titulo').value.trim(),
+    descricao:document.getElementById('bn-desc').value.trim()||null,
+    emoji:document.getElementById('bn-emoji').value||'🎯',
+    cta_texto:document.getElementById('bn-cta').value||'Ver oferta →',
+    cta_url:document.getElementById('bn-url').value.trim()||null,
+    posicao:document.getElementById('bn-posicao').value||'todas',
+    cor_fundo:document.getElementById('bn-cor-fundo').value||'#eff6ff',
+    cor_texto:document.getElementById('bn-cor-texto').value||'#1e40af',
+    cor_btn:document.getElementById('bn-cor-btn').value||'#1a9fd4',
+    product_id:document.getElementById('bn-product').value||null,
+    planos_alvo:planosSel.length?planosSel:['free'],
+    ativo:true
+  };
+  if(!data.titulo){showToast('Título é obrigatório','error');return;}
+  let error;
+  if(editBannerId){
+    ({error}=await sb.from('banners').update(data).eq('id',editBannerId));
+  } else {
+    ({error}=await sb.from('banners').insert(data));
+  }
+  if(error){showToast('Erro: '+error.message,'error');return;}
+  showToast(editBannerId?'Banner atualizado!':'Banner criado!','success');
+  closeM('m-banner');
+  loadBannersAdmin();
+}
+
+async function toggleBanner(id,ativo){
+  await sb.from('banners').update({ativo:!ativo}).eq('id',id);
+  showToast(ativo?'Banner pausado':'Banner ativado','success');
+  loadBannersAdmin();
+}
+
+async function deleteBanner(id){
+  if(!confirm('Excluir este banner?'))return;
+  await sb.from('banners').delete().eq('id',id);
+  showToast('Banner excluído','success');
+  loadBannersAdmin();
+}
 
 // ── SIMULADOS ──
 async function loadSimulados(){
