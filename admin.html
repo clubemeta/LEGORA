@@ -1917,15 +1917,12 @@ async function loadEditalFile(input){
 
       nameEl.textContent = '🤖 Extraindo conteúdo do PDF com IA...';
 
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      const PROXY_URL = 'https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/claude-proxy';
+      const resp = await fetch(PROXY_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-allow-browser': 'true'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
+          apiKey,
           model: 'claude-sonnet-4-20250514',
           max_tokens: 4000,
           messages: [{
@@ -2091,15 +2088,12 @@ Varie os artigos abordados. Não repita o mesmo artigo.`;
       goTo('settings');
       return;
     }
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const PROXY_URL = 'https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/claude-proxy';
+    const resp = await fetch(PROXY_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-allow-browser': 'true'
-      },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
+        apiKey,
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
         system: systemPrompt,
