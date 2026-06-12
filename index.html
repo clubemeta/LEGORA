@@ -976,7 +976,12 @@ async function doLogin(){
   clearAuthMessages();
   const {error}=await sb.auth.signInWithPassword({email,password:pwd});
   btn.disabled=false;btn.textContent='Entrar';
-  if(error) showAuthError(error.message==='Invalid login credentials'?'Email ou senha incorretos.':error.message);
+  if(error){showAuthError(error.message==='Invalid login credentials'?'Email ou senha incorretos.':error.message);return;}
+  // Meta: rastrear login (ajuda a identificar usuários de iPhone que voltam)
+  if(typeof metaEvent==='function'){
+    window._metaUserEmail=email;
+    metaEvent('Lead',{content_name:'Login',content_category:'Auth'});
+  }
 }
 
 async function doRegister(){
@@ -990,8 +995,18 @@ async function doRegister(){
   clearAuthMessages();
   const {error}=await sb.auth.signUp({email,password:pwd,options:{data:{name}}});
   btn.disabled=false;btn.textContent='Criar conta grátis';
-  if(error) showAuthError(error.message);
-  else showAuthSuccess('Conta criada! Verifique seu email para confirmar o acesso.');
+  if(error){showAuthError(error.message);return;}
+  // Meta: cadastro = evento de alta qualidade (quase compra)
+  if(typeof metaEvent==='function'){
+    window._metaUserEmail=email;
+    window._metaUserName=name;
+    metaEvent('CompleteRegistration',{
+      content_name:'Cadastro LeisecaQuest',
+      currency:'BRL',
+      value:0,
+    });
+  }
+  showAuthSuccess('Conta criada! Verifique seu email para confirmar o acesso.');
 }
 
 async function doLogout(){
@@ -1014,6 +1029,8 @@ async function loadProfile(){
   const {data,error}=await sb.from('profiles').select('*').eq('id',USER.id).single();
   if(data) PROFILE=data;
   else PROFILE={id:USER.id,email:USER.email,name:USER.email.split('@')[0],plan:'free',trial_expires_at:null};
+  // Configurar dados do usuário no Meta para melhor match rate
+  if(typeof metaSetUser==='function') metaSetUser(PROFILE);
   updateProfileUI();
 }
 
@@ -1071,6 +1088,7 @@ function initPlatform(){
   renderMateriais();
   renderRetas();
   renderSimulados();
+  loadCadernos();
   loadBanners();
   navTo('desempenho');
 }
@@ -1493,20 +1511,24 @@ function getHotmartUrl(productId){
 
 function renderRetas(){
   const retas=[
-    {id:'enam',productId:'reta-final-enam-2026',name:'ENAM 2026.1',sub:'Exame Nacional da Magistratura — FGV',preco:'R$497'},
-    {id:'enac',productId:'reta-final-enac',name:'ENAC',sub:'Exame Nacional dos Cartórios — FGV',preco:'R$397'},
-    {id:'pc-ap',productId:'pc-ap-2017',name:'PC-AP',sub:'Polícia Civil do Amapá',preco:'R$397'},
-    {id:'mpe-mt',productId:'reta-final-mpe-mt',name:'MPE-MT 2026',sub:'Promotor de Justiça',preco:'R$397'},
-    {id:'tj-pe',productId:'reta-final-tj-pe',name:'TJ-PE 2026',sub:'Juiz de Direito',preco:'R$397'},
-    {id:'tj-ba',productId:'reta-final-tj-ba',name:'TJ-BA 2026',sub:'Juiz de Direito',preco:'R$397'},
-    {id:'prf',productId:'reta-final-prf',name:'PRF 2026',sub:'Policial Rodoviário Federal',preco:'R$397'},
-    {id:'tjce-2026',productId:'reta-final-tjce-2026',name:'TJ-CE 2026',sub:'Analista e Técnico Judiciário',preco:'R$397'},
+    {id:'enam',productId:'reta-final-enam-2026',name:'ENAM 2026.1',sub:'Exame Nacional da Magistratura — FGV',preco:497},
+    {id:'enac',productId:'reta-final-enac',name:'ENAC',sub:'Exame Nacional dos Cartórios — FGV',preco:397},
+    {id:'pc-ap',productId:'pc-ap-2017',name:'PC-AP',sub:'Polícia Civil do Amapá',preco:397},
+    {id:'mpe-mt',productId:'reta-final-mpe-mt',name:'MPE-MT 2026',sub:'Promotor de Justiça',preco:397},
+    {id:'tj-pe',productId:'reta-final-tj-pe',name:'TJ-PE 2026',sub:'Juiz de Direito',preco:397},
+    {id:'tj-ba',productId:'reta-final-tj-ba',name:'TJ-BA 2026',sub:'Juiz de Direito',preco:397},
+    {id:'prf',productId:'reta-final-prf',name:'PRF 2026',sub:'Policial Rodoviário Federal',preco:397},
+    {id:'tjce-2026',productId:'reta-final-tjce-2026',name:'TJ-CE 2026',sub:'Analista e Técnico Judiciário',preco:397},
   ];
   document.getElementById('rf-list').innerHTML=retas.map(r=>{
     const owned=hasProductAccess(r.productId);
     const buyUrl=getHotmartUrl(r.productId);
-    const buyAction=buyUrl?`window.open('${buyUrl}','_blank')`:"showUpsell('retas')";
-    const clickAction=owned?`openRetaFinal('${r.productId}','${r.name}')`:buyAction;
+    const buyAction=buyUrl
+      ?`metaEventAndOpen('${r.productId}','${r.name}',${r.preco},'${buyUrl}')`
+      :"showUpsell('retas')";
+    const clickAction=owned
+      ?`metaViewContent('${r.productId}','${r.name}');openRetaFinal('${r.productId}','${r.name}')`
+      :buyAction;
     return `<div class="rf-item ${owned?'owned-rf':'locked-rf'}" onclick="${clickAction}">
       <div class="rf-item-info"><div class="rf-item-name">${r.name}</div><div class="rf-item-sub">${r.sub}</div></div>
       <span class="rf-tag ${owned?'owned':'lock'}">${owned?'✓ Acessar':'🛒 '+r.preco}</span>
@@ -1516,6 +1538,33 @@ function renderRetas(){
     <div><div style="font-size:.84rem;font-weight:700;color:#6d28d9;margin-bottom:3px">∞ Acesse TODOS com a Ilimitada Vitalícia</div><div style="font-size:.75rem;color:#7c3aed">Um pagamento único — todos os Retas Finais, para sempre.</div></div>
     <button onclick="showUpsell('ilimitada')" style="padding:8px 18px;background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver Ilimitada →</button>
   </div>`;
+}
+
+// Meta: abrir link de compra + disparar InitiateCheckout
+function metaEventAndOpen(productId, name, preco, url){
+  if(typeof metaEvent==='function'){
+    metaEvent('InitiateCheckout',{
+      content_ids:[productId],
+      content_name:name,
+      content_type:'product',
+      num_items:1,
+      currency:'BRL',
+      value:preco,
+    });
+  }
+  setTimeout(function(){window.open(url,'_blank');},200);
+}
+
+// Meta: ViewContent quando abre uma reta final
+function metaViewContent(productId, name){
+  if(typeof metaEvent==='function'){
+    metaEvent('ViewContent',{
+      content_ids:[productId],
+      content_name:name,
+      content_type:'product',
+      currency:'BRL',
+    });
+  }
 }
 
 async function openRetaFinal(productId, name){
@@ -1753,6 +1802,84 @@ body.dark-mode .cad-card{background:#1e293b!important;border-color:#334155!impor
   .feat-box{border-radius:14px;margin:16px}
   #bottom-nav{display:none!important}
 }
+
+/* ══ MOBILE OTIMIZAÇÕES COMPLETAS ══ */
+@media(max-width:767px){
+  /* Questão card: mais legível */
+  .q-card{padding:14px 12px;border-radius:10px;margin-bottom:8px}
+  .q-text{font-size:.88rem;line-height:1.7}
+  .q-opt{padding:11px 10px;font-size:.85rem;border-radius:8px;min-height:48px}
+  .q-answer{width:100%;padding:12px;font-size:.88rem;border-radius:8px;min-height:48px}
+
+  /* Footer de questão: botões em grade 3x2 */
+  .q-footer{display:grid!important;grid-template-columns:repeat(3,1fr);gap:4px;border-top:1px solid var(--bd);margin-top:12px;padding-top:10px}
+  .qf-btn{flex-direction:column;font-size:.62rem;gap:3px;padding:7px 4px;border-radius:6px;min-height:auto}
+  .qf-btn svg{width:15px;height:15px}
+
+  /* Filtros VMQ: empilhar */
+  .vmq-filters{padding:10px}
+  .vmq-row{grid-template-columns:1fr 1fr!important}
+  .vmq-sel,.vmq-inp{font-size:16px!important;padding:9px 10px}
+  .vmq-btns{width:100%;justify-content:space-between}
+  .btn-filter{flex:1;text-align:center;padding:10px;font-size:.82rem}
+  .vmq-meta{flex-wrap:wrap;gap:8px}
+  .vmq-meta-r{width:100%;justify-content:space-between}
+  .sz-btn,.mode-sel,.qty-sel{font-size:13px}
+
+  /* Chips: scroll horizontal sem quebra */
+  .vmq-tab-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;gap:5px;-webkit-overflow-scrolling:touch}
+  .vmq-tab-row::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;white-space:nowrap}
+
+  /* Dashboard: 2 colunas */
+  .dash-stats{grid-template-columns:repeat(2,1fr)!important;gap:8px}
+  .stat{padding:12px 10px}
+  .stat-val{font-size:1.4rem}
+  .dash-bottom{grid-template-columns:1fr!important}
+
+  /* Simulados: legível */
+  .sim-item{flex-wrap:wrap;gap:8px}
+  .sim-item-name{font-size:.88rem}
+
+  /* Retas finais */
+  .rf-item{padding:12px 14px}
+  .rf-item-name{font-size:.86rem}
+
+  /* Conteúdo: espaço para bottom nav */
+  .content{padding:12px 10px 80px!important}
+
+  /* Sidebar: largura adequada */
+  .sb.open{width:240px!important}
+  .sb-logo-txt{font-size:.84rem}
+
+  /* Topbar */
+  .topbar{padding:0 10px}
+  .topbar h1{font-size:.88rem}
+  .tb-uname{display:none}
+
+  /* Feat modals: bottom sheet com handle */
+  .feat-box{padding:16px;border-radius:20px 20px 0 0;padding-top:20px}
+  .feat-box::before{content:'';display:block;width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:-4px auto 16px;position:relative;top:-8px}
+
+  /* Modais */
+  .modal{margin:16px;max-width:calc(100vw - 32px);padding:24px 20px}
+
+  /* Cadernos grid: 2 colunas */
+  #cad-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px}
+
+  /* Drawers */
+  .drawer{width:100%!important;max-width:100%!important}
+  .prof-menu{right:8px;left:8px;max-width:none!important}
+
+  /* Tabela de simulados */
+  table{font-size:.72rem}
+  th,td{padding:7px 8px}
+}
+
+/* ══ TOUCH IMPROVEMENTS ══ */
+.q-opt,.sim-item,.rf-item,.disc-item{-webkit-tap-highlight-color:rgba(26,159,212,.1);cursor:pointer}
+button,a,[onclick]{-webkit-tap-highlight-color:transparent}
+input,select,textarea{-webkit-appearance:none;border-radius:6px}
 </style>
 
 <!-- VITALÍCIO BANNER (injetado no dashboard) -->
@@ -2085,13 +2212,104 @@ function renderBannersAll(){
 }
 
 // ── META PIXEL ──
-var META_PIXEL_ID=''; // Configurar: ex '1234567890'
+// ══════════════════════════════════════════════
+// META PIXEL + CONVERSIONS API (CAPI)
+// Rastreia iPhone, Safari ITP, AdBlockers
+// ══════════════════════════════════════════════
+
+var META_PIXEL_ID = '';  // ← coloque seu Pixel ID aqui (ex: '1234567890')
+var META_CAPI_URL = 'https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/meta-events';
+
+// ── Utilitários ──
+function _getFbp(){
+  return document.cookie.split(';').map(c=>c.trim())
+    .find(c=>c.startsWith('_fbp='))?.split('=')[1]||'';
+}
+function _getFbc(){
+  var stored=sessionStorage.getItem('meta_fbc')||'';
+  if(stored)return stored;
+  var u=new URLSearchParams(window.location.search);
+  var fbclid=u.get('fbclid')||'';
+  if(fbclid){
+    var fbc='fb.1.'+Date.now()+'.'+fbclid;
+    sessionStorage.setItem('meta_fbc',fbc);return fbc;
+  }
+  return document.cookie.split(';').map(c=>c.trim())
+    .find(c=>c.startsWith('_fbc='))?.split('=')[1]||'';
+}
+function _genEventId(){
+  return (typeof crypto!=='undefined'&&crypto.randomUUID)
+    ?crypto.randomUUID()
+    :Math.random().toString(36).slice(2)+Date.now().toString(36);
+}
+
+// ── Inicializar Pixel no browser ──
 function initMetaPixel(pixelId){
   if(!pixelId)return;
   META_PIXEL_ID=pixelId;
-  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init',pixelId);
+  // Código oficial do Meta Pixel
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)
+  }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', pixelId, {
+    // Preenche automaticamente com dados do usuário logado (melhora match)
+    em: window._metaUserEmail||'',
+  });
   fbq('track','PageView');
+}
+
+// ── Evento duplo: Pixel browser + CAPI server ──
+function metaEvent(eventName, data={}, pixelOnly=false){
+  var eventId=_genEventId();
+  var fbp=_getFbp();
+  var fbc=_getFbc();
+  var pageUrl=window.location.href;
+
+  // 1) Enviar via Pixel no browser (funciona sem iOS restrictions quando App não instalado)
+  if(window.fbq){
+    fbq('track', eventName, data, {eventID: eventId});
+  }
+
+  // 2) Enviar via CAPI server-side (captura iOS, Safari ITP, ad-blocker)
+  if(!pixelOnly){
+    var userData={
+      em: window._metaUserEmail||'',
+      fn: window._metaUserName||'',
+      external_id: window._metaUserId||'',
+      client_user_agent: navigator.userAgent,
+      fbc: fbc,
+      fbp: fbp,
+    };
+    fetch(META_CAPI_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        event_name: eventName,
+        event_id: eventId,
+        event_source_url: pageUrl,
+        user_data: userData,
+        custom_data: data,
+      })
+    }).catch(function(){/* silencioso */});
+  }
+  return eventId;
+}
+
+// ── Configurar dados do usuário para matching ──
+function metaSetUser(profile){
+  if(!profile)return;
+  window._metaUserEmail = (profile.email||'').toLowerCase().trim();
+  window._metaUserName  = (profile.name||'').trim();
+  window._metaUserId    = profile.id||'';
+  // Atualizar fbq se já inicializado
+  if(window.fbq&&META_PIXEL_ID){
+    fbq('init', META_PIXEL_ID, {em: window._metaUserEmail});
+  }
 }
 
 // ── NOTIFICAÇÕES ──
@@ -2199,6 +2417,227 @@ var _tourCheck=setInterval(function(){
     clearInterval(_tourCheck);
   }
 },800);
+
+// ══════════════════════════════════════════════
+// CADERNOS — CRUD COMPLETO
+// ══════════════════════════════════════════════
+var ALL_CADS=[], CURRENT_CAD=null;
+
+async function loadCadernos(){
+  if(!window.USER||!window.sb)return;
+  try{
+    var{data}=await window.sb.from('cadernos').select('*').eq('user_id',window.USER.id).order('created_at',{ascending:false});
+    ALL_CADS=data||[];
+    renderCadGrid();
+  }catch(e){ALL_CADS=[];renderCadGrid();}
+}
+
+function renderCadGrid(){
+  var grid=document.getElementById('cad-grid');
+  var lbl=document.getElementById('cad-count-lbl');
+  if(!grid)return;
+  if(lbl)lbl.textContent=ALL_CADS.length+' caderno'+(ALL_CADS.length===1?'':'s');
+  if(!ALL_CADS.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--dim)"><div style="font-size:2.5rem;margin-bottom:10px">📚</div><div style="font-size:.88rem;font-weight:600;margin-bottom:4px">Nenhum caderno ainda</div><div style="font-size:.78rem">Clique em "Novo caderno" para organizar suas questões</div></div>';
+    return;
+  }
+  grid.innerHTML=ALL_CADS.map(function(c){
+    return '<div style="background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:16px;cursor:pointer;transition:.15s;min-height:90px" onclick="openCadDetalhe(\''+c.id+'\')" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">'
+      +'<div style="font-size:1.8rem;margin-bottom:8px">📚</div>'
+      +'<div style="font-weight:700;font-size:.88rem;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escF(c.nome)+'</div>'
+      +'<div style="font-size:.7rem;color:var(--dim)">'+new Date(c.created_at).toLocaleDateString('pt-BR')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function openCadModal(fromQ){
+  var inp=document.getElementById('cad-nome-inp');if(inp)inp.value='';
+  document.getElementById('cad-modal').classList.add('show');
+  setTimeout(function(){if(inp)inp.focus();},200);
+  window._cadFromQ=!!fromQ;
+}
+function closeCadModal(){document.getElementById('cad-modal').classList.remove('show');}
+
+async function saveCad(){
+  var nome=(document.getElementById('cad-nome-inp').value||'').trim();
+  if(!nome){showFT('⚠️ Digite um nome');return;}
+  if(!window.USER||!window.sb){showFT('❌ Faça login primeiro');return;}
+  var{data,error}=await window.sb.from('cadernos').insert({user_id:window.USER.id,nome:nome}).select().single();
+  if(error){showFT('Erro: '+error.message);return;}
+  closeCadModal();
+  ALL_CADS.unshift(data);
+  renderCadGrid();
+  showFT('📚 Caderno "'+nome+'" criado!');
+  if(window._cadFromQ&&window.FEAT_QID) addQToSpecificCad(data.id,nome,window.FEAT_QID);
+}
+
+async function openCadDetalhe(cadId){
+  CURRENT_CAD=ALL_CADS.find(function(c){return c.id===cadId;});
+  if(!CURRENT_CAD)return;
+  var lv=document.getElementById('cad-lista-view');
+  var dv=document.getElementById('cad-detalhe-view');
+  if(lv)lv.style.display='none';
+  if(dv)dv.style.display='block';
+  document.getElementById('cad-detalhe-nome').textContent=CURRENT_CAD.nome;
+  var infoEl=document.getElementById('cad-detalhe-info');
+  if(infoEl)infoEl.textContent='Carregando...';
+  var{data:list}=await window.sb.from('caderno_questoes')
+    .select('question_id,added_at,questions(id,enunciado,gabarito,lei,artigo,tipo)')
+    .eq('caderno_id',cadId).order('added_at',{ascending:false});
+  list=list||[];
+  if(infoEl)infoEl.textContent=list.length+' questão'+(list.length===1?'':'ões');
+  var el=document.getElementById('cad-q-list');
+  var emptyEl=document.getElementById('cad-empty-q');
+  if(!list.length){if(el)el.innerHTML='';if(emptyEl)emptyEl.style.display='block';return;}
+  if(emptyEl)emptyEl.style.display='none';
+  if(el)el.innerHTML=list.map(function(item){
+    var q=item.questions||{};
+    var isV=q.tipo==='vf';
+    return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px;margin-bottom:8px">'
+      +'<div style="display:flex;align-items:flex-start;gap:8px">'
+      +'<div style="flex-shrink:0;font-size:.72rem;background:var(--blue-bg);color:var(--blue);border-radius:4px;padding:2px 7px;font-weight:600">'+(q.lei||'').substring(0,20)+'</div>'
+      +'<div style="flex:1;font-size:.82rem;line-height:1.5">'+escF((q.enunciado||'').substring(0,120))+'...</div>'
+      +'<button onclick="removeQFromCad(\''+item.question_id+'\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:1rem;flex-shrink:0;padding:2px 4px;min-height:auto" title="Remover">✕</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+function closeCadDetalhe(){
+  CURRENT_CAD=null;
+  var l=document.getElementById('cad-lista-view');if(l)l.style.display='';
+  var d=document.getElementById('cad-detalhe-view');if(d)d.style.display='none';
+}
+
+async function removeQFromCad(qId){
+  if(!CURRENT_CAD||!window.sb)return;
+  await window.sb.from('caderno_questoes').delete().eq('caderno_id',CURRENT_CAD.id).eq('question_id',qId);
+  openCadDetalhe(CURRENT_CAD.id);
+  showFT('Questão removida');
+}
+
+async function deleteCad(){
+  if(!CURRENT_CAD||!confirm('Excluir "'+CURRENT_CAD.nome+'"?'))return;
+  await window.sb.from('cadernos').delete().eq('id',CURRENT_CAD.id);
+  ALL_CADS=ALL_CADS.filter(function(c){return c.id!==CURRENT_CAD.id;});
+  closeCadDetalhe();
+  showFT('🗑 Caderno excluído');
+}
+
+var FEAT_QID=null;
+
+function addQToCad(qId){
+  if(!window.USER){showUpsell('cadernos');return;}
+  FEAT_QID=qId;
+  if(!ALL_CADS.length){openCadModal(true);}
+  else{openAddQModal(qId);}
+}
+
+function openAddQModal(qId){
+  FEAT_QID=qId;
+  var listEl=document.getElementById('add-q-cad-list');if(!listEl)return;
+  listEl.innerHTML=!ALL_CADS.length
+    ?'<div style="text-align:center;padding:14px;color:var(--dim);font-size:.82rem">Nenhum caderno ainda</div>'
+    :ALL_CADS.map(function(c){
+      return '<button onclick="addQToSpecificCad(\''+c.id+'\',\''+c.nome.replace(/'/g,"\\'")+'\',\''+qId+'\')" '
+        +'style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;background:#fff;cursor:pointer;text-align:left;font-size:.84rem;font-weight:500;display:flex;align-items:center;gap:8px">📚 '+escF(c.nome)+'</button>';
+    }).join('');
+  document.getElementById('add-q-modal').classList.add('show');
+}
+function closeAddQModal(){document.getElementById('add-q-modal').classList.remove('show');}
+function openCadModalFromQ(){closeAddQModal();openCadModal(true);}
+
+async function addQToSpecificCad(cadId,cadNome,qId){
+  var useQId=qId||FEAT_QID;if(!window.sb||!useQId)return;
+  closeAddQModal();
+  var{error}=await window.sb.from('caderno_questoes').insert({caderno_id:cadId,question_id:useQId});
+  if(error){
+    if(error.code==='23505'){showFT('📚 Já está neste caderno');return;}
+    showFT('Erro: '+error.message);return;
+  }
+  showFT('✅ Adicionado em "'+cadNome+'"');
+}
+
+// ══════════════════════════════════════════════
+// MAPAS MENTAIS — Carrega do Supabase
+// ══════════════════════════════════════════════
+async function loadMapasMentais(){
+  var grid=document.getElementById('materiais-grid');
+  if(!grid||!window.sb)return;
+  try{
+    var{data}=await window.sb.from('mapas_mentais').select('*').eq('active',true).order('disciplina');
+    if(!data||!data.length)return;
+    var html=data.map(function(m){
+      return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;transition:.15s" onclick="abrirMapa(\''+m.id+'\',\''+escF(m.titulo)+'\',\''+m.url+'\')" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">'
+        +'<div style="width:36px;height:36px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">🗺️</div>'
+        +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+escF(m.titulo)+'</div>'
+        +'<div style="font-size:.7rem;color:var(--muted)">'+escF(m.disciplina||'')+'</div>'
+        +'</div>';
+    }).join('');
+    grid.innerHTML=html;
+  }catch(e){}
+}
+
+function abrirMapa(id, titulo, url){
+  if(url&&url.startsWith('http')){window.open(url,'_blank');return;}
+  showFT('🗺️ Mapa: '+titulo);
+}
+
+// Substituir renderMateriais para incluir mapas do DB
+function renderMateriais(){
+  var grid=document.getElementById('materiais-grid');if(!grid)return;
+  grid.innerHTML='<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Carregando materiais...</div>';
+  if(window.sb){
+    // Carregar mapas mentais do Supabase
+    window.sb.from('mapas_mentais').select('*').eq('active',true).order('disciplina').then(function(res){
+      var mapas=res.data||[];
+      var items=[
+        {ico:'📖',name:'Vade Mecum de Questões',sub:'Todas as questões disponíveis',bg:'#dbeafe',free:true,fn:"navTo('questoes')"},
+        {ico:'🎯',name:'Raio-X da Lei Seca',sub:'Artigos mais cobrados',bg:'#ffedd5',free:true,fn:"navTo('raiox')"},
+      ];
+      var html=items.map(function(it){
+        return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;transition:.15s" onclick="'+it.fn+'" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">'
+          +'<div style="width:36px;height:36px;border-radius:8px;background:'+it.bg+';display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">'+it.ico+'</div>'
+          +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+it.name+'</div>'
+          +'<div style="font-size:.7rem;color:var(--muted)">'+it.sub+'</div>'
+          +'</div>';
+      }).join('');
+      // Adicionar mapas do DB
+      if(mapas.length){
+        html+=mapas.slice(0,6).map(function(m){
+          var canView=hasAccess('materiais');
+          var clickFn=canView
+            ?('abrirMapa("'+m.id+'","'+escF(m.titulo||'Mapa')+'","'+m.url+'")')
+            :"showUpsell('materiais')";
+          return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;opacity:'+(canView?1:.6)+'" onclick="'+clickFn+'">'
+            +'<div style="width:36px;height:36px;border-radius:8px;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">🗺️</div>'
+            +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+escF(m.titulo||'Mapa Mental')+(canView?'':' 🔒')+'</div>'
+            +'<div style="font-size:.7rem;color:var(--muted)">'+escF(m.disciplina||'')+'</div>'
+            +'</div>';
+        }).join('');
+      } else {
+        html+='<div style="background:#fff;border:1.5px dashed var(--bd);border-radius:8px;padding:14px;opacity:.5">'
+          +'<div style="width:36px;height:36px;border-radius:8px;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">🗺️</div>'
+          +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">Mapas Mentais</div>'
+          +'<div style="font-size:.7rem;color:var(--muted)">Em breve</div>'
+          +'</div>';
+      }
+      grid.innerHTML=html;
+    }).catch(function(){
+      grid.innerHTML='<div style="text-align:center;padding:30px;color:var(--dim)">Materiais em breve</div>';
+    });
+  }
+}
+
+// ══════════════════════════════════════════════
+// META PIXEL — Configurar aqui
+// ══════════════════════════════════════════════
+// Para ativar: substitua '' pelo seu Pixel ID (ex: '1234567890')
+(function(){
+  var PIXEL_ID=''; // ← COLE SEU PIXEL ID AQUI
+  if(PIXEL_ID){
+    initMetaPixel(PIXEL_ID);
+  }
+})();
 </script>
 <style>@keyframes cfall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}</style>
 </body>
