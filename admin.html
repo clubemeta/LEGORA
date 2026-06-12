@@ -238,11 +238,6 @@ tr:hover td{background:#fafafa}
       </div>
 
       <div class="sb-sec">Conteúdo</div>
-      <div class="sb-item" id="nav-ai" onclick="goTo('ai')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M8 12h8M12 8v8"/></svg>
-        Gerador IA ✨
-        <span class="sb-cnt" style="background:#7c3aed;color:#fff">NEW</span>
-      </div>
       <div class="sb-item" id="nav-questions" onclick="goTo('questions')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
         Questões
@@ -258,10 +253,6 @@ tr:hover td{background:#fafafa}
       </div>
 
       <div class="sb-sec">Comunicação</div>
-      <div class="sb-item" id="nav-banners" onclick="goTo('banners')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        Banners & Ofertas
-      </div>
       <div class="sb-item" id="nav-emails" onclick="goTo('emails')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         Templates de E-mail
@@ -283,11 +274,6 @@ tr:hover td{background:#fafafa}
       <div class="sb-item" id="nav-webhook" onclick="goTo('webhook')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
         Webhook Hotmart
-      </div>
-      <div class="sb-item" id="nav-nfe" onclick="goTo('nfe')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
-        Nota Fiscal
-        <span class="sb-cnt" id="sb-nfe-cnt" style="background:#16a34a;display:none">0</span>
       </div>
       <div class="sb-item" id="nav-settings" onclick="goTo('settings')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>
@@ -501,315 +487,6 @@ tr:hover td{background:#fafafa}
         </div>
       </div>
 
-      <!-- GERADOR DE QUESTÕES COM IA -->
-      <div class="page" id="p-ai">
-        <!-- BANNER: API KEY não configurada -->
-        <div id="ai-apikey-banner" style="display:none;background:#fef3c7;border:1.5px solid #fde68a;border-radius:10px;padding:14px 16px;margin-bottom:14px">
-          <div style="display:flex;align-items:flex-start;gap:12px">
-            <span style="font-size:1.4rem">⚠️</span>
-            <div>
-              <div style="font-size:.9rem;font-weight:600;color:#92400e;margin-bottom:4px">Chave API do Claude não configurada</div>
-              <div style="font-size:.8rem;color:#b45309;line-height:1.6">Para usar o Gerador IA e fazer upload de PDF de editais, você precisa cadastrar sua chave API do Claude nas configurações.<br>
-              <strong>Como obter:</strong> acesse <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#1a9fd4">console.anthropic.com/settings/keys</a> → crie uma chave → copie (começa com <code>sk-ant-api03-...</code>)</div>
-              <button class="btn btn-p" onclick="goTo('settings')" style="margin-top:8px;font-size:.78rem">⚙️ Ir para Configurações e cadastrar chave</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- API Key Warning -->
-        <div id="ai-key-warning" style="display:none;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.82rem;color:#92400e;align-items:center;gap:10px">
-          <span style="font-size:1.2rem">🔑</span>
-          <div style="flex:1">
-            <strong>Chave API não configurada.</strong> O Gerador IA precisa da sua chave da Anthropic para funcionar.
-          </div>
-          <button class="btn btn-p" onclick="goTo('settings')" style="font-size:.74rem;padding:4px 12px;flex-shrink:0">Configurar agora →</button>
-        </div>
-        <div class="card" style="margin-bottom:14px;padding:16px">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px">
-            <div>
-              <label class="sinp-label">Produto / Concurso</label>
-              <select id="ai-product" class="ssel" onchange="onProductChange(this.value)">
-                <option value="reta-final-tjce-2026">Reta Final TJ-CE 2026</option>
-                <option value="reta-final-enam-2026">Reta Final ENAM 2026.1</option>
-                <option value="pc-ap-2017">PC-AP 2017 — Delegado/Agente/Oficial</option>
-              </select>
-            </div>
-            <div>
-              <label class="sinp-label">Tipo de questão</label>
-              <select id="ai-tipo" class="ssel" onchange="onTipoChange(this.value)">
-                <option value="vf">Verdadeiro/Falso (TJ-CE, FCC)</option>
-                <option value="mc">Múltipla escolha A-E (ENAM, FGV)</option>
-              </select>
-            </div>
-            <div>
-              <label class="sinp-label">Lei / Disciplina</label>
-              <select id="ai-lei" class="ssel">
-                <optgroup label="── TJCE (FCC · V/F) ──">
-                  <option value="Constituição Federal/88">Constituição Federal/88</option>
-                  <option value="Código Civil">Código Civil</option>
-                  <option value="Código Penal">Código Penal</option>
-                  <option value="Código de Processo Civil">Código de Processo Civil</option>
-                  <option value="Código de Processo Penal">Código de Processo Penal</option>
-                  <option value="Lei 8.112/90">Lei 8.112/90 — Estatuto Servidores</option>
-                  <option value="Lei 14.133/21 - Nova Lei de Licitações">Lei 14.133/21 — Licitações</option>
-                  <option value="Lei 8.429/92 - Improbidade Administrativa">Lei 8.429/92 — Improbidade</option>
-                  <option value="Lei 9.784/99 - Processo Administrativo">Lei 9.784/99 — Processo Adm.</option>
-                  <option value="Lei 12.527/11 - Lei de Acesso à Informação">Lei 12.527/11 — LAI</option>
-                  <option value="Lei 13.709/18 - LGPD">Lei 13.709/18 — LGPD</option>
-                  <option value="Lei 13.869/19 - Abuso de Autoridade">Lei 13.869/19 — Abuso de Autoridade</option>
-                  <option value="Lei 11.340/06 - Lei Maria da Penha">Lei 11.340/06 — Maria da Penha</option>
-                  <option value="Lei 11.343/06 - Lei de Drogas">Lei 11.343/06 — Lei de Drogas</option>
-                  <option value="Lei 9.613/98 - Lavagem de Dinheiro">Lei 9.613/98 — Lavagem de Dinheiro</option>
-                  <option value="Lei 7.210/84 - Lei de Execução Penal">Lei 7.210/84 — LEP</option>
-                  <option value="Lei 9.099/95 - Juizados Especiais">Lei 9.099/95 — Juizados Especiais</option>
-                  <option value="Lei Estadual 16.397/17 - Organização Judiciária CE">Lei 16.397/17 — Org. Judiciária CE</option>
-                  <option value="Lei Estadual 9.826/74 - Estatuto CE">Lei 9.826/74 — Estatuto CE</option>
-                </optgroup>
-                <optgroup label="── PC-AP 2017 (FCC · MC 5 alt.) ──">
-                  <option value="Direito Penal">Direito Penal — PC-AP</option>
-                  <option value="Direito Processual Penal">Dir. Processual Penal — PC-AP</option>
-                  <option value="Direito Constitucional">Direito Constitucional — PC-AP</option>
-                  <option value="Direito Administrativo">Direito Administrativo — PC-AP</option>
-                  <option value="Língua Portuguesa">Língua Portuguesa — PC-AP</option>
-                  <option value="Lei 0883/2005 - Lei Orgânica PC-AP">Lei 0883/2005 — Org. Polícia Civil AP</option>
-                  <option value="Lei 066/1993 - Estatuto Servidores AP">Lei 066/1993 — Estatuto Servidores AP</option>
-                  <option value="Informática">Informática — PC-AP</option>
-                  <option value="Atualidades">Atualidades — PC-AP</option>
-                  <option value="História e Geografia do Amapá">Hist. e Geog. do Amapá</option>
-                </optgroup>
-                  <option value="Direito Constitucional">Dir. Constitucional — 20% (16q)</option>
-                  <option value="Direito Penal">Direito Penal — 15% (12q)</option>
-                  <option value="Direito Civil">Direito Civil — 15% (12q)</option>
-                  <option value="Direito Processual Civil">Dir. Processual Civil — 15% (12q)</option>
-                  <option value="Direito Administrativo">Dir. Administrativo — 12,5% (10q)</option>
-                  <option value="Direitos Humanos">Direitos Humanos — 7,5% (6q)</option>
-                  <option value="Direito Empresarial">Dir. Empresarial — 7,5% (6q)</option>
-                  <option value="Formação Humanística">Formação Humanística — 7,5% (6q)</option>
-                </optgroup>
-                <optgroup label="── PC-AP 2017 (FCC · V/F) ──">
-                  <option value="Língua Portuguesa">Língua Portuguesa</option>
-                  <option value="Noções de Direito Administrativo">Noções de Direito Administrativo</option>
-                  <option value="Noções de Direito Constitucional">Noções de Direito Constitucional</option>
-                  <option value="Noções de Direito Penal">Noções de Direito Penal</option>
-                  <option value="Noções de Direito Processual Penal">Noções de Dir. Processual Penal</option>
-                  <option value="Leis Específicas do Amapá">Leis Específicas do Amapá (Lei 883/2005)</option>
-                  <option value="Direito Administrativo Delegado">Dir. Administrativo (Delegado)</option>
-                  <option value="Direito Constitucional Delegado">Dir. Constitucional (Delegado)</option>
-                  <option value="Direito Penal Delegado">Dir. Penal (Delegado)</option>
-                  <option value="Direito Processual Penal Delegado">Dir. Proc. Penal (Delegado)</option>
-                  <option value="História e Geografia do Amapá">História e Geografia do Amapá</option>
-                </optgroup>
-              </select>
-            </div>
-            <div>
-              <label class="sinp-label">Cargo-alvo</label>
-              <select id="ai-cargo" class="ssel">
-                <option value="Magistratura">Magistratura (ENAM)</option>
-                <option value="Delegado de Polícia Civil">Delegado de Polícia Civil</option>
-                <option value="Agente de Polícia Civil">Agente de Polícia Civil</option>
-                <option value="Oficial de Polícia Civil">Oficial de Polícia Civil</option>
-                <option value="Analista Judiciário">Analista Judiciário</option>
-                <option value="Técnico Judiciário">Técnico Judiciário</option>
-              </select>
-            </div>
-            <div>
-              <label class="sinp-label">Qtd de questões</label>
-              <select id="ai-qty" class="ssel">
-                <option value="5">5 questões</option>
-                <option value="10" selected>10 questões</option>
-                <option value="20">20 questões</option>
-                <option value="30">30 questões</option>
-              </select>
-            </div>
-            <div id="ai-falso-row">
-              <label class="sinp-label">% Falsas (gabarito F)</label>
-              <select id="ai-falso" class="ssel">
-                <option value="30">30% Falsas</option>
-                <option value="40" selected>40% Falsas</option>
-                <option value="50">50% Falsas</option>
-                <option value="60">60% Falsas</option>
-              </select>
-            </div>
-            <div>
-              <label class="sinp-label">Tema específico (opcional)</label>
-              <input id="ai-tema" class="sinp" placeholder="Ex: art. 37, prescrição, habeas corpus...">
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <button id="ai-gen-btn" class="btn btn-p" onclick="gerarQuestoes()" style="display:flex;align-items:center;gap:6px;padding:10px 20px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              Gerar com IA
-            </button>
-            <button class="btn btn-s" onclick="aprovarTodas()" id="ai-approve-all" style="display:none">✅ Aprovar todas e salvar</button>
-            <button class="btn btn-s" onclick="document.getElementById('ai-results').innerHTML='';document.getElementById('ai-approve-all').style.display='none'" id="ai-clear" style="display:none">🗑 Limpar</button>
-            <span id="ai-status" style="font-size:.78rem;color:var(--muted)"></span>
-          </div>
-        </div>
-
-        <!-- Contexto do Edital (colapsável) -->
-        <div class="card" style="margin-bottom:14px">
-          <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:2px 0" onclick="toggleEditalCtx()">
-            <div>
-              <div style="font-size:.84rem;font-weight:700">📄 Contexto do Edital (opcional mas recomendado)</div>
-              <div style="font-size:.73rem;color:var(--muted);margin-top:2px">Cole o trecho do edital da lei escolhida para questões mais precisas</div>
-            </div>
-            <svg id="edital-ctx-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;transform:rotate(0deg);transition:.2s"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div id="edital-ctx-body" style="display:none;margin-top:12px">
-            <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-              <button class="btn btn-s" style="font-size:.74rem;padding:4px 10px" onclick="document.getElementById('edital-file-input').click()">
-                📎 Upload PDF/TXT
-              </button>
-              <input type="file" id="edital-file-input" accept=".pdf,.txt,.doc,.docx" style="display:none" onchange="loadEditalFile(this)">
-              <button class="btn btn-s" style="font-size:.74rem;padding:4px 10px" onclick="document.getElementById('edital-ctx-txt').value='';showToast('Contexto limpo','success')">
-                🗑 Limpar
-              </button>
-              <span id="edital-file-name" style="font-size:.73rem;color:var(--muted);align-self:center"></span>
-            </div>
-            <textarea id="edital-ctx-txt" class="sinp" rows="8" 
-              placeholder="Cole aqui o trecho do edital com o conteúdo programático da lei escolhida...
-
-Exemplo:
-DIREITO PENAL: Princípios aplicáveis ao Direito Penal. Aplicação da lei penal. A lei penal no tempo e no espaço. Crimes contra a pessoa. Crimes Contra o Patrimônio. Crimes contra a fé pública. Crimes contra a dignidade sexual..."
-              style="font-size:.78rem;resize:vertical;min-height:120px;font-family:monospace"></textarea>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:4px">
-              O conteúdo colado será usado como contexto extra pelo Claude para gerar questões mais alinhadas ao edital específico.
-            </div>
-          </div>
-        </div>
-
-        <!-- Gap alert -->
-        <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.8rem;color:#92400e">
-          <strong>⚠️ Leis com ⚠️ estão com poucas ou nenhuma questão no banco.</strong>
-          Gere pelo menos 15–20 questões de cada para cobrir o edital completamente.
-        </div>
-
-        <!-- Results -->
-        <div id="ai-results"></div>
-      </div>
-
-      <!-- BANNERS & OFERTAS -->
-      <div class="page" id="p-banners">
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-hd">
-            <div>
-              <div class="card-title">Banners & Ofertas</div>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Exibidos para alunos na plataforma — desktop e mobile</div>
-            </div>
-            <button class="btn btn-p" onclick="openAddBanner()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo banner
-            </button>
-          </div>
-        </div>
-
-        <!-- Lista de banners -->
-        <div id="banner-list" style="display:flex;flex-direction:column;gap:12px">
-          <div style="text-align:center;padding:40px;color:var(--muted)">Carregando banners...</div>
-        </div>
-
-        <!-- Modal: adicionar/editar banner -->
-        <div class="modal-bg" id="m-banner" onclick="if(event.target===this)closeM('m-banner')">
-          <div class="modal-box" style="max-width:520px">
-            <div class="modal-hd">
-              <div class="modal-title" id="banner-modal-title">Novo banner</div>
-              <button class="modal-close" onclick="closeM('m-banner')">✕</button>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:12px;padding:16px">
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div>
-                  <label class="sinp-label">Emoji/ícone</label>
-                  <input id="bn-emoji" class="sinp" value="🎯" placeholder="🎯" maxlength="4" style="font-size:1.2rem">
-                </div>
-                <div>
-                  <label class="sinp-label">Posição</label>
-                  <select id="bn-posicao" class="ssel">
-                    <option value="todas">Em todas as páginas</option>
-                    <option value="dashboard">Dashboard</option>
-                    <option value="questoes">Durante as questões</option>
-                    <option value="retas">Página de Retas Finais</option>
-                    <option value="sidebar">Sidebar (fixo)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label class="sinp-label">Título do banner *</label>
-                <input id="bn-titulo" class="sinp" placeholder="Ex: Reta Final TJ-CE 2026">
-              </div>
-              <div>
-                <label class="sinp-label">Descrição</label>
-                <textarea id="bn-desc" class="sinp" rows="2" placeholder="Ex: Prova em 09/08. 502 questões estilo FCC." style="resize:vertical"></textarea>
-              </div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div>
-                  <label class="sinp-label">Texto do botão</label>
-                  <input id="bn-cta" class="sinp" value="Ver oferta →" placeholder="Ver oferta →">
-                </div>
-                <div>
-                  <label class="sinp-label">URL do botão (Hotmart)</label>
-                  <input id="bn-url" class="sinp" type="url" placeholder="https://go.hotmart.com/...">
-                </div>
-              </div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-                <div>
-                  <label class="sinp-label">Cor fundo</label>
-                  <input id="bn-cor-fundo" type="color" value="#eff6ff" class="sinp" style="height:38px;padding:4px">
-                </div>
-                <div>
-                  <label class="sinp-label">Cor texto</label>
-                  <input id="bn-cor-texto" type="color" value="#1e40af" class="sinp" style="height:38px;padding:4px">
-                </div>
-                <div>
-                  <label class="sinp-label">Cor botão</label>
-                  <input id="bn-cor-btn" type="color" value="#1a9fd4" class="sinp" style="height:38px;padding:4px">
-                </div>
-              </div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div>
-                  <label class="sinp-label">Produto relacionado</label>
-                  <select id="bn-product" class="ssel">
-                    <option value="">Nenhum (oferta geral)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="sinp-label">Mostrar para planos</label>
-                  <select id="bn-planos" class="ssel" multiple style="height:80px">
-                    <option value="free" selected>Gratuito</option>
-                    <option value="vmq_vitalicio">VMQ Vitalício</option>
-                    <option value="premium_anual">Premium Anual</option>
-                    <option value="premium_vitalicio">Premium Vitalício</option>
-                    <option value="ilimitada_anual">Ilimitada Anual</option>
-                    <option value="ilimitada_vitalicia">Ilimitada Vitalícia</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Preview -->
-              <div>
-                <label class="sinp-label">Preview do banner</label>
-                <div id="banner-preview" style="border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;background:#eff6ff;margin-top:4px">
-                  <div id="prev-emoji" style="font-size:1.8rem">🎯</div>
-                  <div style="flex:1">
-                    <div id="prev-title" style="font-size:.85rem;font-weight:700;color:#1e40af">Título do banner</div>
-                    <div id="prev-desc" style="font-size:.75rem;color:#1e40af;margin-top:2px;opacity:.8">Descrição do banner</div>
-                  </div>
-                  <button id="prev-btn" style="background:#1a9fd4;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver oferta →</button>
-                </div>
-              </div>
-
-              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
-                <button class="btn btn-s" onclick="closeM('m-banner')">Cancelar</button>
-                <button class="btn btn-p" onclick="saveBanner()">Salvar banner</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- SIMULADOS -->
       <div class="page" id="p-simulados">
         <div class="card">
@@ -908,12 +585,50 @@ DIREITO PENAL: Princípios aplicáveis ao Direito Penal. Aplicação da lei pena
 
       <!-- NOTIFICAÇÕES -->
       <div class="page" id="p-notifications">
-        <div class="card" style="max-width:600px">
-          <div class="card-hd"><div class="card-title">Notificações push (em breve)</div></div>
-          <div style="padding:24px;text-align:center;color:var(--muted)">
-            <div style="font-size:2rem;margin-bottom:10px">🔔</div>
-            <div style="font-size:.88rem;font-weight:500;margin-bottom:6px;color:#111">Notificações push estão em desenvolvimento</div>
-            <div style="font-size:.8rem;line-height:1.6">Integração com Firebase Cloud Messaging para notificar alunos sobre novas Retas Finais, lembretes de estudo e promoções.</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="openAddNotif()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova notificação
+          </button>
+          <button class="btn btn-s" onclick="loadNotifs()">🔄 Atualizar</button>
+        </div>
+        <div class="alert al-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Notificações in-app: aparecem no sino 🔔 da plataforma dos alunos. Para push no celular (fora do app), configure o Firebase FCM.</div>
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Notificações enviadas</div>
+            <select id="notif-filter" class="ssel" onchange="loadNotifs()">
+              <option value="">Todas</option>
+              <option value="free">Somente gratuitos</option>
+              <option value="paid">Somente pagantes</option>
+              <option value="trial">Somente trial</option>
+            </select>
+          </div>
+          <div id="notif-list" style="padding:14px">
+            <div style="text-align:center;padding:24px;color:var(--muted)">Carregando...</div>
+          </div>
+        </div>
+        <!-- Modal nova notificação -->
+        <div class="mbg" id="m-notif" onclick="if(event.target===this)closeM('m-notif')">
+          <div class="modal" style="max-width:520px">
+            <h3>Nova notificação in-app</h3>
+            <div class="fg2">
+              <div class="fg"><label>Emoji</label><input type="text" id="nf-emoji" value="🎯" maxlength="4" placeholder="🎯"></div>
+              <div class="fg"><label>Tipo de destinatário</label>
+                <select id="nf-dest">
+                  <option value="todos">Todos os alunos</option>
+                  <option value="free">Somente gratuitos</option>
+                  <option value="trial">Somente em trial</option>
+                  <option value="paid">Somente pagantes</option>
+                </select>
+              </div>
+              <div class="fg span2"><label>Título</label><input type="text" id="nf-title" placeholder="Ex: Nova Reta Final disponível!"></div>
+              <div class="fg span2"><label>Mensagem</label><textarea id="nf-msg" placeholder="Texto da notificação..." style="min-height:70px"></textarea></div>
+              <div class="fg"><label>Link (opcional)</label><input type="url" id="nf-url" placeholder="https://..."></div>
+              <div class="fg"><label>Texto do link</label><input type="text" id="nf-url-txt" placeholder="Ver oferta" value="Ver mais →"></div>
+            </div>
+            <div class="macts">
+              <button class="btn btn-s" onclick="closeM('m-notif')">Cancelar</button>
+              <button class="btn btn-p" onclick="sendNotif()">📤 Enviar notificação</button>
+            </div>
           </div>
         </div>
       </div>
@@ -922,19 +637,42 @@ DIREITO PENAL: Princípios aplicáveis ao Direito Penal. Aplicação da lei pena
       <div class="page" id="p-pixels">
         <div class="alert al-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Cole os IDs abaixo. O código de rastreamento será injetado automaticamente na plataforma e na landing page.</div>
 
-        <div class="px-card">
-          <div class="px-ico" style="background:#1877f2;color:#fff;font-size:1.6rem">f</div>
-          <div>
-            <div class="px-name">Meta Pixel (Facebook/Instagram)</div>
-            <div class="px-desc">Rastreia visitas, cadastros, compras e eventos personalizados para otimizar anúncios no Facebook e Instagram Ads.</div>
-            <div class="px-field">
-              <input class="px-inp" type="text" id="px-meta" placeholder="Ex: 1234567890123456" value="">
-              <button class="btn btn-p" onclick="savePx('meta')">Salvar</button>
+        <!-- META PIXEL + CAPI -->
+        <div class="px-card" style="flex-direction:column;gap:0;display:block">
+          <div style="display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center">
+            <div class="px-ico" style="background:#1877f2;color:#fff;font-size:1.6rem">f</div>
+            <div>
+              <div class="px-name">Meta Pixel (Facebook/Instagram) + <span style="background:#16a34a;color:#fff;border-radius:4px;padding:1px 7px;font-size:.7rem;font-weight:700">CAPI SERVER-SIDE ✅</span></div>
+              <div class="px-desc">Pixel browser + Conversions API server-side via Supabase Edge Function. Rastreia iPhone, Safari ITP e usuários com ad-blocker.</div>
+              <div class="px-field">
+                <input class="px-inp" type="text" id="px-meta" placeholder="Ex: 1234567890123456 (Pixel ID)">
+                <button class="btn btn-p" onclick="savePx('meta')">Salvar Pixel ID</button>
+              </div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Eventos automáticos: PageView, Lead (cadastro), CompleteRegistration, ViewContent, InitiateCheckout, Purchase (via Hotmart webhook)</div>
             </div>
-            <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Eventos automáticos: PageView, Lead (cadastro), Purchase (compra), InitiateCheckout</div>
+            <div id="px-meta-status" style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div class="badge b-gy">Inativo</div>
+            </div>
           </div>
-          <div id="px-meta-status" style="display:flex;flex-direction:column;align-items:center;gap:4px">
-            <div class="badge b-gy">Inativo</div>
+          <!-- CAPI Token section -->
+          <div style="margin-top:14px;padding:14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px">
+            <div style="font-size:.82rem;font-weight:700;color:#166534;margin-bottom:6px">🔐 Meta Conversions API (CAPI) — Token de Acesso</div>
+            <div style="font-size:.77rem;color:#15803d;line-height:1.6;margin-bottom:10px">
+              O Access Token permite que o servidor envie eventos diretamente para a Meta, sem depender do browser do usuário.<br>
+              <strong>Para obter:</strong> Gerenciador de Eventos Meta → selecione seu Pixel → Configurações → "Gerar token de acesso"
+            </div>
+            <div class="px-field" style="margin-bottom:8px">
+              <input class="px-inp" type="password" id="px-meta-token" placeholder="EAAxxxxxx... (Access Token do Gerenciador de Eventos)">
+              <button class="btn btn-p" onclick="saveMetaCapiToken()" style="background:#16a34a;white-space:nowrap">Salvar Token CAPI</button>
+            </div>
+            <div style="background:#fff;border:1px solid #d1fae5;border-radius:6px;padding:10px 12px;font-size:.75rem;color:#166534;line-height:1.7">
+              ⚡ <strong>Como ativar no Supabase (necessário para iPhone):</strong><br>
+              1. Acesse <strong>supabase.com → seu projeto → Edge Functions → Secrets</strong><br>
+              2. Adicione: <code style="background:#dcfce7;padding:1px 5px;border-radius:3px">META_PIXEL_ID</code> = seu Pixel ID (15 dígitos)<br>
+              3. Adicione: <code style="background:#dcfce7;padding:1px 5px;border-radius:3px">META_ACCESS_TOKEN</code> = seu Access Token<br>
+              4. A Edge Function <code style="background:#dcfce7;padding:1px 5px;border-radius:3px">meta-events</code> já está deployada e captura iOS automaticamente ✅
+            </div>
+            <div style="margin-top:8px;font-size:.73rem;color:var(--muted)" id="capi-status-lbl"></div>
           </div>
         </div>
 
@@ -1006,8 +744,8 @@ DIREITO PENAL: Princípios aplicáveis ao Direito Penal. Aplicação da lei pena
             <div>
               <div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">URL do webhook</div>
               <div style="display:flex;gap:8px">
-                <code style="flex:1;background:#f3f4f6;border:1px solid var(--bd);border-radius:7px;padding:9px 12px;font-size:.8rem;word-break:break-all">https://SEU-BACKEND.railway.app/webhook/hotmart</code>
-                <button class="btn btn-s" onclick="navigator.clipboard.writeText('https://SEU-BACKEND.railway.app/webhook/hotmart');showToast('Copiado!','success')">Copiar</button>
+                <code style="flex:1;background:#f3f4f6;border:1px solid var(--bd);border-radius:7px;padding:9px 12px;font-size:.8rem;word-break:break-all">https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/hotmart-webhook</code>
+                <button class="btn btn-s" onclick="navigator.clipboard.writeText('https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/hotmart-webhook');showToast('Copiado!','success')">Copiar</button>
               </div>
             </div>
             <div style="display:flex;flex-direction:column;gap:10px">
@@ -1028,127 +766,7 @@ DIREITO PENAL: Princípios aplicáveis ao Direito Penal. Aplicação da lei pena
       </div>
 
       <!-- SETTINGS -->
-      <!-- NOTA FISCAL -->
-      <div class="page" id="p-nfe">
-
-        <!-- Configuração -->
-        <div class="card" style="margin-bottom:14px">
-          <div class="card-hd">
-            <div>
-              <div class="card-title">Configuração da Nota Fiscal</div>
-              <div style="font-size:.74rem;color:var(--muted);margin-top:2px">NFSe — Nota Fiscal de Serviços Eletrônica</div>
-            </div>
-            <button class="btn btn-p" onclick="saveNfeConfig()">💾 Salvar configuração</button>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:16px 0 0">
-            <div>
-              <label class="sinp-label">Plataforma de NF</label>
-              <select id="nfe-provider" class="ssel" onchange="onNfeProviderChange()">
-                <option value="enotas">eNotas.io</option>
-                <option value="nfseio">NFSe.io</option>
-                <option value="omie">Omie</option>
-                <option value="manual">Manual (sem integração)</option>
-              </select>
-            </div>
-            <div>
-              <label class="sinp-label">API Key da plataforma</label>
-              <input id="nfe-apikey" class="sinp" type="password" placeholder="sk_live_...">
-            </div>
-            <div>
-              <label class="sinp-label">ID da Empresa (na plataforma)</label>
-              <input id="nfe-empresa-id" class="sinp" placeholder="empresa_abc123">
-            </div>
-            <div>
-              <label class="sinp-label">CNPJ</label>
-              <input id="nfe-cnpj" class="sinp" placeholder="00.000.000/0001-00">
-            </div>
-            <div>
-              <label class="sinp-label">Razão Social</label>
-              <input id="nfe-razao" class="sinp" placeholder="LeisecaQuest Ltda">
-            </div>
-            <div>
-              <label class="sinp-label">Alíquota ISS (%)</label>
-              <input id="nfe-iss" class="sinp" type="number" value="5" min="0" max="10" step="0.5">
-            </div>
-            <div>
-              <label class="sinp-label">Cód. Serviço (LC 116/2003)</label>
-              <input id="nfe-cod-servico" class="sinp" placeholder="1.01" value="1.01">
-            </div>
-            <div>
-              <label class="sinp-label">Ambiente</label>
-              <select id="nfe-ambiente" class="ssel">
-                <option value="homologacao">Homologação (teste)</option>
-                <option value="producao">Produção</option>
-              </select>
-            </div>
-          </div>
-          <div style="padding-top:12px">
-            <label class="sinp-label">Descrição do serviço na NF</label>
-            <input id="nfe-descricao" class="sinp" value="Licença de acesso a plataforma educacional de questões jurídicas">
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;background:var(--surface2);border-radius:8px">
-            <input type="checkbox" id="nfe-auto" style="width:16px;height:16px">
-            <label for="nfe-auto" style="font-size:.84rem;font-weight:500;cursor:pointer">Emissão automática após confirmação de pagamento no Hotmart</label>
-          </div>
-        </div>
-
-        <!-- Ações rápidas -->
-        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-          <button class="btn btn-p" onclick="loadInvoices()">🔄 Atualizar lista</button>
-          <button class="btn btn-s" onclick="testNfeConnection()">🔌 Testar conexão com a plataforma</button>
-          <span id="nfe-test-status" style="align-self:center;font-size:.78rem;color:var(--muted)"></span>
-        </div>
-
-        <!-- Pendentes -->
-        <div id="nfe-pending-banner" style="display:none;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.82rem;color:#92400e;display:flex;align-items:center;gap:10px">
-          <span>⚠️</span>
-          <div>Há notas fiscais pendentes de emissão. <button onclick="emitirTodasPendentes()" class="btn btn-s" style="margin-left:8px;padding:3px 10px;font-size:.74rem">Emitir todas agora</button></div>
-        </div>
-
-        <!-- Lista de NFs -->
-        <div class="card">
-          <div class="card-hd">
-            <div class="card-title">Notas Fiscais</div>
-            <div style="display:flex;gap:6px">
-              <select id="nfe-filter" class="ssel" style="width:auto;padding:5px 8px;font-size:.78rem" onchange="loadInvoices()">
-                <option value="">Todos os status</option>
-                <option value="pending">Pendentes</option>
-                <option value="issued">Emitidas</option>
-                <option value="error">Com erro</option>
-              </select>
-            </div>
-          </div>
-          <div id="nfe-list" style="margin-top:12px">
-            <div style="text-align:center;padding:32px;color:var(--muted)">Carregando notas fiscais...</div>
-          </div>
-        </div>
-      </div>
-
       <div class="page" id="p-settings">
-        <div class="card" style="max-width:560px;margin-bottom:16px">
-          <div class="card-hd"><div class="card-title">🤖 Claude API — Gerador de Questões</div></div>
-          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-            <div style="background:#EAF3DE;border:1px solid #C0DD97;border-radius:8px;padding:12px 14px;font-size:.8rem;color:#27500A">
-              <strong>🤖 O Gerador IA e o upload de PDF de editais precisam de uma chave API da Anthropic.</strong><br>
-              <div style="margin-top:8px;line-height:1.8">
-                <strong>Passo 1:</strong> Acesse <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#185FA5;font-weight:600">console.anthropic.com/settings/keys</a><br>
-                <strong>Passo 2:</strong> Clique em "Create Key" → dê um nome → copie a chave<br>
-                <strong>Passo 3:</strong> Cole abaixo e clique em "Salvar chave"<br>
-                <strong>Passo 4:</strong> Volte ao Gerador IA — o banner de aviso vai sumir ✅
-              </div>
-              <div style="margin-top:8px;font-size:.75rem;color:#3B6D11">⚠️ A chave fica salva <strong>apenas no seu navegador</strong> (localStorage). Cada admin que usar o painel precisa configurar a sua própria chave.</div>
-            </div>
-            <div class="fg">
-              <label>Chave API da Anthropic (começa com <code>sk-ant-api03-...</code>)</label>
-              <div style="display:flex;gap:6px">
-                <input type="password" id="claude-api-key" placeholder="sk-ant-api03-..." style="flex:1;font-family:monospace">
-                <button class="btn btn-s" onclick="toggleApiKeyVis()" title="Mostrar/ocultar">👁</button>
-              </div>
-            </div>
-            <button class="btn btn-p" style="align-self:flex-start;font-size:.9rem" onclick="saveApiKey()">💾 Salvar chave API</button>
-            <div id="api-key-status" style="font-size:.82rem;font-weight:500"></div>
-          </div>
-        </div>
         <div class="card" style="max-width:560px">
           <div class="card-hd"><div class="card-title">Configurações gerais</div></div>
           <div style="padding:18px;display:flex;flex-direction:column;gap:14px">
@@ -1366,7 +984,7 @@ function showApp(user){
 async function adminLogout(){await sb.auth.signOut();location.reload();}
 
 // ── NAV ──
-const TITLES={overview:'Dashboard',revenue:'Receita',users:'Todos os alunos',trials:'Em trial',paid:'Pagantes',questions:'Questões',products:'Produtos',simulados:'Simulados',banners:'Banners & Ofertas',ai:'Gerador de Questões com IA ✨',nfe:'Nota Fiscal',emails:'Templates de E-mail',broadcast:'Disparos',notifications:'Notificações push',pixels:'Pixels & Analytics',webhook:'Webhook Hotmart',settings:'Configurações'};
+const TITLES={overview:'Dashboard',revenue:'Receita',users:'Todos os alunos',trials:'Em trial',paid:'Pagantes',questions:'Questões',products:'Produtos',simulados:'Simulados',emails:'Templates de E-mail',broadcast:'Disparos',notifications:'Notificações push',pixels:'Pixels & Analytics',webhook:'Webhook Hotmart',settings:'Configurações'};
 function goTo(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
   document.getElementById('p-'+id).classList.add('show');
@@ -1374,10 +992,12 @@ function goTo(id){
   document.getElementById('nav-'+id)?.classList.add('active');
   document.getElementById('page-title').textContent=TITLES[id]||id;
   document.getElementById('tb-acts').innerHTML='';
-  if(id==='banners')loadBannersAdmin();
-  if(id==='ai')initAIGen();
-  if(id==='nfe'){loadNfeConfig();loadInvoices();}
-  if(id==='settings')loadApiKeySettings();
+  // Page-specific loaders
+  if(id==='notifications') setTimeout(loadNotifs,100);
+  if(id==='pixels') setTimeout(loadMetaCapiToken,100);
+  if(id==='ai') setTimeout(initAIGen,100);
+  if(id==='nfe'){setTimeout(()=>{loadNfeConfig();loadInvoices();},100);}
+  if(id==='settings') setTimeout(loadApiKeySettings,100);
 }
 
 // ── LOAD ALL ──
@@ -1789,11 +1409,11 @@ async function loadProducts(){
   ALL_PROD=data||[];
   const sel=document.getElementById('q-prod');
   if(sel)sel.innerHTML='<option value="">Livre (VMQ geral)</option>'+ALL_PROD.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-  document.getElementById('prod-tbody').innerHTML=ALL_PROD.map(p=>`
-    <tr>
+  document.getElementById('prod-tbody').innerHTML=ALL_PROD.map(p=>
+    `<tr>
       <td style="font-size:.74rem;font-family:monospace;color:var(--blue)">${p.id}</td>
       <td style="font-weight:500">${p.name}</td>
-      <td><span class="badge b-bl">${p.type}</span></td>
+      <td><span class="badge b-bl">${p.type||'—'}</span></td>
       <td style="font-weight:600">${p.price_cents?'R$'+(p.price_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
       <td style="font-size:.74rem;color:var(--muted)">${p.hotmart_id||'—'}</td>
       <td>—</td>
@@ -1801,15 +1421,14 @@ async function loadProducts(){
       <td><button class="btn btn-d" style="padding:3px 8px;font-size:.7rem" onclick="toggleProd('${p.id}',${p.active})">${p.active?'Desativar':'Ativar'}</button></td>
     </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--dim)">Nenhum produto</td></tr>';
   // Populate bulk product selects
-  const prodOptions = '<option value="">Escolha o produto...</option>' + ALL_PROD.map(p=>`<option value="${p.id}">${p.name} — ${p.price_cents?'R$'+(p.price_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2}):'grátis'}</option>`).join('');
-  ['bulk-prod-sel','bulk-prod-lei','q-filter-prod'].forEach(id=>{
+  const prodOptions='<option value="">Escolha o produto...</option>'+ALL_PROD.map(p=>'<option value="'+p.id+'">'+p.name+(p.price_cents?' — R$'+(p.price_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2}):'')+'</option>').join('');
+  ['bulk-prod-sel','bulk-prod-lei','q-filter-prod'].forEach(function(id){
     const el=document.getElementById(id);
-    if(el){
-      if(id==='q-filter-prod'){
-        el.innerHTML='<option value="">Todos os produtos</option><option value="__none__">Sem produto (livres)</option>'+ALL_PROD.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-      } else {
-        el.innerHTML=prodOptions;
-      }
+    if(!el)return;
+    if(id==='q-filter-prod'){
+      el.innerHTML='<option value="">Todos os produtos</option><option value="__none__">Sem produto (livres)</option>'+ALL_PROD.map(p=>'<option value="'+p.id+'">'+p.name+'</option>').join('');
+    } else {
+      el.innerHTML=prodOptions;
     }
   });
 }
@@ -1822,925 +1441,6 @@ async function saveProd(){
   showToast('Produto criado!','success');closeM('m-prod');loadProducts();
 }
 async function toggleProd(id,active){await sb.from('products').update({active:!active}).eq('id',id);loadProducts();}
-
-// ══════════════════════════════════════════
-// GERADOR DE QUESTÕES COM IA (Claude API)
-
-async function loadProductsForAI(){
-  try {
-    const {data} = await sb.from('products').select('id,name').eq('active',true).order('name');
-    const sel = document.getElementById('ai-product');
-    if(!sel || !data) return;
-    const current = sel.value;
-    sel.innerHTML = '';
-    // Priority products first
-    const priority = ['reta-final-tjce-2026','reta-final-enam-2026','pc-ap-2017'];
-    const sorted = [...data].sort((a,b) => {
-      const ai = priority.indexOf(a.id), bi = priority.indexOf(b.id);
-      if(ai >= 0 && bi < 0) return -1;
-      if(bi >= 0 && ai < 0) return 1;
-      if(ai >= 0 && bi >= 0) return ai - bi;
-      return a.name.localeCompare(b.name);
-    });
-    sorted.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.id; opt.textContent = p.name;
-      sel.appendChild(opt);
-    });
-    if(current && [...sel.options].find(o=>o.value===current)) sel.value = current;
-  } catch(e){ console.warn('loadProductsForAI:', e); }
-}
-// ══════════════════════════════════════════
-// ── API KEY MANAGEMENT ──
-function getClaudeApiKey(){
-  return localStorage.getItem('leisecaquest_claude_key') || '';
-}
-
-function saveApiKey(){
-  const key = document.getElementById('claude-api-key').value.trim();
-  if(!key){showToast('Digite a chave API primeiro','error');return;}
-  if(!key.startsWith('sk-ant')){showToast('Chave inválida — deve começar com sk-ant','error');return;}
-  localStorage.setItem('leisecaquest_claude_key', key);
-  document.getElementById('api-key-status').innerHTML = '✅ Chave salva! O Gerador IA está pronto para uso.';
-  showToast('✅ Chave API salva!','success');
-}
-
-function toggleApiKeyVis(){
-  const inp = document.getElementById('claude-api-key');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-
-function loadApiKeySettings(){
-  const key = getClaudeApiKey();
-  const inp = document.getElementById('claude-api-key');
-  if(inp && key) {
-    inp.value = key;
-    document.getElementById('api-key-status').innerHTML = '✅ Chave configurada — Gerador IA pronto.';
-  }
-}
-
-function toggleEditalCtx(){
-  var body=document.getElementById('edital-ctx-body');
-  var chev=document.getElementById('edital-ctx-chev');
-  var open=body.style.display==='block';
-  body.style.display=open?'none':'block';
-  if(chev)chev.style.transform=open?'rotate(0deg)':'rotate(180deg)';
-}
-
-async function loadEditalFile(input){
-  var file = input.files[0]; if(!file) return;
-  var nameEl = document.getElementById('edital-file-name');
-  var ctx = document.getElementById('edital-ctx-txt');
-  nameEl.textContent = '⏳ Processando ' + file.name + '...';
-
-  // Open edital section if closed
-  var body=document.getElementById('edital-ctx-body');
-  if(body) body.style.display='block';
-
-  try {
-    if(file.name.endsWith('.pdf')){
-      const apiKey = getClaudeApiKey();
-      if(!apiKey){
-        nameEl.textContent = '❌ Configure sua chave API em Configurações primeiro!';
-        showToast('Configure a chave API do Claude em ⚙️ Configurações!','error');
-        goTo('settings');
-        return;
-      }
-
-      // Read PDF as base64
-      const base64 = await new Promise((res,rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(',')[1]);
-        r.onerror = () => rej(new Error('Leitura falhou'));
-        r.readAsDataURL(file);
-      });
-
-      nameEl.textContent = '🤖 Extraindo conteúdo do PDF com IA...';
-
-      const PROXY_URL = 'https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/claude-proxy';
-      const resp = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          apiKey,
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
-          messages: [{
-            role: 'user',
-            content: [
-              {type:'document', source:{type:'base64',media_type:'application/pdf',data:base64}},
-              {type:'text', text:`Extraia deste edital de concurso público:
-1. Nome do concurso, órgão e banca examinadora
-2. Conteúdo programático completo de cada disciplina
-3. Número de questões por disciplina (se informado)
-4. Formato das provas (múltipla escolha, V/F, discursiva)
-Formate de forma clara para uso como contexto de geração de questões.`}
-            ]
-          }]
-        })
-      });
-
-      const data = await resp.json();
-      const extracted = data.content?.map(b=>b.text||'').join('') || '';
-      ctx.value = extracted.slice(0, 10000);
-      nameEl.textContent = '✅ ' + file.name + ' — conteúdo extraído pela IA';
-
-      // Auto-detect product and show creation prompt
-      const productName = extracted.match(/concurso[:\s]+([^\n]{5,60})/i)?.[1] || file.name.replace('.pdf','');
-      showToast('✅ Edital processado! Revise o contexto e configure a disciplina para gerar questões.', 'success');
-
-    } else {
-      // TXT / DOC
-      const text = await file.text();
-      ctx.value = text.slice(0, 10000);
-      nameEl.textContent = '✅ ' + file.name + ' (' + Math.round(text.length/1000) + 'k chars)';
-    }
-  } catch(e) {
-    nameEl.textContent = '❌ Erro: ' + e.message;
-    showToast('Erro ao processar arquivo: ' + e.message, 'error');
-  }
-}
-
-var AI_GENERATED = [];
-
-function onProductChange(productId){
-  const tipoSel = document.getElementById('ai-tipo');
-  const cargSel = document.getElementById('ai-cargo');
-  const bancaMap = {
-    'reta-final-tjce-2026': {tipo:'vf', banca:'FCC', cargo:'Analista Judiciário'},
-    'reta-final-enam-2026': {tipo:'mc', banca:'FGV', cargo:'Magistratura'},
-    'pc-ap-2017': {tipo:'mc', banca:'FCC', cargo:'Delegado de Polícia Civil'}
-  };
-  const cfg = bancaMap[productId];
-  if(cfg){
-    if(tipoSel) tipoSel.value = cfg.tipo;
-    if(cargSel) cargSel.value = cfg.cargo;
-    onTipoChange(cfg.tipo);
-  }
-}
-
-function onTipoChange(tipo){
-  var falsoRow=document.getElementById('ai-falso-row');
-  if(falsoRow)falsoRow.style.display=tipo==='mc'?'none':'';
-  var productSel=document.getElementById('ai-product');
-  if(tipo==='mc'&&productSel&&productSel.value==='reta-final-tjce-2026')productSel.value='reta-final-enam-2026';
-  if(tipo==='vf'&&productSel&&productSel.value==='reta-final-enam-2026')productSel.value='reta-final-tjce-2026';
-  var cargoSel=document.getElementById('ai-cargo');
-  if(tipo==='mc'&&cargoSel&&cargoSel.value==='Analista Judiciário')cargoSel.value='Magistratura';
-}
-
-function initAIGen(){
-  loadApiKeySettings();
-  // Show/hide API key banner
-  const banner = document.getElementById('ai-apikey-banner');
-  if(banner) banner.style.display = getClaudeApiKey() ? 'none' : 'block';
-  // Load products dynamically
-  loadProductsForAI();
-}
-async function gerarQuestoes(){
-  const lei = document.getElementById('ai-lei').value;
-  const cargo = document.getElementById('ai-cargo').value;
-  const qty = parseInt(document.getElementById('ai-qty').value);
-  const pctFalso = parseInt(document.getElementById('ai-falso')?.value||'40');
-  const tema = document.getElementById('ai-tema').value.trim();
-  const productId = document.getElementById('ai-product').value;
-
-  const btn = document.getElementById('ai-gen-btn');
-  const status = document.getElementById('ai-status');
-  const results = document.getElementById('ai-results');
-
-  btn.disabled = true;
-  btn.textContent = '⏳ Gerando...';
-  status.textContent = 'Chamando Claude API...';
-  results.innerHTML = '';
-
-  const tipo = document.getElementById('ai-tipo')?.value || 'vf';
-  const isMC = tipo === 'mc';
-  const editalCtx = (document.getElementById('edital-ctx-txt')?.value||'').trim();
-
-  const systemPromptVF = `Você é um especialista em questões de concursos públicos da área jurídica, com expertise em questões estilo FCC (Fundação Carlos Chagas) para o TJ-CE.
-
-Regras obrigatórias:
-1. Gere questões de Verdadeiro/Falso sobre artigos específicos da lei
-2. Cada questão deve referenciar um artigo concreto (ex: "Art. 5º, II", "Art. 37, caput")
-3. Questões VERDADEIRAS: reproduzem ou parafraseiam fielmente o texto legal
-4. Questões FALSAS: contêm erro sutil mas claro (número errado, palavra trocada, negação indevida)
-5. Justificativa: explica objetivamente o gabarito com referência ao dispositivo
-6. Estilo FCC: assertivo, foco na letra da lei
-7. Retorne APENAS JSON válido, sem markdown
-
-Formato (array JSON):
-[{"artigo":"Art. X","enunciado":"Texto...","gabarito":0,"justificativa":"Correto. Art. X..."}]
-gabarito: 0=Verdadeiro, 1=Falso`;
-
-  const systemPromptMC = `Você é um especialista em questões de concursos públicos da área jurídica, com expertise em questões estilo FGV para o ENAM (Exame Nacional da Magistratura).
-
-Regras obrigatórias:
-1. Gere questões de múltipla escolha com EXATAMENTE 5 alternativas (A, B, C, D, E)
-2. Cada questão deve ter um enunciado claro e 5 alternativas onde APENAS UMA é correta
-3. As alternativas incorretas devem ser plausíveis mas claramente erradas para quem conhece o assunto
-4. Padrão FGV: questões longas, com transcrição de dispositivos legais ou situações concretas
-5. Inclua referência ao artigo/dispositivo no campo artigo
-6. A justificativa deve explicar POR QUE a alternativa correta está certa E por que as demais estão erradas
-7. Retorne APENAS JSON válido, sem markdown
-
-Formato (array JSON):
-[{
-  "artigo": "Art. X",
-  "enunciado": "Texto completo da questão...",
-  "opcoes": ["(A) texto", "(B) texto", "(C) texto", "(D) texto", "(E) texto"],
-  "gabarito": 0,
-  "justificativa": "A alternativa (A) está correta porque... As demais estão erradas porque..."
-}]
-gabarito: índice da alternativa correta (0=A, 1=B, 2=C, 3=D, 4=E)`;
-
-  const systemPrompt = isMC ? systemPromptMC : systemPromptVF;
-  const contextBlock = editalCtx ? `\n\nContexto do edital:\n---\n${editalCtx.slice(0,3000)}\n---\n` : '';
-
-  const concursoNames = {
-    'reta-final-tjce-2026': 'Reta Final TJ-CE 2026 (FCC)',
-    'reta-final-enam-2026': 'ENAM 2026.1 (FGV)',
-    'pc-ap-2017': 'Concurso Polícia Civil do Amapá 2017 (FCC)'
-  };
-  const concursoLabel = concursoNames[productId] || productId;
-
-  let userPrompt;
-  if(isMC){
-    userPrompt = `Gere exatamente ${qty} questões de múltipla escolha sobre "${lei}" para o ENAM 2026.1 (FGV), nível de dificuldade para magistratura.${contextBlock}
-${tema ? `Foque especificamente em: ${tema}` : ''}
-Varie os temas abordados dentro da disciplina. Não repita o mesmo artigo/tema duas vezes.
-As questões devem ser do nível exigido pelo ENAM: interpretação jurídica aprofundada, não apenas memorização de artigos.`;
-  } else {
-    const nFalso = Math.round(qty * pctFalso / 100);
-    const nVerd = qty - nFalso;
-    userPrompt = `Gere exatamente ${qty} questões sobre "${lei}" para o cargo de ${cargo} do ${concursoLabel}.${contextBlock}
-${tema ? `Foque especificamente em: ${tema}` : ''}
-Distribuição: ${nVerd} questões VERDADEIRAS (gabarito 0) e ${nFalso} questões FALSAS (gabarito 1).
-Varie os artigos abordados. Não repita o mesmo artigo.`;
-  }
-
-  try {
-    const apiKey = getClaudeApiKey();
-    if(!apiKey){
-      btn.disabled = false; btn.textContent = '✨ Gerar questões';
-      status.textContent = '';
-      showToast('⚠️ Configure sua chave API do Claude em Configurações primeiro!', 'error');
-      goTo('settings');
-      return;
-    }
-    const PROXY_URL = 'https://iyjmpbqpifvzitulccky.supabase.co/functions/v1/claude-proxy';
-    const resp = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        apiKey,
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system: systemPrompt,
-        messages: [{role:'user', content: userPrompt}]
-      })
-    });
-
-    if(!resp.ok){
-      const err = await resp.text();
-      throw new Error('API error '+resp.status+': '+err);
-    }
-
-    const data = await resp.json();
-    const raw = data.content.map(b=>b.text||'').join('');
-
-    // Parse JSON - strip markdown fences if present
-    const clean = raw.replace(/```json|```/g,'').trim();
-    let questoes;
-    try { questoes = JSON.parse(clean); }
-    catch(e){ throw new Error('JSON inválido: '+clean.slice(0,200)); }
-
-    if(!Array.isArray(questoes)) throw new Error('Resposta não é um array');
-
-    // Store with metadata
-    AI_GENERATED = questoes.map(q => ({
-      ...q,
-      lei: lei,
-      banca: isMC ? 'FGV' : 'FCC',
-      cargo: isMC ? 'Magistratura' : cargo,
-      ano: 2026,
-      concurso: isMC ? 'Reta Final ENAM 2026.1' : 'Reta Final TJ-CE 2026',
-      tipo: isMC ? 'mc' : 'vf',
-      active: true,
-      product_id: productId,
-      _approved: true
-    }));
-
-    renderAIResults(AI_GENERATED);
-    status.textContent = `✅ ${questoes.length} questões geradas!`;
-    document.getElementById('ai-approve-all').style.display = 'inline-flex';
-    document.getElementById('ai-clear').style.display = 'inline-flex';
-
-  } catch(e) {
-    status.textContent = '❌ Erro: ' + e.message;
-    results.innerHTML = `<div class="card" style="border-color:#fca5a5;background:#fee2e2;padding:16px">
-      <strong style="color:#991b1b">Erro ao gerar questões</strong>
-      <div style="font-size:.8rem;color:#b91c1c;margin-top:6px;font-family:monospace">${e.message}</div>
-    </div>`;
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Gerar com IA';
-  }
-}
-
-function renderAIResults(qs){
-  const el = document.getElementById('ai-results');
-  const isMC = qs[0]?.tipo === 'mc';
-  const vCount = isMC ? 0 : qs.filter(q=>q.gabarito===0).length;
-  const fCount = isMC ? 0 : qs.filter(q=>q.gabarito===1).length;
-  const letters = ['A','B','C','D','E'];
-
-  el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-      <div style="font-size:.84rem;font-weight:700">${qs.length} questões geradas</div>
-      ${isMC
-        ? `<span class="badge b-bl">Múltipla Escolha (A-E)</span><span class="badge b-or">ENAM / FGV</span>`
-        : `<span class="badge b-gr">✓ ${vCount} Verdadeiras</span><span class="badge b-or">✗ ${fCount} Falsas</span>`}
-      <div style="font-size:.75rem;color:var(--muted);margin-left:auto">Revise e aprove individualmente ou clique em "Aprovar todas"</div>
-    </div>
-    ${qs.map((q,i) => {
-      const gabaLbl = isMC ? `(${letters[q.gabarito]}) correta` : (q.gabarito===0?'Verdadeiro':'Falso');
-      const gabaColor = isMC ? '#7c3aed' : (q.gabarito===0?'#16a34a':'#ea580c');
-      const opcHTML = isMC && q.opcoes ? q.opcoes.map((o,oi)=>`
-        <div style="font-size:.78rem;padding:4px 8px;border-radius:4px;margin-bottom:3px;background:${oi===q.gabarito?'#f0fdf4':'var(--surface2)'};color:${oi===q.gabarito?'#166534':'inherit'};font-weight:${oi===q.gabarito?'600':'400'}">${o}</div>
-      `).join('') : '';
-      return `
-      <div class="card q-ai-card" id="qai-${i}" style="margin-bottom:10px;border-left:4px solid ${gabaColor}">
-        <div style="display:flex;align-items:flex-start;gap:10px">
-          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-            <span class="badge" style="font-size:.7rem;background:${gabaColor}1a;color:${gabaColor}">${gabaLbl}</span>
-            <span style="font-size:.7rem;color:var(--muted);text-align:center">#${i+1}</span>
-          </div>
-          <div style="flex:1">
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
-              <span style="font-size:.74rem;background:#e0e7ff;color:#3730a3;border-radius:4px;padding:1px 8px;font-weight:600">${q.artigo||''}</span>
-              <span style="font-size:.72rem;color:var(--muted)">${q.lei||''}</span>
-            </div>
-            <div style="font-size:.84rem;margin-bottom:8px;line-height:1.5" id="enun-${i}">${q.enunciado}</div>
-            ${opcHTML}
-            <div style="font-size:.76rem;color:var(--muted);line-height:1.5;background:var(--surface2);border-radius:6px;padding:8px;margin-top:6px" id="just-${i}">${q.justificativa}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-            <button class="btn btn-s" style="padding:3px 8px;font-size:.7rem" onclick="editQAI(${i})" title="Editar">✏️</button>
-            <button class="btn btn-d" style="padding:3px 8px;font-size:.7rem;background:#fee2e2;color:#991b1b;border-color:#fca5a5" onclick="removeQAI(${i})" title="Remover">🗑</button>
-            <button class="btn" id="save-${i}" style="padding:3px 8px;font-size:.7rem;background:#dcfce7;color:#166534;border-color:#86efac" onclick="salvarUmaQAI(${i})" title="Salvar">💾</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('')}`;
-}
-
-function editQAI(i){
-  const q = AI_GENERATED[i];
-  const enun = document.getElementById('enun-'+i);
-  const just = document.getElementById('just-'+i);
-  if(enun.contentEditable === 'true'){
-    // Save
-    AI_GENERATED[i].enunciado = enun.innerText.trim();
-    AI_GENERATED[i].justificativa = just.innerText.trim();
-    enun.contentEditable = 'false'; just.contentEditable = 'false';
-    enun.style.outline = ''; just.style.outline = '';
-    showToast('Editado!','success');
-  } else {
-    enun.contentEditable = 'true'; just.contentEditable = 'true';
-    enun.style.outline = '2px solid #818cf8'; enun.focus();
-    just.style.outline = '2px solid #818cf8';
-  }
-}
-
-function removeQAI(i){
-  AI_GENERATED.splice(i,1);
-  renderAIResults(AI_GENERATED);
-  if(!AI_GENERATED.length){
-    document.getElementById('ai-approve-all').style.display='none';
-    document.getElementById('ai-clear').style.display='none';
-  }
-}
-
-function _buildSaveRow(q){
-  var row={
-    lei:q.lei, artigo:q.artigo, banca:q.banca, cargo:q.cargo,
-    ano:q.ano, concurso:q.concurso, enunciado:q.enunciado,
-    tipo:q.tipo||'vf', gabarito:q.gabarito, justificativa:q.justificativa,
-    active:true, product_id:q.product_id
-  };
-  if(q.tipo==='mc'&&q.opcoes)row.opcoes=q.opcoes;
-  return row;
-}
-
-async function salvarUmaQAI(i){
-  const q = AI_GENERATED[i];
-  const btn = document.getElementById('save-'+i);
-  btn.textContent = '⏳'; btn.disabled = true;
-  try {
-    const {error} = await sb.from('questions').insert(_buildSaveRow(q));
-    if(error) throw error;
-    btn.textContent = '✅'; btn.style.background = '#16a34a'; btn.style.color = '#fff';
-    document.getElementById('qai-'+i).style.opacity = '0.5';
-    showToast('Questão salva!','success');
-  } catch(e){
-    btn.textContent = '❌'; btn.disabled = false;
-    showToast('Erro: '+e.message,'error');
-  }
-}
-
-async function aprovarTodas(){
-  if(!AI_GENERATED.length) return;
-  if(!confirm(`Salvar ${AI_GENERATED.length} questões no banco?`)) return;
-
-  const btn = document.getElementById('ai-approve-all');
-  btn.disabled = true; btn.textContent = '⏳ Salvando...';
-
-  const rows = AI_GENERATED.map(_buildSaveRow);
-
-  try {
-    const {error} = await sb.from('questions').insert(rows);
-    if(error) throw error;
-    showToast(`✅ ${rows.length} questões salvas com sucesso!`,'success');
-    AI_GENERATED = [];
-    document.getElementById('ai-results').innerHTML = `
-      <div class="card" style="text-align:center;padding:32px;background:#f0fdf4;border-color:#86efac">
-        <div style="font-size:2rem">🎉</div>
-        <div style="font-weight:700;color:#166534;margin-top:8px">${rows.length} questões salvas!</div>
-        <div style="font-size:.8rem;color:#16a34a;margin-top:4px">Gere mais questões ou acesse a lista para verificar.</div>
-      </div>`;
-    btn.style.display = 'none';
-    document.getElementById('ai-clear').style.display = 'none';
-    document.getElementById('ai-status').textContent = '';
-    // Update count
-    loadQuestions();
-  } catch(e){
-    showToast('Erro: '+e.message,'error');
-    btn.disabled = false; btn.textContent = '✅ Aprovar todas e salvar';
-  }
-}
-
-// ══════════════════════════════════════════
-// NOTA FISCAL (NFSe)
-// ══════════════════════════════════════════
-var NFE_CONFIG = {};
-
-async function loadNfeConfig(){
-  const {data} = await sb.from('nfe_config').select('*').limit(1).single().catch(()=>({data:null}));
-  if(!data) return;
-  NFE_CONFIG = data;
-  document.getElementById('nfe-provider').value = data.provider||'enotas';
-  document.getElementById('nfe-apikey').value = data.api_key||'';
-  document.getElementById('nfe-empresa-id').value = data.empresa_id||'';
-  document.getElementById('nfe-cnpj').value = data.cnpj||'';
-  document.getElementById('nfe-razao').value = data.razao_social||'';
-  document.getElementById('nfe-iss').value = data.aliquota_iss||5;
-  document.getElementById('nfe-cod-servico').value = data.servico_codigo||'1.01';
-  document.getElementById('nfe-descricao').value = data.servico_descricao||'';
-  document.getElementById('nfe-ambiente').value = data.ambiente||'homologacao';
-  document.getElementById('nfe-auto').checked = !!data.emissao_automatica;
-}
-
-async function saveNfeConfig(){
-  const config = {
-    provider: document.getElementById('nfe-provider').value,
-    api_key: document.getElementById('nfe-apikey').value,
-    empresa_id: document.getElementById('nfe-empresa-id').value,
-    cnpj: document.getElementById('nfe-cnpj').value,
-    razao_social: document.getElementById('nfe-razao').value,
-    aliquota_iss: parseFloat(document.getElementById('nfe-iss').value)||5,
-    servico_codigo: document.getElementById('nfe-cod-servico').value,
-    servico_descricao: document.getElementById('nfe-descricao').value,
-    ambiente: document.getElementById('nfe-ambiente').value,
-    emissao_automatica: document.getElementById('nfe-auto').checked
-  };
-  const existing = await sb.from('nfe_config').select('id').limit(1).single().catch(()=>({data:null}));
-  let err;
-  if(existing.data){
-    ({error:err} = await sb.from('nfe_config').update(config).eq('id',existing.data.id));
-  } else {
-    ({error:err} = await sb.from('nfe_config').insert(config));
-  }
-  if(err){showToast('Erro ao salvar: '+err.message,'error');return;}
-  NFE_CONFIG = config;
-  showToast('✅ Configuração salva!','success');
-}
-
-async function testNfeConnection(){
-  const statusEl = document.getElementById('nfe-test-status');
-  statusEl.textContent = '⏳ Testando...';
-  const provider = document.getElementById('nfe-provider').value;
-  const apiKey = document.getElementById('nfe-apikey').value;
-  if(provider === 'manual'){statusEl.textContent = '✅ Modo manual — sem integração';return;}
-  if(!apiKey){statusEl.textContent = '❌ Configure a API Key primeiro';return;}
-  // Test eNotas connection
-  try {
-    const endpoints = {
-      enotas: 'https://api.enotas.com.br/v1/empresas',
-      nfseio: 'https://api.nfse.io/companies'
-    };
-    const url = endpoints[provider];
-    if(!url){statusEl.textContent = '✅ Provedor configurado (validação manual)';return;}
-    const r = await fetch(url, {headers:{'Authorization':'Basic '+btoa(apiKey+':')}});
-    if(r.ok){statusEl.textContent = '✅ Conexão OK — API válida!';}
-    else{statusEl.textContent = '❌ API Key inválida (HTTP '+r.status+')';}
-  } catch(e){
-    statusEl.textContent = '❌ Erro de conexão: '+e.message;
-  }
-}
-
-function onNfeProviderChange(){
-  const p = document.getElementById('nfe-provider').value;
-  const help = {
-    enotas: 'eNotas.io — plataforma popular para NFSe em todo o Brasil',
-    nfseio: 'NFSe.io — integração direta com prefeituras',
-    omie: 'Omie ERP — sistema de gestão com emissão de NF',
-    manual: 'Emissão manual — você emite na prefeitura e registra aqui'
-  };
-  showToast(help[p]||'','info');
-}
-
-async function loadInvoices(){
-  const status = document.getElementById('nfe-filter')?.value||'';
-  let q = sb.from('invoices').select('*,profiles(name,email)').order('created_at',{ascending:false}).limit(50);
-  if(status) q = q.eq('status',status);
-  const {data,error} = await q;
-  const list = document.getElementById('nfe-list');
-  const pending = document.getElementById('nfe-pending-banner');
-
-  if(error){list.innerHTML='<div style="color:var(--red);padding:16px">Erro: '+error.message+'</div>';return;}
-  const invoices = data||[];
-
-  // Count pending
-  const pendingCount = invoices.filter(i=>i.status==='pending').length;
-  if(pending){pending.style.display=pendingCount?'flex':'none';}
-  const cntEl=document.getElementById('sb-nfe-cnt');
-  if(cntEl){cntEl.textContent=pendingCount;cntEl.style.display=pendingCount?'inline':'none';}
-
-  if(!invoices.length){list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted)">Nenhuma nota fiscal encontrada.</div>';return;}
-
-  const statusColors = {pending:'#f59e0b',processing:'#3b82f6',issued:'#16a34a',error:'#dc2626',cancelled:'#6b7280'};
-  const statusLabels = {pending:'⏳ Pendente',processing:'🔄 Processando',issued:'✅ Emitida',error:'❌ Erro',cancelled:'🚫 Cancelada'};
-
-  list.innerHTML = invoices.map(inv => `
-    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
-      <div style="flex:1;min-width:180px">
-        <div style="font-size:.85rem;font-weight:600">${inv.customer_name||'—'}</div>
-        <div style="font-size:.75rem;color:var(--muted)">${inv.customer_email||''} ${inv.customer_cpf_cnpj?'• '+inv.customer_cpf_cnpj:''}</div>
-        <div style="font-size:.74rem;color:var(--muted);margin-top:2px">${inv.product_id||''} • ${new Date(inv.created_at).toLocaleDateString('pt-BR')}</div>
-      </div>
-      <div style="text-align:right;min-width:100px">
-        <div style="font-size:.9rem;font-weight:700">R$${(inv.amount_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
-        <span style="font-size:.72rem;font-weight:600;color:${statusColors[inv.status]}">${statusLabels[inv.status]||inv.status}</span>
-      </div>
-      <div style="display:flex;gap:4px;align-items:center;flex-shrink:0">
-        ${inv.status==='issued'&&inv.nfe_pdf_url?`<a href="${inv.nfe_pdf_url}" target="_blank" class="btn btn-s" style="padding:3px 8px;font-size:.72rem">📄 PDF</a>`:''}
-        ${inv.status==='pending'?`<button class="btn btn-p" onclick="emitirNF('${inv.id}')" style="padding:3px 8px;font-size:.72rem">📤 Emitir</button>`:''}
-        ${inv.status==='error'?`<button class="btn btn-d" onclick="emitirNF('${inv.id}')" style="padding:3px 8px;font-size:.72rem">🔄 Tentar novamente</button>`:''}
-        <button class="btn btn-s" onclick="verDetalheNF('${inv.id}')" style="padding:3px 8px;font-size:.72rem">👁</button>
-      </div>
-      ${inv.error_message?`<div style="width:100%;font-size:.72rem;color:#dc2626;background:#fee2e2;border-radius:4px;padding:4px 8px">${inv.error_message}</div>`:''}
-    </div>`).join('');
-}
-
-async function emitirNF(invoiceId){
-  const inv = await sb.from('invoices').select('*').eq('id',invoiceId).single();
-  if(inv.error){showToast('NF não encontrada','error');return;}
-  const i = inv.data;
-  const provider = NFE_CONFIG.provider||'manual';
-
-  if(provider==='manual'){
-    // Modo manual: apenas marcar como emitida
-    const numero = prompt('Digite o número da nota fiscal emitida:','');
-    if(!numero)return;
-    await sb.from('invoices').update({
-      status:'issued', nfe_number:numero, issued_at: new Date().toISOString()
-    }).eq('id',invoiceId);
-    showToast('✅ NF registrada manualmente!','success');
-    loadInvoices();
-    return;
-  }
-
-  // Emissão via API (eNotas como exemplo)
-  if(!NFE_CONFIG.api_key||!NFE_CONFIG.empresa_id){
-    showToast('Configure a API Key e ID da empresa primeiro!','error');
-    return;
-  }
-
-  // Atualizar status para processing
-  await sb.from('invoices').update({status:'processing'}).eq('id',invoiceId);
-  showToast('⏳ Emitindo nota fiscal...','info');
-  loadInvoices();
-
-  try {
-    // Chamada para eNotas (exemplo de integração)
-    const payload = {
-      ambienteTeste: NFE_CONFIG.ambiente==='homologacao',
-      exibirNaConsultaPublica: true,
-      naturezaOperacao: 'Tributação no município',
-      dataEmissao: new Date().toISOString().split('T')[0],
-      prestador: {
-        cnpj: NFE_CONFIG.cnpj?.replace(/\D/g,''),
-        inscricaoMunicipal: NFE_CONFIG.inscricao_municipal||'',
-      },
-      tomador: {
-        cpfCnpj: i.customer_cpf_cnpj?.replace(/\D/g,'')||'',
-        razaoSocial: i.customer_name,
-        email: i.customer_email,
-        endereco: {
-          cep: i.customer_cep?.replace(/\D/g,'')||'',
-          logradouro: i.customer_address||'',
-          cidade: i.customer_city||'',
-          estado: i.customer_state||''
-        }
-      },
-      servico: {
-        valor: i.amount_cents/100,
-        discriminacao: NFE_CONFIG.servico_descricao||'Licença de software educacional',
-        codigoTributacaoMunicipio: NFE_CONFIG.servico_codigo||'1.01',
-        aliquota: (NFE_CONFIG.aliquota_iss||5)/100
-      }
-    };
-
-    const resp = await fetch(
-      `https://api.enotas.com.br/v1/empresas/${NFE_CONFIG.empresa_id}/nfse`,
-      {
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Basic '+btoa(NFE_CONFIG.api_key+':')
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-
-    const result = await resp.json();
-    if(resp.ok && result.id){
-      await sb.from('invoices').update({
-        status:'issued',
-        nfe_id: result.id,
-        nfe_number: result.numero||String(result.id),
-        nfe_pdf_url: result.linkDownloadPDF||result.linkPDF||null,
-        nfe_url: result.linkDownloadXML||null,
-        issued_at: new Date().toISOString()
-      }).eq('id',invoiceId);
-      showToast('✅ Nota fiscal emitida com sucesso!','success');
-    } else {
-      throw new Error(result.message||result.error||'Erro desconhecido na API');
-    }
-  } catch(e){
-    await sb.from('invoices').update({
-      status:'error', error_message: e.message
-    }).eq('id',invoiceId);
-    showToast('❌ Erro: '+e.message,'error');
-  }
-  loadInvoices();
-}
-
-async function emitirTodasPendentes(){
-  const {data} = await sb.from('invoices').select('id').eq('status','pending');
-  if(!data||!data.length){showToast('Sem notas pendentes','info');return;}
-  if(!confirm(`Emitir ${data.length} notas fiscais pendentes?`))return;
-  for(const inv of data){
-    await emitirNF(inv.id);
-    await new Promise(r=>setTimeout(r,500)); // rate limit
-  }
-  showToast(`✅ ${data.length} notas processadas!`,'success');
-  loadInvoices();
-}
-
-async function criarInvoice(userId, productId, customerName, customerEmail, customerCpfCnpj, amountCents){
-  // Chamada interna para criar NF após pagamento Hotmart
-  const {data,error} = await sb.from('invoices').insert({
-    user_id: userId,
-    product_id: productId,
-    customer_name: customerName,
-    customer_email: customerEmail,
-    customer_cpf_cnpj: customerCpfCnpj||null,
-    amount_cents: amountCents,
-    status: 'pending'
-  }).select().single();
-  if(error){console.error('Erro ao criar invoice:',error);return null;}
-  // Se emissão automática, emitir imediatamente
-  if(NFE_CONFIG.emissao_automatica){
-    await emitirNF(data.id);
-  }
-  return data;
-}
-
-function verDetalheNF(invoiceId){
-  sb.from('invoices').select('*').eq('id',invoiceId).single().then(({data:inv})=>{
-    if(!inv)return;
-    var m=document.createElement('div');
-    m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center';
-    m.onclick=function(e){if(e.target===m)m.remove();};
-    m.innerHTML='<div style="background:#fff;border-radius:12px;padding:20px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
-      +'<h3 style="font-size:.95rem;font-weight:700">Detalhes da Nota Fiscal</h3>'
-      +'<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:#9ca3af">✕</button>'
-      +'</div>'
-      +'<div style="display:flex;flex-direction:column;gap:8px;font-size:.82rem">'
-      +`<div><strong>Cliente:</strong> ${inv.customer_name}</div>`
-      +`<div><strong>Email:</strong> ${inv.customer_email}</div>`
-      +`<div><strong>CPF/CNPJ:</strong> ${inv.customer_cpf_cnpj||'—'}</div>`
-      +`<div><strong>Produto:</strong> ${inv.product_id}</div>`
-      +`<div><strong>Valor:</strong> R$${(inv.amount_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>`
-      +`<div><strong>Status:</strong> ${inv.status}</div>`
-      +`<div><strong>Número NF:</strong> ${inv.nfe_number||'—'}</div>`
-      +`<div><strong>Emitida em:</strong> ${inv.issued_at?new Date(inv.issued_at).toLocaleString('pt-BR'):'—'}</div>`
-      +(inv.nfe_pdf_url?`<a href="${inv.nfe_pdf_url}" target="_blank" style="color:#1a9fd4">📄 Download PDF da NF</a>`:'')
-      +(inv.error_message?`<div style="color:#dc2626;background:#fee2e2;padding:8px;border-radius:6px"><strong>Erro:</strong> ${inv.error_message}</div>`:'')
-      +'</div></div>';
-    document.body.appendChild(m);
-  });
-}
-
-// Função para ser chamada pelo webhook Hotmart após pagamento
-async function processar_pagamento_hotmart(payload){
-  // payload = dados recebidos do webhook Hotmart
-  const {
-    data: {
-      buyer: {name:buyerName, email:buyerEmail, document:buyerDoc},
-      product: {id:productHotmartId},
-      purchase: {price:{value:amount}, transaction}
-    }
-  } = payload;
-
-  // Encontrar o produto correspondente
-  const {data:product} = await sb.from('products').select('id,name').eq('hotmart_id',productHotmartId).single();
-  if(!product){console.error('Produto Hotmart não encontrado:',productHotmartId);return;}
-
-  // Encontrar ou criar o usuário pelo email
-  let userId = null;
-  const {data:profile} = await sb.from('profiles').select('id').eq('email',buyerEmail).single().catch(()=>({data:null}));
-  if(profile) userId = profile.id;
-
-  // Criar registro de acesso ao produto
-  await sb.from('user_products').upsert({
-    user_id: userId,
-    product_id: product.id,
-    expires_at: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
-    purchased_at: new Date().toISOString()
-  }).catch(()=>{});
-
-  // Criar e emitir nota fiscal
-  await criarInvoice(
-    userId, product.id, buyerName, buyerEmail,
-    buyerDoc, Math.round(amount*100)
-  );
-}
-
-// ── BANNERS ──
-let ALL_BANNERS=[];
-let editBannerId=null;
-
-async function loadBannersAdmin(){
-  const{data}=await sb.from('banners').select('*').order('ordem',{ascending:true});
-  ALL_BANNERS=data||[];
-  renderBannerList();
-  // populate product select in banner modal
-  const sel=document.getElementById('bn-product');
-  if(sel&&ALL_PROD.length){
-    sel.innerHTML='<option value="">Nenhum (oferta geral)</option>'+ALL_PROD.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-  }
-}
-
-function renderBannerList(){
-  const el=document.getElementById('banner-list');
-  if(!ALL_BANNERS.length){
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum banner criado ainda. Clique em <strong>Novo banner</strong> para começar.</div>';
-    return;
-  }
-  el.innerHTML=ALL_BANNERS.map(b=>`
-    <div class="card" style="padding:14px 16px">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <div style="width:40px;height:40px;border-radius:8px;background:${b.cor_fundo};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">${b.emoji||'🎯'}</div>
-        <div style="flex:1;min-width:180px">
-          <div style="font-size:.88rem;font-weight:700">${b.titulo}</div>
-          <div style="font-size:.74rem;color:var(--muted);margin-top:2px">${b.descricao||''}</div>
-          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-            <span class="badge b-bl" style="font-size:.65rem">${b.posicao||'todas'}</span>
-            ${(b.planos_alvo||[]).map(p=>`<span class="badge b-gy" style="font-size:.65rem">${p}</span>`).join('')}
-            ${b.cta_url?`<span class="badge b-gr" style="font-size:.65rem">✓ Link Hotmart</span>`:`<span class="badge b-or" style="font-size:.65rem">⚠ Sem link</span>`}
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
-          <span class="badge ${b.ativo?'b-gr':'b-gy'}" style="font-size:.7rem">${b.ativo?'Ativo':'Inativo'}</span>
-          <button class="btn btn-s" style="padding:4px 10px;font-size:.72rem" onclick="editBanner('${b.id}')">✏️ Editar</button>
-          <button class="btn ${b.ativo?'btn-d':'btn-p'}" style="padding:4px 10px;font-size:.72rem" onclick="toggleBanner('${b.id}',${b.ativo})">${b.ativo?'Pausar':'Ativar'}</button>
-          <button class="btn btn-d" style="padding:4px 10px;font-size:.72rem;background:#fee2e2;color:#991b1b;border-color:#fca5a5" onclick="deleteBanner('${b.id}')">🗑</button>
-        </div>
-      </div>
-      <!-- mini preview -->
-      <div style="margin-top:12px;border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;background:${b.cor_fundo}">
-        <div style="font-size:1.4rem">${b.emoji||'🎯'}</div>
-        <div style="flex:1">
-          <div style="font-size:.8rem;font-weight:700;color:${b.cor_texto||'#1e40af'}">${b.titulo}</div>
-          ${b.descricao?`<div style="font-size:.7rem;color:${b.cor_texto||'#1e40af'};opacity:.8;margin-top:2px">${b.descricao}</div>`:''}
-        </div>
-        <button style="background:${b.cor_btn||'#1a9fd4'};color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">${b.cta_texto||'Ver oferta →'}</button>
-      </div>
-    </div>`).join('');
-}
-
-function openAddBanner(){
-  editBannerId=null;
-  document.getElementById('banner-modal-title').textContent='Novo banner';
-  ['bn-titulo','bn-desc','bn-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('bn-emoji').value='🎯';
-  document.getElementById('bn-cta').value='Ver oferta →';
-  document.getElementById('bn-posicao').value='todas';
-  document.getElementById('bn-cor-fundo').value='#eff6ff';
-  document.getElementById('bn-cor-texto').value='#1e40af';
-  document.getElementById('bn-cor-btn').value='#1a9fd4';
-  document.getElementById('bn-product').value='';
-  updateBannerPreview();
-  document.getElementById('m-banner').classList.add('show');
-}
-
-function editBanner(id){
-  const b=ALL_BANNERS.find(x=>x.id===id);if(!b)return;
-  editBannerId=id;
-  document.getElementById('banner-modal-title').textContent='Editar banner';
-  document.getElementById('bn-titulo').value=b.titulo||'';
-  document.getElementById('bn-desc').value=b.descricao||'';
-  document.getElementById('bn-emoji').value=b.emoji||'🎯';
-  document.getElementById('bn-cta').value=b.cta_texto||'Ver oferta →';
-  document.getElementById('bn-url').value=b.cta_url||'';
-  document.getElementById('bn-posicao').value=b.posicao||'todas';
-  document.getElementById('bn-cor-fundo').value=b.cor_fundo||'#eff6ff';
-  document.getElementById('bn-cor-texto').value=b.cor_texto||'#1e40af';
-  document.getElementById('bn-cor-btn').value=b.cor_btn||'#1a9fd4';
-  document.getElementById('bn-product').value=b.product_id||'';
-  // select planos
-  const sel=document.getElementById('bn-planos');
-  Array.from(sel.options).forEach(o=>o.selected=(b.planos_alvo||[]).includes(o.value));
-  updateBannerPreview();
-  document.getElementById('m-banner').classList.add('show');
-}
-
-function updateBannerPreview(){
-  const t=document.getElementById('bn-titulo')?.value||'Título do banner';
-  const d=document.getElementById('bn-desc')?.value||'Descrição do banner';
-  const cta=document.getElementById('bn-cta')?.value||'Ver oferta →';
-  const e=document.getElementById('bn-emoji')?.value||'🎯';
-  const cf=document.getElementById('bn-cor-fundo')?.value||'#eff6ff';
-  const ct=document.getElementById('bn-cor-texto')?.value||'#1e40af';
-  const cb=document.getElementById('bn-cor-btn')?.value||'#1a9fd4';
-  const p=document.getElementById('banner-preview');if(!p)return;
-  p.style.background=cf;
-  document.getElementById('prev-emoji').textContent=e;
-  document.getElementById('prev-title').textContent=t;document.getElementById('prev-title').style.color=ct;
-  document.getElementById('prev-desc').textContent=d;document.getElementById('prev-desc').style.color=ct;
-  const btn=document.getElementById('prev-btn');btn.textContent=cta;btn.style.background=cb;
-}
-// Live preview
-['bn-titulo','bn-desc','bn-emoji','bn-cta','bn-cor-fundo','bn-cor-texto','bn-cor-btn'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)el.addEventListener('input',updateBannerPreview);
-});
-
-async function saveBanner(){
-  const planosSel=Array.from(document.getElementById('bn-planos').selectedOptions).map(o=>o.value);
-  const data={
-    titulo:document.getElementById('bn-titulo').value.trim(),
-    descricao:document.getElementById('bn-desc').value.trim()||null,
-    emoji:document.getElementById('bn-emoji').value||'🎯',
-    cta_texto:document.getElementById('bn-cta').value||'Ver oferta →',
-    cta_url:document.getElementById('bn-url').value.trim()||null,
-    posicao:document.getElementById('bn-posicao').value||'todas',
-    cor_fundo:document.getElementById('bn-cor-fundo').value||'#eff6ff',
-    cor_texto:document.getElementById('bn-cor-texto').value||'#1e40af',
-    cor_btn:document.getElementById('bn-cor-btn').value||'#1a9fd4',
-    product_id:document.getElementById('bn-product').value||null,
-    planos_alvo:planosSel.length?planosSel:['free'],
-    ativo:true
-  };
-  if(!data.titulo){showToast('Título é obrigatório','error');return;}
-  let error;
-  if(editBannerId){
-    ({error}=await sb.from('banners').update(data).eq('id',editBannerId));
-  } else {
-    ({error}=await sb.from('banners').insert(data));
-  }
-  if(error){showToast('Erro: '+error.message,'error');return;}
-  showToast(editBannerId?'Banner atualizado!':'Banner criado!','success');
-  closeM('m-banner');
-  loadBannersAdmin();
-}
-
-async function toggleBanner(id,ativo){
-  await sb.from('banners').update({ativo:!ativo}).eq('id',id);
-  showToast(ativo?'Banner pausado':'Banner ativado','success');
-  loadBannersAdmin();
-}
-
-async function deleteBanner(id){
-  if(!confirm('Excluir este banner?'))return;
-  await sb.from('banners').delete().eq('id',id);
-  showToast('Banner excluído','success');
-  loadBannersAdmin();
-}
 
 // ── SIMULADOS ──
 async function loadSimulados(){
@@ -2863,6 +1563,88 @@ function planBadge(plan){return`<span class="badge ${PLAN_BADGE[plan]||'b-gy'}">
 function trialBadge(date){const days=Math.ceil((new Date(date)-new Date())/86400000);if(days<0)return'<span class="badge b-re">Expirado</span>';if(days<=2)return`<span class="badge b-or">${days}d</span>`;return`<span class="badge b-bl">${days}d</span>`;}
 function fmtD(d){if(!d)return'—';return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});}
 function closeM(id){document.getElementById(id).classList.remove('show');}
+
+// ── META CAPI TOKEN ──
+function saveMetaCapiToken(){
+  const token=document.getElementById('px-meta-token').value.trim();
+  if(!token){showToast('Cole o Access Token do Meta','error');return;}
+  localStorage.setItem('lq_meta_capi_token',token);
+  const lbl=document.getElementById('capi-status-lbl');
+  if(lbl)lbl.innerHTML='✅ Token salvo localmente. <strong>Para ativar no servidor (iOS/iPhone):</strong> adicione META_ACCESS_TOKEN nos Secrets do Supabase Edge Functions.';
+  showToast('✅ Token CAPI salvo! Configure também nos Secrets do Supabase para capturar iOS.','success');
+}
+
+function loadMetaCapiToken(){
+  const token=localStorage.getItem('lq_meta_capi_token')||'';
+  const inp=document.getElementById('px-meta-token');
+  if(inp&&token){inp.value=token;const lbl=document.getElementById('capi-status-lbl');if(lbl)lbl.innerHTML='✅ Token configurado. Verifique também nos Secrets do Supabase.';}
+}
+
+// ── NOTIFICAÇÕES IN-APP ──
+async function loadNotifs(){
+  const filter=document.getElementById('notif-filter')?.value||'';
+  let q=sb.from('notificacoes').select('*').order('created_at',{ascending:false}).limit(50);
+  if(filter)q=q.eq('destinatario',filter);
+  const{data,error}=await q;
+  const el=document.getElementById('notif-list');if(!el)return;
+  if(error){el.innerHTML='<div style="color:var(--red)">Erro: '+error.message+'</div>';return;}
+  const notifs=data||[];
+  if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">Nenhuma notificação enviada ainda.</div>';return;}
+  el.innerHTML=notifs.map(function(n){
+    const destLabel={todos:'👥 Todos',free:'🆓 Gratuitos',trial:'⏳ Trial',paid:'💳 Pagantes'};
+    const dt=new Date(n.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">'
+      +'<div style="width:36px;height:36px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">'+n.emoji+'</div>'
+      +'<div style="flex:1;min-width:180px">'
+        +'<div style="font-weight:600;font-size:.85rem;margin-bottom:2px">'+escH(n.titulo)+'</div>'
+        +'<div style="font-size:.78rem;color:var(--muted);margin-bottom:4px">'+escH(n.mensagem)+'</div>'
+        +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+          +'<span class="badge b-bl" style="font-size:.65rem">'+(destLabel[n.destinatario]||n.destinatario)+'</span>'
+          +(n.url?'<span class="badge b-gr" style="font-size:.65rem">✓ Link</span>':'')
+          +'<span style="font-size:.68rem;color:var(--dim)">'+dt+'</span>'
+          +'<span style="font-size:.68rem;color:var(--muted)">Lida por '+(n.lida_por?.length||0)+' aluno(s)</span>'
+        +'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+        +'<span class="badge '+(n.ativo?'b-gr':'b-gy')+'" style="font-size:.68rem">'+(n.ativo?'Ativa':'Inativa')+'</span>'
+        +'<button class="btn btn-d" style="padding:3px 8px;font-size:.7rem" onclick="deleteNotif(\''+n.id+'\')">🗑</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function openAddNotif(){closeM('m-notif');document.getElementById('m-notif').classList.add('show');}
+
+async function sendNotif(){
+  const data={
+    emoji:document.getElementById('nf-emoji').value||'🔔',
+    titulo:document.getElementById('nf-title').value.trim(),
+    mensagem:document.getElementById('nf-msg').value.trim(),
+    destinatario:document.getElementById('nf-dest').value||'todos',
+    url:document.getElementById('nf-url').value.trim()||null,
+    url_texto:document.getElementById('nf-url-txt').value.trim()||'Ver mais →',
+    ativo:true
+  };
+  if(!data.titulo||!data.mensagem){showToast('Título e mensagem são obrigatórios','error');return;}
+  const{data:{session}}=await sb.auth.getSession();
+  data.created_by=session?.user?.email||'admin';
+  const{error}=await sb.from('notificacoes').insert(data);
+  if(error){showToast('Erro: '+error.message,'error');return;}
+  showToast('✅ Notificação enviada! Alunos verão no próximo login.','success');
+  closeM('m-notif');
+  ['nf-title','nf-msg','nf-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  loadNotifs();
+}
+
+async function deleteNotif(id){
+  if(!confirm('Excluir notificação?'))return;
+  await sb.from('notificacoes').delete().eq('id',id);
+  showToast('Notificação excluída','success');
+  loadNotifs();
+}
+
+function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
 let toastT;
 function showToast(msg,type='success'){
   const t=document.getElementById('toast');
