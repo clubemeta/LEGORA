@@ -217,7 +217,11 @@ tr:last-child td{border-bottom:none}
 .qf-btn:hover{background:#f9fafb;color:#111}
 .qf-btn svg{width:12px;height:12px;flex-shrink:0}
 /* ── UPSELL MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-bg.show{display:flex}
+.modal-box{background:#fff;border-radius:14px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.modal-title{font-size:.95rem;font-weight:700}
 .modal-bg.show{display:flex}
 .modal{background:#fff;border-radius:16px;padding:32px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative}
 .modal-x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:var(--dim);cursor:pointer;line-height:1}
@@ -766,9 +770,39 @@ tr:last-child td{border-bottom:none}
         <div style="text-align:center;padding:60px;color:var(--dim)"><div style="font-size:.88rem;font-weight:500">Nenhum filtro salvo ainda</div></div>
       </div>
 
-      <!-- MATERIAIS -->
+      <!-- MATERIAIS + MAPAS MENTAIS -->
       <div class="page" id="p-materiais">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px" id="materiais-grid"></div>
+        <!-- Tabs: Materiais / Mapas -->
+        <div style="display:flex;gap:0;border-bottom:2px solid var(--bd);margin-bottom:16px">
+          <button id="mat-tab-mat" onclick="switchMatTab('mat')" style="padding:10px 18px;border:none;background:none;font-size:.84rem;font-weight:700;color:var(--blue);border-bottom:2px solid var(--blue);margin-bottom:-2px;cursor:pointer">📚 Materiais</button>
+          <button id="mat-tab-map" onclick="switchMatTab('map')" style="padding:10px 18px;border:none;background:none;font-size:.84rem;font-weight:600;color:var(--muted);cursor:pointer">🗺️ Mapas Mentais</button>
+        </div>
+
+        <!-- Aba Materiais -->
+        <div id="mat-panel-mat">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px" id="materiais-grid"></div>
+        </div>
+
+        <!-- Aba Mapas Mentais -->
+        <div id="mat-panel-map" style="display:none">
+          <div id="mapas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+            <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--dim)">⏳ Carregando mapas...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEWER DE MAPA MENTAL (tela cheia) -->
+      <div class="page" id="p-mapa-viewer">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <button onclick="navTo('materiais');switchMatTab('map')" style="padding:8px 14px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="15 18 9 12 15 6"/></svg>Voltar
+          </button>
+          <div>
+            <div id="mv-titulo" style="font-size:1rem;font-weight:700"></div>
+            <div id="mv-subtitulo" style="font-size:.75rem;color:var(--muted)"></div>
+          </div>
+        </div>
+        <div id="mv-container" style="background:#fff;border:1px solid var(--bd);border-radius:12px;padding:20px;overflow-x:auto;min-height:400px"></div>
       </div>
 
       <!-- RAIO-X -->
@@ -823,16 +857,166 @@ tr:last-child td{border-bottom:none}
 
 <!-- PROFILE MENU -->
 <div class="prof-menu" id="pmenu">
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu perfil</div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Informações Pessoais</div>
+  <div class="pm-item" onclick="openModalPerfil();closeProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu perfil
+  </div>
+  <div class="pm-item" onclick="openInfoPessoais();closeProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Informações Pessoais
+  </div>
   <div class="pm-div"></div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Fale conosco</div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Ir para o site</div>
+  <div class="pm-item" onclick="openFaleConosco();closeProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Fale conosco
+  </div>
+  <div class="pm-item" onclick="window.open('https://clubemeta.github.io/leisecaquest','_blank');closeProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Ir para o site
+  </div>
   <div class="pm-div"></div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>Configurações</div>
-  <div class="pm-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</div>
+  <div class="pm-item" onclick="openConfigAluno();closeProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M2 12h2M20 12h2"/></svg>Configurações
+  </div>
+  <div class="pm-item" onclick="navTo('notifs');closeProfile()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações <span id="pm-notif-badge" style="background:#dc2626;color:#fff;border-radius:99px;padding:1px 7px;font-size:.6rem;font-weight:700;margin-left:4px;display:none">0</span>
+  </div>
   <div class="pm-div"></div>
-  <div class="pm-item red" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</div>
+  <div class="pm-item red" onclick="doLogout()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair
+  </div>
+</div>
+
+<!-- MODAL: MEU PERFIL -->
+<div class="modal-bg" id="m-perfil" onclick="if(event.target===this)closeModalPerfil()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-hd"><div class="modal-title">Meu Perfil</div><button class="feat-x" onclick="closeModalPerfil()">✕</button></div>
+    <div style="padding:20px">
+      <div style="text-align:center;margin-bottom:20px">
+        <div id="prof-av" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1a9fd4,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;margin:0 auto 10px"></div>
+        <div id="prof-name-lbl" style="font-size:1rem;font-weight:700"></div>
+        <div id="prof-email-lbl" style="font-size:.8rem;color:var(--dim)"></div>
+        <div id="prof-plan-lbl" style="margin-top:6px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:var(--blue-bg);border-radius:8px;padding:12px;text-align:center">
+          <div id="prof-total-lbl" style="font-size:1.4rem;font-weight:800;color:var(--blue)">0</div>
+          <div style="font-size:.72rem;color:var(--muted)">Questões respondidas</div>
+        </div>
+        <div style="background:#dcfce7;border-radius:8px;padding:12px;text-align:center">
+          <div id="prof-acertos-lbl" style="font-size:1.4rem;font-weight:800;color:var(--green)">0%</div>
+          <div style="font-size:.72rem;color:var(--muted)">Taxa de acerto</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button onclick="openInfoPessoais();closeModalPerfil()" style="padding:9px 18px;border:1px solid var(--blue);border-radius:7px;background:var(--blue);color:#fff;font-size:.82rem;font-weight:600;cursor:pointer">Editar perfil</button>
+        <button onclick="closeModalPerfil();navTo('desempenho')" style="padding:9px 18px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer">Ver desempenho</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: INFORMAÇÕES PESSOAIS -->
+<div class="modal-bg" id="m-info-pessoais" onclick="if(event.target===this)document.getElementById('m-info-pessoais').classList.remove('show')">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><div class="modal-title">Informações Pessoais</div><button class="feat-x" onclick="document.getElementById('m-info-pessoais').classList.remove('show')">✕</button></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Nome completo</label>
+        <input id="ip-nome" type="text" placeholder="Seu nome" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none">
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">E-mail</label>
+        <input id="ip-email" type="email" disabled style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;background:#f9fafb;color:var(--muted)">
+        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">O e-mail não pode ser alterado.</div>
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Nova senha (opcional)</label>
+        <input id="ip-pwd" type="password" placeholder="Digite para alterar" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none">
+        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">Mínimo 6 caracteres. Deixe em branco para não alterar.</div>
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Concurso alvo</label>
+        <input id="ip-concurso" type="text" placeholder="Ex: ENAC 2026, TJ-CE" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none">
+      </div>
+      <div id="ip-msg" style="font-size:.8rem;display:none;padding:8px 12px;border-radius:6px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+        <button onclick="document.getElementById('m-info-pessoais').classList.remove('show')" style="padding:9px 18px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;cursor:pointer">Cancelar</button>
+        <button onclick="salvarInfoPessoais()" style="padding:9px 18px;border:none;border-radius:7px;background:var(--blue);color:#fff;font-size:.82rem;font-weight:600;cursor:pointer">Salvar alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FALE CONOSCO -->
+<div class="modal-bg" id="m-fale" onclick="if(event.target===this)document.getElementById('m-fale').classList.remove('show')">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><div class="modal-title">💬 Fale Conosco</div><button class="feat-x" onclick="document.getElementById('m-fale').classList.remove('show')">✕</button></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="background:var(--blue-bg);border-radius:8px;padding:12px 14px;font-size:.82rem;color:#0c4a6e;line-height:1.6">
+        📞 Responderemos em até 24h. Para respostas rápidas, use o WhatsApp.
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Assunto</label>
+        <select id="fc-assunto" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;background:#fff">
+          <option value="duvida">Dúvida sobre o conteúdo</option>
+          <option value="erro">Reportar erro em questão</option>
+          <option value="plano">Informações sobre planos</option>
+          <option value="acesso">Problema de acesso</option>
+          <option value="outro">Outro assunto</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Mensagem</label>
+        <textarea id="fc-msg" rows="4" placeholder="Descreva sua dúvida ou problema..." style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;resize:vertical;font-family:inherit;outline:none"></textarea>
+      </div>
+      <div style="display:flex;gap:8px">
+        <a href="https://wa.me/5599999999999" target="_blank" style="flex:1;padding:10px;background:#25D366;color:#fff;border-radius:7px;font-size:.82rem;font-weight:600;text-align:center;text-decoration:none">💬 WhatsApp</a>
+        <button onclick="enviarFaleConosco()" style="flex:1;padding:10px;background:var(--blue);color:#fff;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;border:none">📧 Enviar e-mail</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIGURAÇÕES DO ALUNO -->
+<div class="modal-bg" id="m-config-aluno" onclick="if(event.target===this)document.getElementById('m-config-aluno').classList.remove('show')">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-hd"><div class="modal-title">⚙️ Configurações</div><button class="feat-x" onclick="document.getElementById('m-config-aluno').classList.remove('show')">✕</button></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:0">
+      <!-- Aparência -->
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:8px;letter-spacing:.05em">Aparência</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd)">
+        <div><div style="font-size:.85rem;font-weight:600">Modo escuro</div><div style="font-size:.72rem;color:var(--muted)">Interface em tons escuros</div></div>
+        <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer">
+          <input type="checkbox" id="cfg-dark" onchange="toggleDarkMode(this.checked)" style="opacity:0;width:0;height:0">
+          <span style="position:absolute;inset:0;background:#ccc;border-radius:12px;transition:.2s"></span>
+          <span id="cfg-dark-ball" style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s"></span>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd)">
+        <div><div style="font-size:.85rem;font-weight:600">Som ao responder</div><div style="font-size:.72rem;color:var(--muted)">Beep de acerto/erro</div></div>
+        <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer">
+          <input type="checkbox" id="cfg-sound" onchange="localStorage.setItem('lq_sound',this.checked)" style="opacity:0;width:0;height:0">
+          <span style="position:absolute;inset:0;background:#ccc;border-radius:12px;transition:.2s"></span>
+          <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s"></span>
+        </label>
+      </div>
+      <!-- Notificações -->
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;letter-spacing:.05em">Notificações</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd)">
+        <div><div style="font-size:.85rem;font-weight:600">Avisos da plataforma</div><div style="font-size:.72rem;color:var(--muted)">Novas retas finais, promoções</div></div>
+        <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer">
+          <input type="checkbox" id="cfg-notif" onchange="localStorage.setItem('lq_notif',this.checked)" checked style="opacity:0;width:0;height:0">
+          <span style="position:absolute;inset:0;background:var(--blue);border-radius:12px;transition:.2s"></span>
+          <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s"></span>
+        </label>
+      </div>
+      <!-- Conta -->
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;letter-spacing:.05em">Conta</div>
+      <button onclick="resetarProgresso()" style="width:100%;padding:11px;border:1px solid #fca5a5;border-radius:7px;background:#fee2e2;color:#dc2626;font-size:.82rem;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left">
+        🗑️ Resetar meu histórico de respostas
+      </button>
+      <button onclick="doLogout();document.getElementById('m-config-aluno').classList.remove('show')" style="width:100%;padding:11px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer;text-align:left">
+        🚪 Sair da conta
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1105,7 +1289,8 @@ const NAV={
   disciplinas:{t:'Disciplinas',acc:'vmq',sub:'disciplinas'},
   rankings:{t:'Rankings',acc:'vmq',sub:'rankings'},
   filtros:{t:'Filtros salvos',acc:'vmq',sub:'filtros'},
-  materiais:{t:'Materiais',sub:'materiais'},
+  materiais:{t:'Materiais & Mapas',sub:'materiais'},
+  'mapa-viewer':{t:'Mapa Mental',sub:'materiais'},
   raiox:{t:'Raio - X da Lei Seca',sub:'raiox'},
   retas:{t:'Retas Finais',sub:'retas'},
 };
@@ -1720,9 +1905,173 @@ function closeModal(){document.getElementById('upsell-modal').classList.remove('
 // ═══════════════════════════════════════════════
 function openDrawer(){document.getElementById('dbg').classList.add('show');document.getElementById('drawer').classList.add('show')}
 function closeDrawer(){document.getElementById('dbg').classList.remove('show');document.getElementById('drawer').classList.remove('show')}
-function toggleProfile(){document.getElementById('pmenu').classList.toggle('show')}
-function closeProfile(){document.getElementById('pmenu').classList.remove('show')}
-document.addEventListener('click',e=>{if(!e.target.closest('#pmenu')&&!e.target.closest('.tb-user')&&!e.target.closest('.sb-user'))closeProfile()});
+function toggleProfile(){document.getElementById('pmenu').classList.toggle('show');}
+function closeProfile(){document.getElementById('pmenu').classList.remove('show');}
+document.addEventListener('click',function(e){if(!e.target.closest('#pmenu')&&!e.target.closest('.tb-user')&&!e.target.closest('.sb-user'))closeProfile();});
+
+// ── MEU PERFIL ──
+function openModalPerfil(){
+  if(!window.PROFILE)return;
+  var p=window.PROFILE;
+  var nm=(p.name||p.email||'A')[0].toUpperCase();
+  document.getElementById('prof-av').textContent=nm;
+  document.getElementById('prof-name-lbl').textContent=p.name||'Sem nome';
+  document.getElementById('prof-email-lbl').textContent=p.email||'';
+  var planLabel={free:'🆓 Plano Gratuito',vmq_vitalicio:'⭐ VMQ Vitalício',premium_anual:'💎 Premium Anual',ilimitada_vitalicia:'♾️ Ilimitada Vitalícia',reta_final:'🎯 Reta Final'};
+  var planColor={free:'#6b7280',vmq_vitalicio:'#1a9fd4',premium_anual:'#ea580c',ilimitada_vitalicia:'#16a34a',reta_final:'#7c3aed'};
+  var plan=p.plan||'free';
+  document.getElementById('prof-plan-lbl').innerHTML='<span style="background:'+((planColor[plan]||'#9ca3af')+'1a')+';color:'+(planColor[plan]||'#9ca3af')+';border-radius:999px;padding:3px 12px;font-size:.75rem;font-weight:700">'+((planLabel[plan])||plan)+'</span>';
+  var stats=window.S&&window.S.stats?window.S.stats:{t:0,c:0,e:0};
+  document.getElementById('prof-total-lbl').textContent=stats.t||0;
+  var pct=stats.t?(Math.round(stats.c/stats.t*100))+'%':'—';
+  document.getElementById('prof-acertos-lbl').textContent=pct;
+  document.getElementById('m-perfil').classList.add('show');
+}
+function closeModalPerfil(){document.getElementById('m-perfil').classList.remove('show');}
+
+// ── INFORMAÇÕES PESSOAIS ──
+function openInfoPessoais(){
+  if(!window.PROFILE)return;
+  document.getElementById('ip-nome').value=window.PROFILE.name||'';
+  document.getElementById('ip-email').value=window.PROFILE.email||'';
+  document.getElementById('ip-concurso').value=window.PROFILE.concurso_alvo||'';
+  document.getElementById('ip-pwd').value='';
+  document.getElementById('ip-msg').style.display='none';
+  document.getElementById('m-info-pessoais').classList.add('show');
+}
+
+async function salvarInfoPessoais(){
+  if(!window.USER||!window.sb)return;
+  var nome=document.getElementById('ip-nome').value.trim();
+  var concurso=document.getElementById('ip-concurso').value.trim();
+  var pwd=document.getElementById('ip-pwd').value;
+  var msgEl=document.getElementById('ip-msg');
+  var updates={name:nome,concurso_alvo:concurso,updated_at:new Date().toISOString()};
+  // Atualizar senha se preenchida
+  if(pwd){
+    if(pwd.length<6){
+      msgEl.style.display='block';msgEl.style.background='#fee2e2';msgEl.style.color='#dc2626';msgEl.textContent='Senha deve ter ao menos 6 caracteres.';return;
+    }
+    var{error:pwdErr}=await window.sb.auth.updateUser({password:pwd});
+    if(pwdErr){msgEl.style.display='block';msgEl.style.background='#fee2e2';msgEl.style.color='#dc2626';msgEl.textContent='Erro ao alterar senha: '+pwdErr.message;return;}
+  }
+  var{error}=await window.sb.from('profiles').update(updates).eq('id',window.USER.id);
+  if(error){msgEl.style.display='block';msgEl.style.background='#fee2e2';msgEl.style.color='#dc2626';msgEl.textContent='Erro: '+error.message;return;}
+  window.PROFILE=Object.assign(window.PROFILE,updates);
+  if(typeof metaSetUser==='function')metaSetUser(window.PROFILE);
+  msgEl.style.display='block';msgEl.style.background='#dcfce7';msgEl.style.color='#16a34a';msgEl.textContent='✅ Perfil atualizado com sucesso!';
+  setTimeout(function(){document.getElementById('m-info-pessoais').classList.remove('show');},1500);
+}
+
+// ── FALE CONOSCO ──
+function openFaleConosco(){document.getElementById('m-fale').classList.add('show');}
+
+async function enviarFaleConosco(){
+  var assunto=document.getElementById('fc-assunto').value;
+  var msg=document.getElementById('fc-msg').value.trim();
+  if(!msg){showFT('⚠️ Escreva uma mensagem');return;}
+  // Salva no banco para o admin ver
+  if(window.sb&&window.USER){
+    await window.sb.from('erros_reportados').insert({
+      user_id:window.USER.id,
+      question_id:null,
+      tipo:assunto,
+      descricao:'[FALE CONOSCO] '+msg,
+      status:'aberto'
+    }).catch(function(){});
+  }
+  showFT('✅ Mensagem enviada! Responderemos em até 24h.');
+  document.getElementById('fc-msg').value='';
+  document.getElementById('m-fale').classList.remove('show');
+}
+
+// ── CONFIGURAÇÕES ──
+function openConfigAluno(){
+  // Carregar preferências salvas
+  var dark=localStorage.getItem('lq_dark')==='true';
+  var sound=localStorage.getItem('lq_sound')!=='false';
+  var notif=localStorage.getItem('lq_notif')!=='false';
+  var cb=document.getElementById('cfg-dark');if(cb)cb.checked=dark;
+  var cb2=document.getElementById('cfg-sound');if(cb2)cb2.checked=sound;
+  var cb3=document.getElementById('cfg-notif');if(cb3)cb3.checked=notif;
+  updateToggleVisual('cfg-dark',dark);
+  document.getElementById('m-config-aluno').classList.add('show');
+}
+
+function updateToggleVisual(id,on){
+  var inp=document.getElementById(id);if(!inp)return;
+  var span=inp.nextElementSibling;
+  var ball=span&&span.nextElementSibling;
+  if(span)span.style.background=on?'var(--blue)':'#ccc';
+  if(ball)ball.style.left=on?'20px':'2px';
+}
+
+function toggleDarkMode(on){
+  localStorage.setItem('lq_dark',on);
+  document.body.classList.toggle('dark-mode',on);
+  updateToggleVisual('cfg-dark',on);
+}
+
+async function resetarProgresso(){
+  if(!window.USER||!window.sb)return;
+  if(!confirm('Tem certeza? Isso vai apagar TODAS suas respostas e estatísticas.'))return;
+  await window.sb.from('user_answers').delete().eq('user_id',window.USER.id);
+  window.S={ans:{},stats:{t:0,u:0,c:0,e:0}};
+  showFT('🗑️ Histórico resetado. A página será recarregada.');
+  setTimeout(function(){location.reload();},1500);
+}
+
+// ── DOWNLOAD PDF COM MARCA D'ÁGUA ──
+async function downloadMaterial(url, titulo){
+  if(!url){showFT('⚠️ Material não disponível');return;}
+  if(!window.PROFILE){showFT('⚠️ Faça login para baixar');return;}
+  // Verificar acesso
+  if(!hasAccess('materiais')&&!window.PROFILE.plan){showUpsell('materiais');return;}
+  try{
+    showFT('⏳ Preparando download com sua marca d\'água...');
+    // Buscar o PDF
+    var resp=await fetch(url);
+    var arrBuf=await resp.arrayBuffer();
+    // Carregar pdf-lib do CDN
+    if(!window.PDFLib){
+      await new Promise(function(resolve){
+        var s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+        s.onload=resolve;document.head.appendChild(s);
+      });
+    }
+    var pdfDoc=await window.PDFLib.PDFDocument.load(arrBuf);
+    var pages=pdfDoc.getPages();
+    var watermarkText=(window.PROFILE.name||window.PROFILE.email||'LeisecaQuest').toUpperCase()+' — MATERIAL EXCLUSIVO';
+    pages.forEach(function(page){
+      var{width,height}=page.getSize();
+      page.drawText(watermarkText,{
+        x:width/2-watermarkText.length*3.5,
+        y:height/2,
+        size:18,
+        opacity:0.12,
+        rotate:window.PDFLib.degrees(-35),
+        color:window.PDFLib.rgb(0.1,0.62,0.83),
+      });
+      page.drawText('LeisecaQuest — '+new Date().toLocaleDateString('pt-BR'),{
+        x:10,y:10,size:8,opacity:0.25,
+        color:window.PDFLib.rgb(0.4,0.4,0.4),
+      });
+    });
+    var pdfBytes=await pdfDoc.save();
+    var blob=new Blob([pdfBytes],{type:'application/pdf'});
+    var link=document.createElement('a');
+    link.href=URL.createObjectURL(blob);
+    link.download=(titulo||'material').replace(/[^a-z0-9]/gi,'_')+'.pdf';
+    link.click();
+    showFT('✅ Download iniciado com marca d\'água!');
+  }catch(err){
+    console.error('Erro watermark:',err);
+    // Fallback: abrir link direto
+    window.open(url,'_blank');
+    showFT('📄 Abrindo material...');
+  }
+}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('mob-overlay').classList.toggle('open')}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('mob-overlay').classList.remove('open')}
 </script>
@@ -2558,85 +2907,146 @@ async function addQToSpecificCad(cadId,cadNome,qId){
 }
 
 // ══════════════════════════════════════════════
-// MAPAS MENTAIS — Carrega do Supabase
+// MAPAS MENTAIS — Viewer interativo
 // ══════════════════════════════════════════════
-async function loadMapasMentais(){
-  var grid=document.getElementById('materiais-grid');
-  if(!grid||!window.sb)return;
+
+function switchMatTab(tab){
+  var isMat=tab==='mat';
+  document.getElementById('mat-panel-mat').style.display=isMat?'':'none';
+  document.getElementById('mat-panel-map').style.display=isMat?'none':'';
+  document.getElementById('mat-tab-mat').style.cssText='padding:10px 18px;border:none;background:none;font-size:.84rem;cursor:pointer;font-weight:'+(isMat?'700':'600')+';color:'+(isMat?'var(--blue)':'var(--muted)')+';border-bottom:2px solid '+(isMat?'var(--blue)':'transparent')+';margin-bottom:-2px';
+  document.getElementById('mat-tab-map').style.cssText='padding:10px 18px;border:none;background:none;font-size:.84rem;cursor:pointer;font-weight:'+(isMat?'600':'700')+';color:'+(isMat?'var(--muted)':'var(--blue)')+';border-bottom:2px solid '+(isMat?'transparent':'var(--blue)')+';margin-bottom:-2px';
+  if(!isMat) loadMapasMentaisGrid();
+}
+
+var MAPAS_CACHE=null;
+
+async function loadMapasMentaisGrid(){
+  if(!window.sb)return;
+  var grid=document.getElementById('mapas-grid');if(!grid)return;
+  if(MAPAS_CACHE&&MAPAS_CACHE.length){renderMapasGrid(MAPAS_CACHE);return;}
   try{
-    var{data}=await window.sb.from('mapas_mentais').select('*').eq('active',true).order('disciplina');
-    if(!data||!data.length)return;
-    var html=data.map(function(m){
-      return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;transition:.15s" onclick="abrirMapa(\''+m.id+'\',\''+escF(m.titulo)+'\',\''+m.url+'\')" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">'
-        +'<div style="width:36px;height:36px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">🗺️</div>'
-        +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+escF(m.titulo)+'</div>'
-        +'<div style="font-size:.7rem;color:var(--muted)">'+escF(m.disciplina||'')+'</div>'
-        +'</div>';
-    }).join('');
-    grid.innerHTML=html;
-  }catch(e){}
+    var{data,error}=await window.sb.from('mapas_mentais').select('id,titulo,lei,disciplina,descricao,emoji,thumbnail_color,gratuito,active').eq('active',true).order('disciplina');
+    if(error)throw error;
+    MAPAS_CACHE=data||[];
+    renderMapasGrid(MAPAS_CACHE);
+  }catch(e){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--dim)">Erro ao carregar mapas.</div>';
+  }
 }
 
-function abrirMapa(id, titulo, url){
-  if(url&&url.startsWith('http')){window.open(url,'_blank');return;}
-  showFT('🗺️ Mapa: '+titulo);
+function renderMapasGrid(mapas){
+  var grid=document.getElementById('mapas-grid');if(!grid)return;
+  if(!mapas.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--dim)"><div style="font-size:2.5rem;margin-bottom:10px">🗺️</div><div>Nenhum mapa disponível ainda.</div></div>';
+    return;
+  }
+  var canPremium=hasAccess('materiais')||window.PROFILE?.plan==='premium_anual'||window.PROFILE?.plan==='ilimitada_vitalicia'||window.PROFILE?.plan==='reta_final';
+  grid.innerHTML=mapas.map(function(m){
+    var livre=m.gratuito||canPremium;
+    var cor=m.thumbnail_color||'#1a9fd4';
+    var emoji=m.emoji||'🗺️';
+    return '<div onclick="'+(livre?'abrirMapaMental("'+m.id+'")':"showUpsell('materiais')")+'" '
+      +'style="background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden;cursor:pointer;transition:.15s;opacity:'+(livre?1:.7)+'" '
+      +'onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,.12)\';this.style.transform=\'translateY(-2px)\'" '
+      +'onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'none\'">'
+        +'<div style="height:80px;background:'+cor+';display:flex;align-items:center;justify-content:center;font-size:2.2rem;position:relative">'
+          +emoji
+          +(livre?'':'<div style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.4);color:#fff;border-radius:4px;padding:2px 6px;font-size:.62rem;font-weight:700">🔒 Premium</div>')
+        +'</div>'
+        +'<div style="padding:12px">'
+          +'<div style="font-size:.82rem;font-weight:700;margin-bottom:3px;line-height:1.3">'+escF(m.titulo)+'</div>'
+          +'<div style="font-size:.7rem;color:'+cor+';font-weight:600;margin-bottom:4px">'+escF(m.disciplina||m.lei||'')+'</div>'
+          +(m.descricao?'<div style="font-size:.7rem;color:var(--dim);line-height:1.4">'+escF(m.descricao.substring(0,60))+'...</div>':'')
+          +(m.gratuito?'<div style="margin-top:6px"><span style="background:#dcfce7;color:#16a34a;border-radius:4px;padding:2px 7px;font-size:.62rem;font-weight:700">✓ Gratuito</span></div>':'')
+        +'</div>'
+      +'</div>';
+  }).join('');
 }
 
-// Substituir renderMateriais para incluir mapas do DB
+async function abrirMapaMental(mapaId){
+  // Buscar dados completos incluindo nos (JSON)
+  if(!window.sb)return;
+  var{data,error}=await window.sb.from('mapas_mentais').select('*').eq('id',mapaId).single();
+  if(error||!data){showFT('Erro ao carregar mapa');return;}
+
+  // Se tiver URL externa, abrir PDF
+  if(data.url){downloadMaterial(data.url,data.titulo);return;}
+
+  // Abrir viewer interno
+  navTo('mapa-viewer');
+  document.getElementById('mv-titulo').textContent=data.titulo;
+  document.getElementById('mv-subtitulo').textContent=(data.disciplina||data.lei||'')+(data.descricao?' — '+data.descricao:'');
+
+  // Renderizar mapa interativo
+  var container=document.getElementById('mv-container');
+  var nos=typeof data.nos==='string'?JSON.parse(data.nos):data.nos;
+  container.innerHTML=renderMindMap(nos);
+}
+
+function renderMindMap(node,depth){
+  if(!node)return '';
+  depth=depth||0;
+  var colors=['#1a9fd4','#7c3aed','#16a34a','#ea580c','#0891b2','#dc2626'];
+  var color=node.color||colors[depth%colors.length];
+  var hasChildren=node.children&&node.children.length>0;
+
+  if(depth===0){
+    // Nó raiz — central
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:0;min-width:600px">'
+      +'<div style="background:'+color+';color:#fff;border-radius:12px;padding:14px 22px;font-size:.95rem;font-weight:800;text-align:center;margin-bottom:20px;box-shadow:0 4px 16px '+color+'44">'+escF(node.label)+'</div>'
+      +(hasChildren?'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;width:100%">'
+        +node.children.map(function(c){return renderMindMap(c,1);}).join('')
+      +'</div>':'')
+    +'</div>';
+  }
+
+  if(depth===1){
+    // Ramos principais
+    return '<div style="background:#fff;border:2px solid '+color+';border-radius:10px;overflow:hidden">'
+      +'<div style="background:'+color+'22;padding:10px 14px;border-bottom:2px solid '+color+';font-size:.84rem;font-weight:700;color:'+color+'">'+escF(node.label)+'</div>'
+      +(hasChildren
+        ?'<div style="padding:8px">'
+          +node.children.map(function(c){return renderMindMap(c,2,color);}).join('')
+        +'</div>'
+        :(node.detail?'<div style="padding:10px 14px;font-size:.77rem;color:#374151;line-height:1.5">'+escF(node.detail)+'</div>':''))
+    +'</div>';
+  }
+
+  // Folhas
+  return '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;margin-bottom:3px" onmouseover="this.style.background=\''+color+'11\'" onmouseout="this.style.background=\'transparent\'">'
+    +'<div style="width:7px;height:7px;border-radius:50%;background:'+(arguments[2]||color)+';margin-top:5px;flex-shrink:0"></div>'
+    +'<div>'
+      +'<div style="font-size:.8rem;font-weight:600;color:#111">'+escF(node.label)+'</div>'
+      +(node.detail?'<div style="font-size:.73rem;color:var(--muted);line-height:1.4;margin-top:1px">'+escF(node.detail)+'</div>':'')
+    +'</div>'
+  +'</div>';
+}
+
+
+// ── renderMateriais — aba Materiais (VMQ + Raio-X) ──
 function renderMateriais(){
   var grid=document.getElementById('materiais-grid');if(!grid)return;
-  grid.innerHTML='<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Carregando materiais...</div>';
-  if(window.sb){
-    // Carregar mapas mentais do Supabase
-    window.sb.from('mapas_mentais').select('*').eq('active',true).order('disciplina').then(function(res){
-      var mapas=res.data||[];
-      var items=[
-        {ico:'📖',name:'Vade Mecum de Questões',sub:'Todas as questões disponíveis',bg:'#dbeafe',free:true,fn:"navTo('questoes')"},
-        {ico:'🎯',name:'Raio-X da Lei Seca',sub:'Artigos mais cobrados',bg:'#ffedd5',free:true,fn:"navTo('raiox')"},
-      ];
-      var html=items.map(function(it){
-        return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;transition:.15s" onclick="'+it.fn+'" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">'
-          +'<div style="width:36px;height:36px;border-radius:8px;background:'+it.bg+';display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">'+it.ico+'</div>'
-          +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+it.name+'</div>'
-          +'<div style="font-size:.7rem;color:var(--muted)">'+it.sub+'</div>'
-          +'</div>';
-      }).join('');
-      // Adicionar mapas do DB
-      if(mapas.length){
-        html+=mapas.slice(0,6).map(function(m){
-          var canView=hasAccess('materiais');
-          var clickFn=canView
-            ?('abrirMapa("'+m.id+'","'+escF(m.titulo||'Mapa')+'","'+m.url+'")')
-            :"showUpsell('materiais')";
-          return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;opacity:'+(canView?1:.6)+'" onclick="'+clickFn+'">'
-            +'<div style="width:36px;height:36px;border-radius:8px;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">🗺️</div>'
-            +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+escF(m.titulo||'Mapa Mental')+(canView?'':' 🔒')+'</div>'
-            +'<div style="font-size:.7rem;color:var(--muted)">'+escF(m.disciplina||'')+'</div>'
-            +'</div>';
-        }).join('');
-      } else {
-        html+='<div style="background:#fff;border:1.5px dashed var(--bd);border-radius:8px;padding:14px;opacity:.5">'
-          +'<div style="width:36px;height:36px;border-radius:8px;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">🗺️</div>'
-          +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">Mapas Mentais</div>'
-          +'<div style="font-size:.7rem;color:var(--muted)">Em breve</div>'
-          +'</div>';
-      }
-      grid.innerHTML=html;
-    }).catch(function(){
-      grid.innerHTML='<div style="text-align:center;padding:30px;color:var(--dim)">Materiais em breve</div>';
-    });
-  }
+  var items=[
+    {ico:'📖',name:'Vade Mecum de Questões',sub:'Todas as questões disponíveis',bg:'#dbeafe',fn:"navTo('questoes')"},
+    {ico:'🎯',name:'Raio-X da Lei Seca',sub:'Artigos mais cobrados',bg:'#ffedd5',fn:"navTo('raiox')"},
+    {ico:'🗺️',name:'Mapas Mentais',sub:'Esquemas visuais por disciplina',bg:'#dcfce7',fn:"switchMatTab('map')"},
+  ];
+  grid.innerHTML=items.map(function(it){
+    return '<div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer;transition:.15s" onclick="'+it.fn+'" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">'
+      +'<div style="width:36px;height:36px;border-radius:8px;background:'+it.bg+';display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:1rem">'+it.ico+'</div>'
+      +'<div style="font-size:.82rem;font-weight:600;margin-bottom:3px">'+it.name+'</div>'
+      +'<div style="font-size:.7rem;color:var(--muted)">'+it.sub+'</div>'
+      +'</div>';
+  }).join('');
 }
 
 // ══════════════════════════════════════════════
 // META PIXEL — Configurar aqui
 // ══════════════════════════════════════════════
-// Para ativar: substitua '' pelo seu Pixel ID (ex: '1234567890')
 (function(){
   var PIXEL_ID=''; // ← COLE SEU PIXEL ID AQUI
-  if(PIXEL_ID){
-    initMetaPixel(PIXEL_ID);
-  }
+  if(PIXEL_ID) initMetaPixel(PIXEL_ID);
 })();
 </script>
 <style>@keyframes cfall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}</style>
