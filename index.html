@@ -478,7 +478,7 @@ tr:last-child td{border-bottom:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <span>Retas Finais</span>
         </div>
-        <div class="sb-link" onclick="alert('Tour em breve!')">
+        <div class="sb-link" onclick="startTour()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <span>Tour explicativo</span>
         </div>
@@ -588,26 +588,26 @@ tr:last-child td{border-bottom:none}
             <select class="vmq-sel"><option value="">SubAssunto</option></select>
           </div>
           <div class="vmq-row">
-            <div class="vmq-inp-wrap"><input class="vmq-inp" placeholder="Ano"><span class="vmq-lk">🔒</span></div>
-            <div class="vmq-inp-wrap"><input class="vmq-inp" placeholder="Cargo"><span class="vmq-lk">🔒</span></div>
-            <div class="vmq-inp-wrap"><input class="vmq-inp" placeholder="Banca"><span class="vmq-lk">🔒</span></div>
-            <div class="vmq-inp-wrap"><input class="vmq-inp" placeholder="Instituição"><span class="vmq-lk">🔒</span></div>
+            <div class="vmq-inp-wrap"><input class="vmq-inp" id="f-ano" placeholder="Ano"><span class="vmq-lk">🔒</span></div>
+            <div class="vmq-inp-wrap"><input class="vmq-inp" id="f-cargo" placeholder="Cargo"><span class="vmq-lk">🔒</span></div>
+            <div class="vmq-inp-wrap"><input class="vmq-inp" id="f-banca" placeholder="Banca"><span class="vmq-lk">🔒</span></div>
+            <div class="vmq-inp-wrap"><input class="vmq-inp" id="f-instit" placeholder="Instituição"><span class="vmq-lk">🔒</span></div>
           </div>
           <div class="vmq-actions">
             <div class="vmq-tabs-area">
               <div class="vmq-tab-row">
                 <span class="vmq-label">Comentários:</span>
-                <div class="chip active">Todos</div>
-                <div class="chip lock">🔒 Meus comentários</div>
-                <div class="chip lock">🔒 Minhas anotações</div>
+                <div class="chip active" id="chip-coment-todos" onclick="chipActive(this);Q_FILTER_COMENT='todos'">Todos</div>
+                <div class="chip lock" id="chip-coment-meus" onclick="chipLoginOrActive(this,'questoes');Q_FILTER_COMENT='meus'">🔒 Meus comentários</div>
+                <div class="chip lock" id="chip-coment-notas" onclick="chipLoginOrActive(this,'questoes');Q_FILTER_COMENT='notas'">🔒 Minhas anotações</div>
               </div>
               <div class="vmq-tab-row">
                 <span class="vmq-label">Questões:</span>
-                <div class="chip active" onclick="chipActive(this)">Todas</div>
-                <div class="chip lock">🔒 Acertei</div>
-                <div class="chip lock">🔒 Errei</div>
-                <div class="chip" onclick="chipActive(this)">Resolvidas</div>
-                <div class="chip lock">🔒 Não resolvidas</div>
+                <div class="chip active" id="chip-q-todas" onclick="chipActive(this);Q_FILTER_Q='todas'">Todas</div>
+                <div class="chip lock" id="chip-q-acertei" onclick="chipLoginOrActive(this,'questoes');Q_FILTER_Q='acertei'">🔒 Acertei</div>
+                <div class="chip lock" id="chip-q-errei" onclick="chipLoginOrActive(this,'questoes');Q_FILTER_Q='errei'">🔒 Errei</div>
+                <div class="chip" id="chip-q-resolvidas" onclick="chipActive(this);Q_FILTER_Q='resolvidas'">Resolvidas</div>
+                <div class="chip lock" id="chip-q-nresolvidas" onclick="chipLoginOrActive(this,'questoes');Q_FILTER_Q='nresolvidas'">🔒 Não resolvidas</div>
               </div>
               <div class="vmq-tab-row">
                 <span class="vmq-label">Modo:</span>
@@ -629,8 +629,8 @@ tr:last-child td{border-bottom:none}
         <div class="vmq-meta">
           <div class="vmq-count"><span id="q-count">—</span> Questões encontradas</div>
           <div class="vmq-meta-r">
-            <button class="sz-btn active">A+</button>
-            <button class="sz-btn">A-</button>
+            <button class="sz-btn" id="btn-aplus" onclick="adjustFont(1)" title="Aumentar fonte">A+</button>
+            <button class="sz-btn" id="btn-aminus" onclick="adjustFont(-1)" title="Diminuir fonte">A-</button>
             <select class="mode-sel"><option>Modo scroll</option></select>
             <select class="qty-sel"><option>Questões a resolver: 50</option><option>Questões a resolver: 20</option><option>Questões a resolver: 10</option></select>
           </div>
@@ -638,12 +638,83 @@ tr:last-child td{border-bottom:none}
         <div id="qlist"><div style="text-align:center;padding:40px;color:var(--dim)">Carregando questões...</div></div>
       </div>
 
-      <!-- POSICAO -->
+      <!-- POSICAO — Ranking Moderno com Pódio -->
       <div class="page" id="p-posicao">
-        <div style="background:#fff;border:1px solid var(--bd);border-radius:8px;overflow:hidden">
-          <div style="padding:12px 16px;background:#f9fafb;border-bottom:1px solid var(--bd);display:grid;grid-template-columns:40px 1fr 120px 80px;gap:8px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)"><div>#</div><div>Usuário</div><div>Questões</div><div style="text-align:right">Acerto</div></div>
+        <!-- Header -->
+        <div style="text-align:center;padding:8px 0 20px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:4px">🏆 RANKING</div>
+          <div style="font-size:1.2rem;font-weight:800;color:#111" id="rank-mes-title">Pódio de Junho</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Atualizado em tempo real · questões respondidas no mês</div>
+        </div>
+
+        <!-- Pódio animado -->
+        <div id="podium-wrap" style="display:flex;align-items:flex-end;justify-content:center;gap:12px;padding:0 8px 24px;max-width:420px;margin:0 auto">
+          <!-- 2º lugar -->
+          <div class="podium-col" id="pod-2" style="flex:1;text-align:center;opacity:0;transform:translateY(20px);transition:all .5s ease .2s">
+            <div class="pod-avatar" style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#94a3b8,#64748b);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;margin:0 auto 6px;border:3px solid #94a3b8"></div>
+            <div class="pod-name" style="font-size:.69rem;font-weight:600;color:#374151;line-height:1.2;margin-bottom:8px;max-width:80px;margin-left:auto;margin-right:auto"></div>
+            <div style="background:linear-gradient(180deg,#94a3b8,#64748b);border-radius:8px 8px 0 0;padding:12px 6px 6px;position:relative">
+              <div style="font-size:1.3rem;position:absolute;top:-16px;left:50%;transform:translateX(-50%)">🥈</div>
+              <div class="pod-score" style="font-size:.72rem;font-weight:800;color:#fff"></div>
+              <div style="font-size:.6rem;color:rgba(255,255,255,.8)">questões</div>
+            </div>
+          </div>
+          <!-- 1º lugar -->
+          <div class="podium-col" id="pod-1" style="flex:1.1;text-align:center;opacity:0;transform:translateY(20px);transition:all .5s ease 0s">
+            <div style="font-size:1.4rem;margin-bottom:2px">👑</div>
+            <div class="pod-avatar" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:#fff;margin:0 auto 6px;border:3px solid #fbbf24;box-shadow:0 0 20px rgba(251,191,36,.4)"></div>
+            <div class="pod-name" style="font-size:.73rem;font-weight:700;color:#111;line-height:1.2;margin-bottom:8px;max-width:90px;margin-left:auto;margin-right:auto"></div>
+            <div style="background:linear-gradient(180deg,#fbbf24,#d97706);border-radius:8px 8px 0 0;padding:20px 6px 6px;position:relative">
+              <div style="font-size:1.5rem;position:absolute;top:-20px;left:50%;transform:translateX(-50%)">🥇</div>
+              <div class="pod-score" style="font-size:.8rem;font-weight:800;color:#fff"></div>
+              <div style="font-size:.6rem;color:rgba(255,255,255,.8)">questões</div>
+            </div>
+          </div>
+          <!-- 3º lugar -->
+          <div class="podium-col" id="pod-3" style="flex:1;text-align:center;opacity:0;transform:translateY(20px);transition:all .5s ease .35s">
+            <div class="pod-avatar" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#c8a96e,#a07740);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#fff;margin:0 auto 6px;border:3px solid #c8a96e"></div>
+            <div class="pod-name" style="font-size:.67rem;font-weight:600;color:#374151;line-height:1.2;margin-bottom:8px;max-width:75px;margin-left:auto;margin-right:auto"></div>
+            <div style="background:linear-gradient(180deg,#c8a96e,#8a6138);border-radius:8px 8px 0 0;padding:8px 6px 6px;position:relative">
+              <div style="font-size:1.2rem;position:absolute;top:-14px;left:50%;transform:translateX(-50%)">🥉</div>
+              <div class="pod-score" style="font-size:.68rem;font-weight:800;color:#fff"></div>
+              <div style="font-size:.6rem;color:rgba(255,255,255,.8)">questões</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sua posição destaque -->
+        <div id="my-rank-card" style="display:none;background:linear-gradient(135deg,var(--blue),#1270a8);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px">
+          <div style="font-size:1.4rem;font-weight:800;color:rgba(255,255,255,.8)" id="my-rank-pos">—</div>
+          <div style="flex:1">
+            <div style="font-size:.8rem;font-weight:700;color:#fff" id="my-rank-name">Você</div>
+            <div style="font-size:.7rem;color:rgba(255,255,255,.75)">Sua posição no ranking</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:1rem;font-weight:800;color:#fff" id="my-rank-score">0</div>
+            <div style="font-size:.65rem;color:rgba(255,255,255,.7)">questões</div>
+          </div>
+        </div>
+
+        <!-- Lista do ranking -->
+        <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden">
+          <div style="padding:10px 16px;background:#f9fafb;border-bottom:1px solid var(--bd);display:grid;grid-template-columns:44px 1fr 80px 70px;gap:8px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)">
+            <div>#</div><div>Usuário</div><div style="text-align:center">Questões</div><div style="text-align:right">% Acerto</div>
+          </div>
           <div id="rank-list"></div>
         </div>
+
+        <!-- Regras acordeão -->
+        <details style="margin-top:12px;background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden">
+          <summary style="padding:12px 16px;font-size:.82rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">
+            📋 Regras do Ranking <span style="color:var(--muted);font-size:.75rem">▾</span>
+          </summary>
+          <div style="padding:12px 16px;font-size:.8rem;color:var(--muted);line-height:1.6;border-top:1px solid var(--bd)">
+            <p>🗓️ <strong>Período:</strong> Questões respondidas no mês atual (1º ao último dia).</p>
+            <p>📊 <strong>Critério de desempate:</strong> Maior percentual de acertos.</p>
+            <p>🔄 <strong>Atualização:</strong> O ranking é atualizado em tempo real a cada resposta.</p>
+            <p>🏆 <strong>Objetivo:</strong> Estimular a consistência nos estudos — quantidade + qualidade.</p>
+          </div>
+        </details>
       </div>
 
       <!-- CADERNOS -->
@@ -992,7 +1063,7 @@ tr:last-child td{border-bottom:none}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd)">
         <div><div style="font-size:.85rem;font-weight:600">Som ao responder</div><div style="font-size:.72rem;color:var(--muted)">Beep de acerto/erro</div></div>
         <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer">
-          <input type="checkbox" id="cfg-sound" onchange="localStorage.setItem('lq_sound',this.checked)" style="opacity:0;width:0;height:0">
+          <input type="checkbox" id="cfg-sound" onchange="localStorage.setItem('lq_sound',this.checked);updateToggleVisual('cfg-sound',this.checked)" style="opacity:0;width:0;height:0">
           <span style="position:absolute;inset:0;background:#ccc;border-radius:12px;transition:.2s"></span>
           <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s"></span>
         </label>
@@ -1002,7 +1073,7 @@ tr:last-child td{border-bottom:none}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd)">
         <div><div style="font-size:.85rem;font-weight:600">Avisos da plataforma</div><div style="font-size:.72rem;color:var(--muted)">Novas retas finais, promoções</div></div>
         <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer">
-          <input type="checkbox" id="cfg-notif" onchange="localStorage.setItem('lq_notif',this.checked)" checked style="opacity:0;width:0;height:0">
+          <input type="checkbox" id="cfg-notif" onchange="localStorage.setItem('lq_notif',this.checked);updateToggleVisual('cfg-notif',this.checked)" checked style="opacity:0;width:0;height:0">
           <span style="position:absolute;inset:0;background:var(--blue);border-radius:12px;transition:.2s"></span>
           <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s"></span>
         </label>
@@ -1030,8 +1101,8 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 // ═══════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════
-let USER = null;
-let PROFILE = null;
+var USER = null;
+var PROFILE = null;
 let S = { ans:{}, stats:{t:0,u:0,c:0,e:0} };
 let chart = null;
 let QUESTIONS = [];
@@ -1105,6 +1176,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     USER = session.user;
     await loadProfile();
     showPlatform();
+    setTimeout(unlockChipsForUser, 800);
   } else if (event === 'SIGNED_OUT') {
     USER = null; PROFILE = null;
     showLogin();
@@ -1274,6 +1346,10 @@ function initPlatform(){
   renderSimulados();
   loadCadernos();
   loadBanners();
+  unlockChipsForUser();
+  // Restaurar fonte salva
+  var savedFont=parseInt(localStorage.getItem('lq_font_idx'));
+  if(!isNaN(savedFont)&&savedFont>=0){FONT_IDX=savedFont;var el=document.getElementById('qlist');if(el)el.style.fontSize=FONT_SIZES[FONT_IDX]+'px';}
   navTo('desempenho');
 }
 
@@ -1390,19 +1466,56 @@ function updateChart(c,t){
 // ═══════════════════════════════════════════════
 // QUESTIONS (VMQ)
 // ═══════════════════════════════════════════════
-let Q_PAGE=0, Q_TOTAL=0, Q_FILTER_LEI='';
+var Q_PAGE=0, Q_TOTAL=0, Q_FILTER_LEI='';
 window.ACTIVE_PRODUCT_FILTER=null;
 
 async function loadQuestions(reset=true){
-  const lei=document.getElementById('f-lei')?.value||'';
-  if(reset){Q_PAGE=0; Q_FILTER_LEI=lei; window.ACTIVE_PRODUCT_FILTER=null;}
+  // Ler todos os filtros do formulário
+  const fLei=document.getElementById('f-lei')?.value||'';
+  const fAno=document.getElementById('f-ano')?.value||'';
+  const fCargo=document.getElementById('f-cargo')?.value||'';
+  const fBanca=document.getElementById('f-banca')?.value||'';
+  const fInstit=document.getElementById('f-instit')?.value||'';
+  const fModo=document.querySelector('.vmq-tab-row:last-of-type .chip.active')?.textContent?.trim()||'Ordenado';
+
+  if(reset){Q_PAGE=0; Q_FILTER_LEI=fLei; window.ACTIVE_PRODUCT_FILTER=null;}
   const from=Q_PAGE*100, to=from+99;
   const el=document.getElementById('qlist');
   if(reset) el.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim)">⏳ Carregando questões...</div>';
 
-  // Construir query — sem filtro de product_id no VMQ geral
-  let query=sb.from('questions').select('*',{count:'exact'}).eq('active',true).range(from,to).order('id',{ascending:true});
-  if(Q_FILTER_LEI) query=query.ilike('lei','%'+Q_FILTER_LEI+'%');
+  // Construir query base
+  let query=sb.from('questions').select('*',{count:'exact'}).eq('active',true);
+
+  // Filtro de produto (quando vem de uma Reta Final)
+  if(window.ACTIVE_PRODUCT_FILTER){
+    query=query.eq('product_id',window.ACTIVE_PRODUCT_FILTER);
+  } else {
+    query=query.is('product_id',null);
+  }
+
+  // Filtros textuais
+  if(Q_FILTER_LEI||fLei) query=query.ilike('lei','%'+(Q_FILTER_LEI||fLei)+'%');
+  if(fAno) query=query.eq('ano',parseInt(fAno));
+  if(fCargo) query=query.ilike('cargo','%'+fCargo+'%');
+  if(fBanca) query=query.ilike('banca','%'+fBanca+'%');
+  if(fInstit) query=query.ilike('concurso','%'+fInstit+'%');
+
+  // Filtro de questões por status (Acertei/Errei/Resolvidas/Não resolvidas)
+  var qFilter=Q_FILTER_Q||'todas';
+  if((qFilter==='acertei'||qFilter==='errei'||qFilter==='resolvidas'||qFilter==='nresolvidas')&&USER&&window.S&&window.S.ans){
+    var answeredIds=Object.keys(window.S.ans);
+    var correctIds=answeredIds.filter(function(id){return window.S.ans[id]&&window.S.ans[id].ok;});
+    var wrongIds=answeredIds.filter(function(id){return window.S.ans[id]&&!window.S.ans[id].ok;});
+    if(qFilter==='acertei'&&correctIds.length) query=query.in('id',correctIds);
+    else if(qFilter==='errei'&&wrongIds.length) query=query.in('id',wrongIds);
+    else if(qFilter==='resolvidas'&&answeredIds.length) query=query.in('id',answeredIds);
+    else if(qFilter==='nresolvidas'&&answeredIds.length) query=query.not('id','in','('+answeredIds.map(function(i){return "'"+i+"'";}).join(',')+')');
+  }
+
+  // Ordenação
+  var aleatorio=fModo==='Aleatório';
+  query=aleatorio?query.order('created_at',{ascending:false}):query.order('id',{ascending:true});
+  query=query.range(from,to);
 
   const {data,error,count}=await query;
   if(error){
@@ -1411,13 +1524,13 @@ async function loadQuestions(reset=true){
     document.getElementById('q-count').textContent='0'; return;
   }
   if(!data||!data.length){
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">Nenhuma questão encontrada.</div>';
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">🔍 Nenhuma questão encontrada com estes filtros.</div>';
     document.getElementById('q-count').textContent='0'; return;
   }
 
   Q_TOTAL=count||data.length;
   if(reset) QUESTIONS=data; else QUESTIONS=[...QUESTIONS,...data];
-  document.getElementById('q-count').textContent=Q_TOTAL;
+  document.getElementById('q-count').textContent=Q_TOTAL.toLocaleString('pt-BR');
 
   const qHTML=data.map((q,i)=>buildQ(q,from+i)).join('');
   const loaded=from+data.length;
@@ -1425,10 +1538,10 @@ async function loadQuestions(reset=true){
   const moreBtn=moreLeft>0
     ?`<div class="load-more-wrap" style="text-align:center;padding:16px">
         <button onclick="Q_PAGE++;loadQuestions(false)" style="padding:9px 24px;border:1.5px solid var(--blue);border-radius:6px;background:#fff;color:var(--blue);font-size:.8rem;font-weight:600;cursor:pointer">
-          Carregar mais ${Math.min(100,moreLeft)} questões (de ${Q_TOTAL} total) →
+          Carregar mais ${Math.min(100,moreLeft)} questões (de ${Q_TOTAL.toLocaleString('pt-BR')} total) →
         </button>
       </div>`
-    :`<div style="text-align:center;padding:12px;font-size:.75rem;color:var(--dim)">✓ Todas as ${Q_TOTAL} questões carregadas</div>`;
+    :`<div style="text-align:center;padding:12px;font-size:.75rem;color:var(--dim)">✓ Todas as ${Q_TOTAL.toLocaleString('pt-BR')} questões carregadas</div>`;
 
   if(reset){
     el.innerHTML=qHTML+moreBtn;
@@ -1466,12 +1579,12 @@ function buildQ(q,idx){
     ${ans===undefined?`<button class="q-answer" onclick="answerQ('${q.id}')">Responder</button>`:''}
     ${fb}
     <div class="q-footer">
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Comentários</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Cadernos</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>Lembrete</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Reportar erro</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Histórico de Respostas</div>
-      <div class="qf-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Estatísticas</div>
+      <div class="qf-btn" onclick="openFeat('comentarios','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Comentários</div>
+      <div class="qf-btn" onclick="addQToCad('${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Cadernos</div>
+      <div class="qf-btn" onclick="openFeat('lembrete','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>Lembrete</div>
+      <div class="qf-btn" onclick="openFeat('erro','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Reportar erro</div>
+      <div class="qf-btn" onclick="openFeat('historico','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Histórico de Respostas</div>
+      <div class="qf-btn" onclick="openFeat('stats','${q.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Estatísticas</div>
     </div>
   </div>`;
 }
@@ -1495,6 +1608,19 @@ async function answerQ(qId){
   S.stats.t++;S.stats.u++;
   if(ok)S.stats.c++;else S.stats.e++;
   updateStats();
+  // Som ao responder
+  if(localStorage.getItem('lq_sound')!=='false'){
+    try{
+      var ac=new(window.AudioContext||window.webkitAudioContext)();
+      var osc=ac.createOscillator();var gain=ac.createGain();
+      osc.connect(gain);gain.connect(ac.destination);
+      osc.frequency.value=ok?880:220;
+      osc.type=ok?'sine':'sawtooth';
+      gain.gain.setValueAtTime(0.3,ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.3);
+      osc.start();osc.stop(ac.currentTime+0.3);
+    }catch(e){}
+  }
   // Save to Supabase
   if(USER){
     await sb.from('user_answers').upsert({user_id:USER.id,question_id:qId,resposta:idx,correta:ok},{onConflict:'user_id,question_id'});
@@ -1510,6 +1636,52 @@ function chipActive(btn){
   btn.closest('.vmq-tab-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
 }
+
+// ── FILTROS — desbloqueio por login ──
+var Q_FILTER_Q='todas', Q_FILTER_COMENT='todos';
+
+function chipLoginOrActive(btn, feature){
+  if(!USER){ showUpsell(feature||'questoes'); return; }
+  chipActive(btn);
+  // remover ícone de cadeado
+  if(btn.textContent.startsWith('🔒')) btn.textContent=btn.textContent.replace('🔒 ','');
+}
+
+function unlockChipsForUser(){
+  if(!USER) return;
+  // Remove lock class e ícone 🔒 de todos os chips que requerem login
+  document.querySelectorAll('.chip.lock').forEach(function(chip){
+    chip.classList.remove('lock');
+    if(chip.textContent.startsWith('🔒 ')) chip.textContent=chip.textContent.replace('🔒 ','');
+  });
+  // Remove cadeados dos inputs
+  document.querySelectorAll('.vmq-lk').forEach(function(lk){ lk.style.display='none'; });
+  // Habilita inputs de filtro
+  document.querySelectorAll('.vmq-inp').forEach(function(inp){ inp.disabled=false; });
+}
+
+// ── FONT SIZE ──
+var FONT_SIZES=[13,14,15,16,18,20];
+var FONT_IDX=1; // default 14px
+
+function adjustFont(dir){
+  FONT_IDX=Math.max(0,Math.min(FONT_SIZES.length-1,FONT_IDX+dir));
+  var sz=FONT_SIZES[FONT_IDX]+'px';
+  document.getElementById('qlist').style.fontSize=sz;
+  var reta=document.getElementById('reta-q-list');if(reta)reta.style.fontSize=sz;
+  var plus=document.getElementById('btn-aplus');
+  var minus=document.getElementById('btn-aminus');
+  if(plus){plus.classList.toggle('active',FONT_IDX>1);}
+  if(minus){minus.classList.toggle('active',FONT_IDX<FONT_SIZES.length-1);}
+  localStorage.setItem('lq_font_idx',FONT_IDX);
+  showFT('Fonte: '+sz);
+}
+
+// Restaurar tamanho de fonte salvo
+(function(){
+  var saved=parseInt(localStorage.getItem('lq_font_idx'));
+  if(!isNaN(saved)&&saved>=0&&saved<FONT_SIZES.length){FONT_IDX=saved;}
+})();
 
 // ═══════════════════════════════════════════════
 // DISCIPLINAS
@@ -1557,21 +1729,97 @@ function discGoTo(p){
 }
 
 // ═══════════════════════════════════════════════
-// RANKING
+// RANKING — Pódio + Lista dinâmica
 // ═══════════════════════════════════════════════
-const MOCK_RANKS=[
-  {n:'Ana Lima',q:3420,p:'94%'},{n:'Carlos Mendes',q:2980,p:'91%'},
-  {n:'Juliana Rocha',q:2745,p:'89%'},{n:'Pedro Alves',q:2510,p:'88%'},
-  {n:'Marina Costa',q:2340,p:'86%'},{n:'Rafael Souza',q:2120,p:'85%'},
-  {n:'Fernanda Dias',q:1980,p:'84%'},{n:'Bruno Ferreira',q:1760,p:'82%'},
-  {n:'Camila Santos',q:1540,p:'81%'},{n:'Diego Oliveira',q:1320,p:'79%'},
-];
-function renderRanking(){
-  const hd=`<div style="display:grid;grid-template-columns:40px 1fr 120px 80px;gap:8px;padding:9px 16px;background:#f9fafb;border-bottom:1px solid var(--bd);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)"><div>#</div><div>Usuário</div><div>Questões</div><div style="text-align:right">Acerto</div></div>`;
-  const rows=MOCK_RANKS.map((r,i)=>`<div style="display:grid;grid-template-columns:40px 1fr 120px 80px;gap:8px;padding:10px 16px;border-bottom:1px solid var(--bd);align-items:center;font-size:.78rem"><div style="font-weight:700;color:${i<3?'#92400e':'var(--muted)'}">${['🥇','🥈','🥉'][i]||i+1}</div><div style="font-weight:500">${r.n}</div><div style="color:var(--blue);font-weight:600">${r.q.toLocaleString('pt-BR')}</div><div style="text-align:right;color:var(--muted)">${r.p}</div></div>`).join('');
-  const html=hd+rows;
-  document.getElementById('rank-list').innerHTML=html;
-  document.getElementById('rank-global').innerHTML=html;
+async function renderRanking(){
+  // Título do mês
+  var meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now=new Date();
+  var mesTitle='Pódio de '+meses[now.getMonth()];
+  var el=document.getElementById('rank-mes-title');
+  if(el) el.textContent=mesTitle;
+
+  // Buscar ranking real do Supabase
+  var rankData=[];
+  if(window.sb){
+    try{
+      // Calcular início do mês
+      var inicio=new Date(now.getFullYear(),now.getMonth(),1).toISOString();
+      var res=await window.sb.rpc('get_ranking_mensal',{p_inicio:inicio}).catch(function(){return{data:null};});
+      if(res&&res.data&&res.data.length>0){
+        rankData=res.data;
+      }
+    }catch(e){}
+  }
+
+  // Fallback com dados mock se não tem dados reais
+  if(!rankData.length){
+    rankData=[
+      {nome:'Ana Lima',total:3420,acertos:3218,pct:94},
+      {nome:'Carlos Mendes',total:2980,acertos:2712,pct:91},
+      {nome:'Juliana Rocha',total:2745,acertos:2443,pct:89},
+      {nome:'Pedro Alves',total:2510,acertos:2209,pct:88},
+      {nome:'Marina Costa',total:2340,acertos:2012,pct:86},
+      {nome:'Rafael Souza',total:2120,acertos:1802,pct:85},
+      {nome:'Fernanda Dias',total:1980,acertos:1663,pct:84},
+      {nome:'Bruno Ferreira',total:1760,acertos:1443,pct:82},
+      {nome:'Camila Santos',total:1540,acertos:1247,pct:81},
+      {nome:'Diego Oliveira',total:1320,acertos:1043,pct:79},
+    ];
+  }
+
+  // Renderizar pódio (top 3)
+  function getInitials(name){ return (name||'?').split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase(); }
+
+  [1,2,3].forEach(function(pos){
+    var d=rankData[pos-1];
+    var pod=document.getElementById('pod-'+pos);
+    if(!pod||!d) return;
+    pod.querySelector('.pod-avatar').textContent=getInitials(d.nome);
+    pod.querySelector('.pod-name').textContent=d.nome.split(' ')[0];
+    pod.querySelector('.pod-score').textContent=(d.total||0).toLocaleString('pt-BR');
+    setTimeout(function(){
+      pod.style.opacity='1';
+      pod.style.transform='translateY(0)';
+    }, pos===1?100:pos===2?300:500);
+  });
+
+  // Minha posição
+  if(window.PROFILE){
+    var myName=PROFILE.name||PROFILE.email;
+    var myPos=rankData.findIndex(function(r){return r.user_id===USER.id;});
+    if(myPos>-1){
+      document.getElementById('my-rank-pos').textContent='#'+(myPos+1);
+      document.getElementById('my-rank-name').textContent=myName;
+      document.getElementById('my-rank-score').textContent=(rankData[myPos].total||0).toLocaleString('pt-BR');
+      document.getElementById('my-rank-card').style.display='flex';
+    }
+  }
+
+  // Lista ranks 4+
+  var listEl=document.getElementById('rank-list');
+  if(!listEl) return;
+  var myId=window.USER?USER.id:null;
+  listEl.innerHTML=rankData.map(function(r,i){
+    var isMe=r.user_id&&r.user_id===myId;
+    var pos=i+1;
+    var medal=pos<=3?['🥇','🥈','🥉'][i]:'';
+    var pct=r.pct||Math.round((r.acertos/r.total)*100)||0;
+    var barColor=pct>80?'#16a34a':pct>60?'#1a9fd4':'#ea580c';
+    return '<div style="display:grid;grid-template-columns:44px 1fr 80px 70px;gap:8px;padding:10px 16px;border-bottom:1px solid var(--bd);align-items:center;font-size:.78rem;background:'+(isMe?'#eff6ff':'transparent')+'">'
+      +'<div style="font-weight:800;color:'+(pos<=3?'#92400e':'var(--muted)')+'">'+( medal||pos)+'</div>'
+      +'<div>'
+        +'<div style="font-weight:'+(isMe?700:500)+';color:'+(isMe?'var(--blue)':'#111')+'">'+r.nome+(isMe?' (você)':'')+'</div>'
+        +'<div style="height:3px;border-radius:2px;background:#e5e7eb;margin-top:3px;overflow:hidden"><div style="height:100%;width:'+Math.min(pct,100)+'%;background:'+barColor+';border-radius:2px;transition:width 1s"></div></div>'
+      +'</div>'
+      +'<div style="text-align:center;font-weight:600;color:var(--blue)">'+(r.total||0).toLocaleString('pt-BR')+'</div>'
+      +'<div style="text-align:right;color:var(--muted);font-weight:500">'+pct+'%</div>'
+      +'</div>';
+  }).join('');
+
+  // Também atualizar rank-global se existir
+  var rg=document.getElementById('rank-global');
+  if(rg) rg.innerHTML=listEl.innerHTML;
 }
 
 // ═══════════════════════════════════════════════
@@ -1995,6 +2243,8 @@ function openConfigAluno(){
   var cb2=document.getElementById('cfg-sound');if(cb2)cb2.checked=sound;
   var cb3=document.getElementById('cfg-notif');if(cb3)cb3.checked=notif;
   updateToggleVisual('cfg-dark',dark);
+  updateToggleVisual('cfg-sound',sound);
+  updateToggleVisual('cfg-notif',notif);
   document.getElementById('m-config-aluno').classList.add('show');
 }
 
@@ -2272,17 +2522,51 @@ input,select,textarea{-webkit-appearance:none;border-radius:6px}
 
 <div class="feat-modal" id="modal-erro" onclick="if(event.target===this)closeFeat('erro')">
   <div class="feat-box">
-    <div class="feat-hd"><span class="feat-title">⚠️ Reportar erro</span><button class="feat-x" onclick="closeFeat('erro')">✕</button></div>
-    <div id="erro-q-ref" style="font-size:.72rem;color:var(--muted);margin-bottom:14px;padding:7px 10px;background:#f9fafb;border-radius:6px"></div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-      <label style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:2px">TIPO DE ERRO</label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.84rem;padding:9px 12px;border:1px solid var(--bd);border-radius:7px;min-height:44px"><input type="radio" name="erro-tipo" value="gabarito" style="accent-color:var(--blue)"> Gabarito incorreto</label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.84rem;padding:9px 12px;border:1px solid var(--bd);border-radius:7px;min-height:44px"><input type="radio" name="erro-tipo" value="enunciado"> Enunciado com erro</label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.84rem;padding:9px 12px;border:1px solid var(--bd);border-radius:7px;min-height:44px"><input type="radio" name="erro-tipo" value="justificativa"> Justificativa incorreta</label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.84rem;padding:9px 12px;border:1px solid var(--bd);border-radius:7px;min-height:44px"><input type="radio" name="erro-tipo" value="dados"> Dados incorretos</label>
+    <div class="feat-hd"><span class="feat-title">⚠️ Reportar erro na questão</span><button class="feat-x" onclick="closeFeat('erro')">✕</button></div>
+    <div id="erro-q-ref" style="font-size:.72rem;color:var(--muted);margin-bottom:14px;padding:8px 11px;background:#fef9f0;border:1px solid #fed7aa;border-radius:7px;line-height:1.5"></div>
+
+    <!-- Tipo de erro -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px">Selecione o tipo de erro *</label>
+      <select id="erro-tipo" style="width:100%;padding:10px 12px;border:1.5px solid var(--bd2);border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;background:#fff;color:#111;min-height:44px">
+        <option value="">— Selecione o tipo de erro —</option>
+        <option value="gabarito">Gabarito incorreto</option>
+        <option value="enunciado">Enunciado com erro ou ambiguidade</option>
+        <option value="justificativa">Justificativa incorreta ou incompleta</option>
+        <option value="desatualizado">Lei/norma desatualizada</option>
+        <option value="typo">Erro de digitação ou formatação</option>
+        <option value="outro">Outro</option>
+      </select>
     </div>
-    <textarea id="erro-desc" placeholder="Descreva o erro (opcional)..." style="width:100%;padding:9px 12px;border:1.5px solid var(--bd2);border-radius:8px;font-size:15px;font-family:inherit;resize:vertical;min-height:70px;outline:none;margin-bottom:12px"></textarea>
-    <button onclick="submitErro()" style="width:100%;padding:11px;background:#ea580c;color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;min-height:44px">Enviar relatório</button>
+
+    <!-- Gabarito oficial -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px">O gabarito da questão está de acordo com o oficial da banca? *</label>
+      <div style="display:flex;gap:8px">
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:.84rem;font-weight:600;padding:10px;border:1.5px solid var(--bd2);border-radius:8px;min-height:44px;transition:.12s" id="lbl-gab-sim">
+          <input type="radio" name="erro-gab" value="sim" onchange="highlightGab(this)" style="accent-color:#16a34a"> ✓ Sim
+        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:.84rem;font-weight:600;padding:10px;border:1.5px solid var(--bd2);border-radius:8px;min-height:44px;transition:.12s" id="lbl-gab-nao">
+          <input type="radio" name="erro-gab" value="nao" onchange="highlightGab(this)" style="accent-color:#dc2626"> ✗ Não
+        </label>
+      </div>
+    </div>
+
+    <!-- Justificativa -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px">Justifique de forma fundamentada *</label>
+      <textarea id="erro-desc" placeholder="Cite o artigo, parágrafo ou súmula que fundamenta a correção..." style="width:100%;padding:10px 12px;border:1.5px solid var(--bd2);border-radius:8px;font-size:.84rem;font-family:inherit;resize:vertical;min-height:90px;outline:none;box-sizing:border-box"></textarea>
+    </div>
+
+    <!-- Aviso DLS-style -->
+    <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:7px;padding:10px 12px;font-size:.73rem;color:#78350f;line-height:1.55;margin-bottom:14px">
+      <strong>Atenção:</strong> Agradecemos imensamente pelo auxílio em aprimorar nossa plataforma. Pedimos que enviem apenas reports efetivamente em desacordo com os gabaritos ou com a legislação vigente. Reports procedentes são analisados e corrigidos em até 48h.
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button onclick="closeFeat('erro')" style="flex:1;padding:11px;background:#fff;border:1.5px solid var(--bd2);border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;color:var(--muted);min-height:44px">Cancelar</button>
+      <button onclick="submitErro()" style="flex:2;padding:11px;background:#ea580c;color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:700;cursor:pointer;min-height:44px">📤 Reportar</button>
+    </div>
   </div>
 </div>
 
@@ -2464,21 +2748,53 @@ function addLembreteBadge(qId){
 }
 
 // ── REPORTAR ERRO ──
+function highlightGab(radio){
+  document.getElementById('lbl-gab-sim').style.borderColor='var(--bd2)';
+  document.getElementById('lbl-gab-sim').style.background='#fff';
+  document.getElementById('lbl-gab-nao').style.borderColor='var(--bd2)';
+  document.getElementById('lbl-gab-nao').style.background='#fff';
+  if(radio.value==='sim'){
+    document.getElementById('lbl-gab-sim').style.borderColor='#16a34a';
+    document.getElementById('lbl-gab-sim').style.background='#f0fdf4';
+  } else {
+    document.getElementById('lbl-gab-nao').style.borderColor='#dc2626';
+    document.getElementById('lbl-gab-nao').style.background='#fef2f2';
+  }
+}
+
 async function submitErro(){
-  var tipo=document.querySelector('input[name="erro-tipo"]:checked')&&document.querySelector('input[name="erro-tipo"]:checked').value;
-  if(!tipo){alert('Selecione o tipo de erro');return;}
+  var tipo=document.getElementById('erro-tipo').value;
+  if(!tipo){showFT('⚠️ Selecione o tipo de erro');return;}
+  var gabRadio=document.querySelector('input[name="erro-gab"]:checked');
   var desc=document.getElementById('erro-desc').value.trim();
+  if(!desc){showFT('⚠️ Escreva a justificativa');document.getElementById('erro-desc').focus();return;}
   var q=window.QUESTIONS&&window.QUESTIONS.find(function(x){return x.id===FEAT_QID;});
-  var erros=JSON.parse(localStorage.getItem('lq_erros')||'[]');
-  erros.push({qId:FEAT_QID,tipo:tipo,desc:desc,lei:q&&q.lei,artigo:q&&q.artigo,data:new Date().toISOString()});
-  localStorage.setItem('lq_erros',JSON.stringify(erros));
+  var payload={
+    question_id:FEAT_QID,
+    tipo_erro:tipo,
+    gabarito_correto:gabRadio?(gabRadio.value==='sim'):null,
+    justificativa:desc,
+    lei:q&&q.lei,
+    artigo:q&&q.artigo,
+    question_text:q&&q.enunciado&&q.enunciado.substring(0,200),
+    status:'pendente',
+    user_id:USER?USER.id:null,
+    user_email:PROFILE?PROFILE.email:null,
+    user_name:PROFILE?PROFILE.name:null,
+    created_at:new Date().toISOString()
+  };
   if(window.sb&&window.USER){
-    await window.sb.from('erros_reportados').insert({question_id:FEAT_QID,user_id:USER.id,tipo:tipo,descricao:desc||null,lei:q&&q.lei,artigo:q&&q.artigo}).catch(function(){});
+    var res=await window.sb.from('erros_reportados').insert(payload).catch(function(e){return{error:e};});
+    if(res&&res.error){showFT('❌ Erro ao enviar. Tente novamente.');return;}
   }
   closeFeat('erro');
-  document.querySelectorAll('input[name="erro-tipo"]').forEach(function(r){r.checked=false;});
+  // Reset form
+  document.getElementById('erro-tipo').value='';
+  document.querySelectorAll('input[name="erro-gab"]').forEach(function(r){r.checked=false;});
+  document.getElementById('lbl-gab-sim').style.cssText='';
+  document.getElementById('lbl-gab-nao').style.cssText='';
   document.getElementById('erro-desc').value='';
-  showFT('✅ Erro reportado! Obrigado.');
+  showFT('✅ Report enviado! Analisaremos em até 48h. Obrigado!');
 }
 
 // ── HISTÓRICO ──
