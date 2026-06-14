@@ -271,6 +271,10 @@ tr:hover td{background:#fafafa}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
         Pixels & Analytics
       </div>
+      <div class="sb-item" id="nav-reports" onclick="goTo('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Reports de Erros <span id="reports-badge" style="background:#dc2626;color:#fff;border-radius:99px;padding:1px 6px;font-size:.6rem;font-weight:700;margin-left:4px;display:none">0</span>
+      </div>
       <div class="sb-item" id="nav-webhook" onclick="goTo('webhook')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
         Webhook Hotmart
@@ -735,6 +739,65 @@ tr:hover td{background:#fafafa}
         </div>
       </div>
 
+      <!-- REPORTS DE ERROS -->
+      <div class="page" id="p-reports">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:1rem;font-weight:700">⚠️ Reports de Erros</div>
+            <div style="font-size:.78rem;color:var(--muted)">Erros reportados pelos alunos nas questões</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="rep-filter-status" onchange="loadReports()" style="padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:.78rem;background:#fff">
+              <option value="">Todos os status</option>
+              <option value="pendente">Pendentes</option>
+              <option value="resolvido">Resolvidos</option>
+              <option value="invalido">Inválidos</option>
+            </select>
+            <button class="btn btn-s" onclick="loadReports()">🔄 Atualizar</button>
+          </div>
+        </div>
+
+        <!-- Stats cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px">
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:1.3rem;font-weight:800;color:#dc2626" id="rep-count-pend">—</div>
+            <div style="font-size:.7rem;color:var(--muted)">Pendentes</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:1.3rem;font-weight:800;color:#16a34a" id="rep-count-res">—</div>
+            <div style="font-size:.7rem;color:var(--muted)">Resolvidos</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:1.3rem;font-weight:800;color:var(--muted)" id="rep-count-inv">—</div>
+            <div style="font-size:.7rem;color:var(--muted)">Inválidos</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:1.3rem;font-weight:800;color:var(--blue)" id="rep-count-total">—</div>
+            <div style="font-size:.7rem;color:var(--muted)">Total</div>
+          </div>
+        </div>
+
+        <!-- Tabela de reports -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:120px">Data</th>
+                <th style="width:100px">Tipo</th>
+                <th>Questão / Justificativa</th>
+                <th style="width:100px">Gabarito OK?</th>
+                <th style="width:90px">Aluno</th>
+                <th style="width:110px">Status</th>
+                <th style="width:100px">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="rep-tbody">
+              <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- WEBHOOK -->
       <div class="page" id="p-webhook">
         <div class="card" style="max-width:700px">
@@ -984,7 +1047,7 @@ function showApp(user){
 async function adminLogout(){await sb.auth.signOut();location.reload();}
 
 // ── NAV ──
-const TITLES={overview:'Dashboard',revenue:'Receita',users:'Todos os alunos',trials:'Em trial',paid:'Pagantes',questions:'Questões',products:'Produtos',simulados:'Simulados',emails:'Templates de E-mail',broadcast:'Disparos',notifications:'Notificações push',pixels:'Pixels & Analytics',webhook:'Webhook Hotmart',settings:'Configurações'};
+const TITLES={overview:'Dashboard',revenue:'Receita',users:'Todos os alunos',trials:'Em trial',paid:'Pagantes',questions:'Questões',products:'Produtos',simulados:'Simulados',emails:'Templates de E-mail',broadcast:'Disparos',notifications:'Notificações push',pixels:'Pixels & Analytics',webhook:'Webhook Hotmart',settings:'Configurações',reports:'⚠️ Reports de Erros'};
 function goTo(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
   document.getElementById('p-'+id).classList.add('show');
@@ -998,10 +1061,89 @@ function goTo(id){
   if(id==='ai') setTimeout(initAIGen,100);
   if(id==='nfe'){setTimeout(()=>{loadNfeConfig();loadInvoices();},100);}
   if(id==='settings') setTimeout(loadApiKeySettings,100);
+  if(id==='reports') setTimeout(loadReports,100);
+}
+
+// ── REPORTS DE ERROS ──
+async function loadReports(){
+  const tbody=document.getElementById('rep-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">⏳ Carregando...</td></tr>';
+  const statusFilter=document.getElementById('rep-filter-status')?.value||'';
+  let query=sb.from('erros_reportados').select('*').order('created_at',{ascending:false}).limit(200);
+  if(statusFilter) query=query.eq('status',statusFilter);
+  const{data,error}=await query;
+  if(error||!data){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:#dc2626">Erro ao carregar</td></tr>';return;}
+
+  // Stats
+  const pend=data.filter(r=>r.status==='pendente').length;
+  const res=data.filter(r=>r.status==='resolvido').length;
+  const inv=data.filter(r=>r.status==='invalido').length;
+  document.getElementById('rep-count-pend').textContent=pend;
+  document.getElementById('rep-count-res').textContent=res;
+  document.getElementById('rep-count-inv').textContent=inv;
+  document.getElementById('rep-count-total').textContent=data.length;
+  // Badge no menu
+  const badge=document.getElementById('reports-badge');
+  if(badge){badge.textContent=pend;badge.style.display=pend>0?'inline':'none';}
+
+  if(!data.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Nenhum report ainda. 🎉</td></tr>';return;}
+
+  const tipoLabels={gabarito:'Gabarito',enunciado:'Enunciado',justificativa:'Justificativa',desatualizado:'Desatualizado',typo:'Digitação',outro:'Outro'};
+  const statusColors={pendente:'#dc2626',resolvido:'#16a34a',invalido:'#6b7280'};
+  const statusEmoji={pendente:'🟡',resolvido:'✅',invalido:'❌'};
+
+  tbody.innerHTML=data.map(r=>{
+    const dt=r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+    const tipo=tipoLabels[r.tipo_erro]||r.tipo_erro||'—';
+    const gabText=r.gabarito_correto===true?'✅ Sim':r.gabarito_correto===false?'❌ Não':'—';
+    const qText=(r.question_text||'').substring(0,80)+'...';
+    const just=(r.justificativa||r.descricao||'—').substring(0,100);
+    const st=r.status||'pendente';
+    const stColor=statusColors[st]||'#6b7280';
+    const stEmoji=statusEmoji[st]||'🟡';
+    return `<tr>
+      <td style="font-size:.72rem;color:var(--muted)">${dt}</td>
+      <td><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 7px;font-size:.68rem;font-weight:600">${tipo}</span></td>
+      <td>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:3px">${r.lei||''} ${r.artigo||''}</div>
+        <div style="font-size:.78rem;font-weight:500;color:#111;margin-bottom:3px">${qText}</div>
+        <div style="font-size:.73rem;color:var(--muted);font-style:italic">"${just}"</div>
+      </td>
+      <td style="text-align:center;font-size:.82rem">${gabText}</td>
+      <td style="font-size:.72rem;color:var(--muted)">${r.user_name||r.user_email||'Anônimo'}</td>
+      <td><span style="color:${stColor};font-size:.75rem;font-weight:700">${stEmoji} ${st.charAt(0).toUpperCase()+st.slice(1)}</span></td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${st==='pendente'?`<button class="btn btn-s" onclick="setRepStatus('${r.id}','resolvido')" style="font-size:.68rem;padding:4px 8px">✅ Resolver</button>
+          <button class="btn btn-s" onclick="setRepStatus('${r.id}','invalido')" style="font-size:.68rem;padding:4px 8px;color:#6b7280">❌ Inválido</button>`:''}
+          ${r.question_id?`<button class="btn btn-s" onclick="viewReportQuestion('${r.question_id}')" style="font-size:.68rem;padding:4px 8px">🔍 Ver questão</button>`:''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function setRepStatus(id,status){
+  await sb.from('erros_reportados').update({status,respondido_em:new Date().toISOString()}).eq('id',id);
+  loadReports();
+  showToast('Status atualizado: '+status,'success');
+}
+
+async function viewReportQuestion(qId){
+  const{data}=await sb.from('questions').select('*').eq('id',qId).single();
+  if(!data){showToast('Questão não encontrada','error');return;}
+  alert(`QUESTÃO:\n\n${data.enunciado}\n\nGABARITO: ${data.gabarito===0?'CERTO (0)':'ERRADO (1)'}\n\nJUSTIFICATIVA:\n${data.justificativa||'—'}\n\nLEI: ${data.lei} — ${data.artigo}`);
 }
 
 // ── LOAD ALL ──
-function loadAll(){loadOverview();loadUsers();loadTrials();loadPaid();loadQuestions();loadProducts();loadSimulados();loadRevenueData();}
+function loadAll(){loadOverview();loadUsers();loadTrials();loadPaid();loadQuestions();loadProducts();loadSimulados();loadRevenueData();loadReportsBadge();}
+
+async function loadReportsBadge(){
+  const{count}=await sb.from('erros_reportados').select('*',{count:'exact',head:true}).eq('status','pendente');
+  const badge=document.getElementById('reports-badge');
+  if(badge&&count>0){badge.textContent=count;badge.style.display='inline';}
+}
 
 // ── DATA ──
 let ALL_USERS=[],ALL_Q=[],ALL_PROD=[];
