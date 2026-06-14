@@ -957,27 +957,44 @@ tr:last-child td{border-bottom:none}
 <!-- MODAL: MEU PERFIL -->
 <div class="modal-bg" id="m-perfil" onclick="if(event.target===this)closeModalPerfil()">
   <div class="modal-box" style="max-width:480px">
-    <div class="modal-hd"><div class="modal-title">Meu Perfil</div><button class="feat-x" onclick="closeModalPerfil()">✕</button></div>
+    <div class="modal-hd"><div class="modal-title">👤 Meu Perfil</div><button class="feat-x" onclick="closeModalPerfil()">✕</button></div>
     <div style="padding:20px">
+      <!-- Avatar + nome -->
       <div style="text-align:center;margin-bottom:20px">
-        <div id="prof-av" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1a9fd4,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;margin:0 auto 10px"></div>
+        <div id="prof-av" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1a9fd4,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;margin:0 auto 10px;cursor:pointer" onclick="openInfoPessoais();closeModalPerfil()" title="Clique para editar"></div>
         <div id="prof-name-lbl" style="font-size:1rem;font-weight:700"></div>
         <div id="prof-email-lbl" style="font-size:.8rem;color:var(--dim)"></div>
-        <div id="prof-plan-lbl" style="margin-top:6px"></div>
+        <div id="prof-concurso-lbl" style="font-size:.75rem;color:var(--blue);font-weight:600;margin-top:3px"></div>
+        <div id="prof-plan-lbl" style="margin-top:8px"></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
         <div style="background:var(--blue-bg);border-radius:8px;padding:12px;text-align:center">
           <div id="prof-total-lbl" style="font-size:1.4rem;font-weight:800;color:var(--blue)">0</div>
-          <div style="font-size:.72rem;color:var(--muted)">Questões respondidas</div>
+          <div style="font-size:.68rem;color:var(--muted)">Respondidas</div>
         </div>
         <div style="background:#dcfce7;border-radius:8px;padding:12px;text-align:center">
-          <div id="prof-acertos-lbl" style="font-size:1.4rem;font-weight:800;color:var(--green)">0%</div>
-          <div style="font-size:.72rem;color:var(--muted)">Taxa de acerto</div>
+          <div id="prof-acertos-lbl" style="font-size:1.4rem;font-weight:800;color:#16a34a">0%</div>
+          <div style="font-size:.68rem;color:var(--muted)">Acerto</div>
+        </div>
+        <div style="background:#fef3c7;border-radius:8px;padding:12px;text-align:center">
+          <div id="prof-cadernos-lbl" style="font-size:1.4rem;font-weight:800;color:#d97706">0</div>
+          <div style="font-size:.68rem;color:var(--muted)">Cadernos</div>
         </div>
       </div>
+
+      <!-- Info do plano -->
+      <div id="prof-plan-detail" style="border:1px solid var(--bd);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.8rem">
+        <div style="font-weight:700;margin-bottom:4px">📋 Detalhes do plano</div>
+        <div id="prof-plan-info" style="color:var(--muted);line-height:1.7"></div>
+      </div>
+
+      <!-- Botões -->
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-        <button onclick="openInfoPessoais();closeModalPerfil()" style="padding:9px 18px;border:1px solid var(--blue);border-radius:7px;background:var(--blue);color:#fff;font-size:.82rem;font-weight:600;cursor:pointer">Editar perfil</button>
-        <button onclick="closeModalPerfil();navTo('desempenho')" style="padding:9px 18px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer">Ver desempenho</button>
+        <button onclick="openInfoPessoais();closeModalPerfil()" style="padding:9px 16px;border:none;border-radius:7px;background:var(--blue);color:#fff;font-size:.82rem;font-weight:600;cursor:pointer">✏️ Editar perfil</button>
+        <button onclick="closeModalPerfil();navTo('desempenho')" style="padding:9px 16px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer">📊 Meu desempenho</button>
+        <button onclick="closeModalPerfil();navTo('cadernos')" style="padding:9px 16px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer">📚 Cadernos</button>
       </div>
     </div>
   </div>
@@ -986,30 +1003,35 @@ tr:last-child td{border-bottom:none}
 <!-- MODAL: INFORMAÇÕES PESSOAIS -->
 <div class="modal-bg" id="m-info-pessoais" onclick="if(event.target===this)document.getElementById('m-info-pessoais').classList.remove('show')">
   <div class="modal-box" style="max-width:460px">
-    <div class="modal-hd"><div class="modal-title">Informações Pessoais</div><button class="feat-x" onclick="document.getElementById('m-info-pessoais').classList.remove('show')">✕</button></div>
+    <div class="modal-hd"><div class="modal-title">✏️ Editar Perfil</div><button class="feat-x" onclick="document.getElementById('m-info-pessoais').classList.remove('show')">✕</button></div>
     <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
       <div>
-        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Nome completo</label>
-        <input id="ip-nome" type="text" placeholder="Seu nome" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none">
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Nome completo *</label>
+        <input id="ip-nome" type="text" placeholder="Seu nome completo" style="width:100%;padding:10px 13px;border:1.5px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd)'">
       </div>
       <div>
         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">E-mail</label>
-        <input id="ip-email" type="email" disabled style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;background:#f9fafb;color:var(--muted)">
-        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">O e-mail não pode ser alterado.</div>
+        <input id="ip-email" type="email" disabled style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;background:#f9fafb;color:var(--muted);box-sizing:border-box">
+        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">O e-mail não pode ser alterado por aqui.</div>
       </div>
       <div>
-        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Nova senha (opcional)</label>
-        <input id="ip-pwd" type="password" placeholder="Digite para alterar" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none">
-        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">Mínimo 6 caracteres. Deixe em branco para não alterar.</div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">WhatsApp / Telefone</label>
+        <input id="ip-phone" type="tel" placeholder="(11) 99999-9999" style="width:100%;padding:10px 13px;border:1.5px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd)'">
       </div>
       <div>
         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Concurso alvo</label>
-        <input id="ip-concurso" type="text" placeholder="Ex: ENAC 2026, TJ-CE" style="width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none">
+        <input id="ip-concurso" type="text" placeholder="Ex: ENAC 2026, TJ-CE, AGU 2026" style="width:100%;padding:10px 13px;border:1.5px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd)'">
+        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">Aparece no seu perfil e personaliza as sugestões.</div>
+      </div>
+      <div>
+        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:block;margin-bottom:4px">Nova senha (opcional)</label>
+        <input id="ip-pwd" type="password" placeholder="Deixe em branco para não alterar" style="width:100%;padding:10px 13px;border:1.5px solid var(--bd);border-radius:7px;font-size:.88rem;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd)'">
+        <div style="font-size:.7rem;color:var(--dim);margin-top:3px">Mínimo 6 caracteres.</div>
       </div>
       <div id="ip-msg" style="font-size:.8rem;display:none;padding:8px 12px;border-radius:6px"></div>
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
-        <button onclick="document.getElementById('m-info-pessoais').classList.remove('show')" style="padding:9px 18px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;cursor:pointer">Cancelar</button>
-        <button onclick="salvarInfoPessoais()" style="padding:9px 18px;border:none;border-radius:7px;background:var(--blue);color:#fff;font-size:.82rem;font-weight:600;cursor:pointer">Salvar alterações</button>
+        <button onclick="document.getElementById('m-info-pessoais').classList.remove('show')" style="padding:10px 18px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.82rem;cursor:pointer;color:var(--muted)">Cancelar</button>
+        <button id="ip-save-btn" onclick="salvarInfoPessoais()" style="padding:10px 18px;border:none;border-radius:7px;background:var(--blue);color:#fff;font-size:.82rem;font-weight:700;cursor:pointer">✓ Salvar alterações</button>
       </div>
     </div>
   </div>
@@ -1244,25 +1266,38 @@ async function doRegister(){
   const name=document.getElementById('r-name').value.trim();
   const email=document.getElementById('r-email').value.trim();
   const pwd=document.getElementById('r-pwd').value;
-  if(!name||!email||!pwd){showAuthError('Preencha todos os campos.');return;}
-  if(pwd.length<6){showAuthError('Senha deve ter ao menos 6 caracteres.');return;}
+  if(!name){showAuthError('Digite seu nome completo.');document.getElementById('r-name').focus();return;}
+  if(!email){showAuthError('Digite seu e-mail.');document.getElementById('r-email').focus();return;}
+  if(!pwd||pwd.length<6){showAuthError('Senha deve ter ao menos 6 caracteres.');document.getElementById('r-pwd').focus();return;}
   const btn=document.getElementById('btn-register');
-  btn.disabled=true;btn.textContent='Criando conta...';
+  btn.disabled=true;btn.textContent='Criando sua conta...';
   clearAuthMessages();
-  const {error}=await sb.auth.signUp({email,password:pwd,options:{data:{name}}});
+  const{error,data}=await sb.auth.signUp({email,password:pwd,options:{data:{name},emailRedirectTo:window.location.href.split('?')[0]}});
   btn.disabled=false;btn.textContent='Criar conta grátis';
-  if(error){showAuthError(error.message);return;}
-  // Meta: cadastro = evento de alta qualidade (quase compra)
-  if(typeof metaEvent==='function'){
-    window._metaUserEmail=email;
-    window._metaUserName=name;
-    metaEvent('CompleteRegistration',{
-      content_name:'Cadastro LeisecaQuest',
-      currency:'BRL',
-      value:0,
-    });
+  if(error){showAuthError(error.message==='User already registered'?'Este e-mail já possui uma conta. Faça login.':error.message);return;}
+  // Se confirmação de email está desativada, já faz login direto
+  if(data?.session){
+    USER=data.session.user;
+    await loadProfile();
+    showPlatform();
+    setTimeout(unlockChipsForUser,800);
+    showFT('🎉 Bem-vindo ao LeisecaQuest, '+name+'!');
+    return;
   }
-  showAuthSuccess('Conta criada! Verifique seu email para confirmar o acesso.');
+  // Confirmação ativada — mostrar sucesso
+  showAuthSuccess('');
+  document.getElementById('form-register').innerHTML='<div style="text-align:center;padding:20px">'
+    +'<div style="font-size:2.5rem;margin-bottom:12px">🎉</div>'
+    +'<div style="font-size:1rem;font-weight:800;color:#111;margin-bottom:8px">Conta criada com sucesso!</div>'
+    +'<div style="font-size:.84rem;color:#6b7280;line-height:1.6;margin-bottom:16px">Enviamos um e-mail de confirmação para <strong>'+escF(email)+'</strong>.<br>Clique no link do e-mail para ativar sua conta.</div>'
+    +'<div style="background:#fef9c3;border:1px solid #fef08a;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#713f12;margin-bottom:16px">📌 Não recebeu? Verifique a pasta de <strong>Spam/Lixo eletrônico</strong>.</div>'
+    +'<button onclick="switchAuth(\'login\')" style="padding:10px 24px;background:#1a9fd4;color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:700;cursor:pointer">Ir para login →</button>'
+    +'</div>';
+  // Meta: cadastro
+  if(typeof metaEvent==='function'){
+    window._metaUserEmail=email;window._metaUserName=name;
+    metaEvent('CompleteRegistration',{content_name:'Cadastro LeisecaQuest',currency:'BRL',value:0});
+  }
 }
 
 async function doLogout(){
@@ -1271,9 +1306,52 @@ async function doLogout(){
 }
 
 function showForgot(){
-  const email=prompt('Digite seu email para redefinir a senha:');
-  if(email){
-    sb.auth.resetPasswordForEmail(email).then(()=>alert('E-mail enviado! Verifique sua caixa de entrada.'));
+  // Criar modal bonito inline
+  var existing=document.getElementById('modal-forgot');
+  if(existing) existing.remove();
+  var email=document.getElementById('l-email')?.value||'';
+  var modal=document.createElement('div');
+  modal.id='modal-forgot';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML='<div style="background:#fff;border-radius:14px;padding:28px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    +'<div style="text-align:center;margin-bottom:20px">'
+    +'<div style="font-size:2rem;margin-bottom:8px">🔑</div>'
+    +'<div style="font-size:1rem;font-weight:800;color:#111;margin-bottom:4px">Redefinir senha</div>'
+    +'<div style="font-size:.82rem;color:#6b7280;line-height:1.5">Digite seu e-mail e enviaremos um link para criar uma nova senha.</div>'
+    +'</div>'
+    +'<input id="forgot-email" type="email" value="'+escF(email)+'" placeholder="seu@email.com" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.88rem;outline:none;margin-bottom:12px;box-sizing:border-box" onfocus="this.style.borderColor=\'#1a9fd4\'" onblur="this.style.borderColor=\'#e5e7eb\'" onkeydown="if(event.key===\'Enter\')sendForgot()">'
+    +'<div id="forgot-msg" style="font-size:.78rem;margin-bottom:10px;display:none;padding:8px 12px;border-radius:6px"></div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="document.getElementById(\'modal-forgot\').remove()" style="flex:1;padding:10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:.84rem;cursor:pointer;color:#6b7280">Cancelar</button>'
+    +'<button id="forgot-btn" onclick="sendForgot()" style="flex:2;padding:10px;background:#1a9fd4;color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:700;cursor:pointer">Enviar link</button>'
+    +'</div>'
+    +'</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+  setTimeout(function(){document.getElementById('forgot-email')?.focus();},50);
+}
+
+async function sendForgot(){
+  var email=(document.getElementById('forgot-email')?.value||'').trim();
+  var msgEl=document.getElementById('forgot-msg');
+  var btn=document.getElementById('forgot-btn');
+  if(!email){
+    msgEl.style.cssText='display:block;background:#fef2f2;color:#dc2626;padding:8px 12px;border-radius:6px;margin-bottom:10px';
+    msgEl.textContent='⚠️ Digite seu e-mail';return;
+  }
+  btn.disabled=true;btn.textContent='Enviando...';
+  // URL de redirect após redefinir senha (volta para a plataforma)
+  var redirectUrl=window.location.href.split('?')[0];
+  var{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl});
+  btn.disabled=false;btn.textContent='Enviar link';
+  if(error){
+    msgEl.style.cssText='display:block;background:#fef2f2;color:#dc2626;padding:8px 12px;border-radius:6px;margin-bottom:10px';
+    msgEl.textContent='❌ '+error.message;
+  } else {
+    msgEl.style.cssText='display:block;background:#f0fdf4;color:#16a34a;padding:8px 12px;border-radius:6px;margin-bottom:10px';
+    msgEl.textContent='✅ Link enviado! Verifique sua caixa de entrada (e o spam).';
+    btn.textContent='✅ Enviado!';
+    setTimeout(function(){document.getElementById('modal-forgot')?.remove();},3000);
   }
 }
 
@@ -2161,18 +2239,43 @@ document.addEventListener('click',function(e){if(!e.target.closest('#pmenu')&&!e
 function openModalPerfil(){
   if(!window.PROFILE)return;
   var p=window.PROFILE;
-  var nm=(p.name||p.email||'A')[0].toUpperCase();
+  var nm=(p.name||p.email||'?').split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
   document.getElementById('prof-av').textContent=nm;
   document.getElementById('prof-name-lbl').textContent=p.name||'Sem nome';
   document.getElementById('prof-email-lbl').textContent=p.email||'';
-  var planLabel={free:'🆓 Plano Gratuito',vmq_vitalicio:'⭐ VMQ Vitalício',premium_anual:'💎 Premium Anual',ilimitada_vitalicia:'♾️ Ilimitada Vitalícia',reta_final:'🎯 Reta Final'};
-  var planColor={free:'#6b7280',vmq_vitalicio:'#1a9fd4',premium_anual:'#ea580c',ilimitada_vitalicia:'#16a34a',reta_final:'#7c3aed'};
+
+  // Concurso alvo
+  var concEl=document.getElementById('prof-concurso-lbl');
+  if(concEl) concEl.textContent=p.concurso_alvo?'🎯 '+p.concurso_alvo:'';
+
+  // Badge do plano
+  var planLabel={free:'🆓 Plano Gratuito',vmq_vitalicio:'⭐ VMQ Vitalício',premium_anual:'💎 Premium Anual',premium_vitalicio:'💎 Premium Vitalício',ilimitada_anual:'♾️ Ilimitada Anual',ilimitada_vitalicia:'♾️ Ilimitada Vitalícia',reta_final:'🎯 Reta Final'};
+  var planColor={free:'#6b7280',vmq_vitalicio:'#1a9fd4',premium_anual:'#ea580c',premium_vitalicio:'#ea580c',ilimitada_anual:'#16a34a',ilimitada_vitalicia:'#16a34a',reta_final:'#7c3aed'};
   var plan=p.plan||'free';
-  document.getElementById('prof-plan-lbl').innerHTML='<span style="background:'+((planColor[plan]||'#9ca3af')+'1a')+';color:'+(planColor[plan]||'#9ca3af')+';border-radius:999px;padding:3px 12px;font-size:.75rem;font-weight:700">'+((planLabel[plan])||plan)+'</span>';
+  document.getElementById('prof-plan-lbl').innerHTML='<span style="background:'+((planColor[plan]||'#9ca3af')+'22')+';color:'+(planColor[plan]||'#9ca3af')+';border-radius:999px;padding:4px 14px;font-size:.76rem;font-weight:700">'+(planLabel[plan]||plan)+'</span>';
+
+  // Stats
   var stats=window.S&&window.S.stats?window.S.stats:{t:0,c:0,e:0};
-  document.getElementById('prof-total-lbl').textContent=stats.t||0;
-  var pct=stats.t?(Math.round(stats.c/stats.t*100))+'%':'—';
+  document.getElementById('prof-total-lbl').textContent=(stats.t||0).toLocaleString('pt-BR');
+  var pct=stats.t?Math.round(stats.c/stats.t*100)+'%':'—';
   document.getElementById('prof-acertos-lbl').textContent=pct;
+  var cadEl=document.getElementById('prof-cadernos-lbl');
+  if(cadEl) cadEl.textContent=(window.ALL_CADS||[]).length;
+
+  // Detalhes do plano
+  var planInfo=document.getElementById('prof-plan-info');
+  if(planInfo){
+    var lines=[];
+    lines.push('Plano atual: <strong>'+(planLabel[plan]||plan)+'</strong>');
+    if(p.plan_expires_at) lines.push('Expira em: <strong>'+new Date(p.plan_expires_at).toLocaleDateString('pt-BR')+'</strong>');
+    if(p.trial_expires_at&&p.plan==='free'){
+      var trialDays=Math.ceil((new Date(p.trial_expires_at)-new Date())/(1000*60*60*24));
+      if(trialDays>0) lines.push('Trial: <strong>'+trialDays+' dias restantes</strong>');
+    }
+    lines.push('Membro desde: <strong>'+new Date(p.created_at||Date.now()).toLocaleDateString('pt-BR')+'</strong>');
+    planInfo.innerHTML=lines.join('<br>');
+  }
+
   document.getElementById('m-perfil').classList.add('show');
 }
 function closeModalPerfil(){document.getElementById('m-perfil').classList.remove('show');}
@@ -2180,35 +2283,76 @@ function closeModalPerfil(){document.getElementById('m-perfil').classList.remove
 // ── INFORMAÇÕES PESSOAIS ──
 function openInfoPessoais(){
   if(!window.PROFILE)return;
-  document.getElementById('ip-nome').value=window.PROFILE.name||'';
-  document.getElementById('ip-email').value=window.PROFILE.email||'';
-  document.getElementById('ip-concurso').value=window.PROFILE.concurso_alvo||'';
+  var p=window.PROFILE;
+  document.getElementById('ip-nome').value=p.name||'';
+  document.getElementById('ip-email').value=p.email||'';
+  document.getElementById('ip-phone').value=p.phone||'';
+  document.getElementById('ip-concurso').value=p.concurso_alvo||'';
   document.getElementById('ip-pwd').value='';
-  document.getElementById('ip-msg').style.display='none';
+  var msgEl=document.getElementById('ip-msg');
+  if(msgEl) msgEl.style.display='none';
   document.getElementById('m-info-pessoais').classList.add('show');
+  setTimeout(function(){document.getElementById('ip-nome')?.focus();},50);
 }
 
 async function salvarInfoPessoais(){
-  if(!window.USER||!window.sb)return;
-  var nome=document.getElementById('ip-nome').value.trim();
-  var concurso=document.getElementById('ip-concurso').value.trim();
-  var pwd=document.getElementById('ip-pwd').value;
+  var ok=await ensureUser();
+  if(!ok) return;
+  var nome=(document.getElementById('ip-nome')?.value||'').trim();
+  var phone=(document.getElementById('ip-phone')?.value||'').trim();
+  var concurso=(document.getElementById('ip-concurso')?.value||'').trim();
+  var pwd=document.getElementById('ip-pwd')?.value||'';
   var msgEl=document.getElementById('ip-msg');
-  var updates={name:nome,concurso_alvo:concurso,updated_at:new Date().toISOString()};
+  var btn=document.getElementById('ip-save-btn');
+
+  if(!nome){
+    msgEl.style.cssText='display:block;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:6px';
+    msgEl.textContent='⚠️ O nome não pode ficar em branco.';
+    return;
+  }
+
+  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+
   // Atualizar senha se preenchida
   if(pwd){
     if(pwd.length<6){
-      msgEl.style.display='block';msgEl.style.background='#fee2e2';msgEl.style.color='#dc2626';msgEl.textContent='Senha deve ter ao menos 6 caracteres.';return;
+      msgEl.style.cssText='display:block;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:6px';
+      msgEl.textContent='⚠️ Senha deve ter ao menos 6 caracteres.';
+      if(btn){btn.disabled=false;btn.textContent='✓ Salvar alterações';}
+      return;
     }
-    var{error:pwdErr}=await window.sb.auth.updateUser({password:pwd});
-    if(pwdErr){msgEl.style.display='block';msgEl.style.background='#fee2e2';msgEl.style.color='#dc2626';msgEl.textContent='Erro ao alterar senha: '+pwdErr.message;return;}
+    var{error:pwdErr}=await sb.auth.updateUser({password:pwd});
+    if(pwdErr){
+      msgEl.style.cssText='display:block;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:6px';
+      msgEl.textContent='❌ Erro ao alterar senha: '+pwdErr.message;
+      if(btn){btn.disabled=false;btn.textContent='✓ Salvar alterações';}
+      return;
+    }
   }
-  var{error}=await window.sb.from('profiles').update(updates).eq('id',window.USER.id);
-  if(error){msgEl.style.display='block';msgEl.style.background='#fee2e2';msgEl.style.color='#dc2626';msgEl.textContent='Erro: '+error.message;return;}
-  window.PROFILE=Object.assign(window.PROFILE,updates);
-  if(typeof metaSetUser==='function')metaSetUser(window.PROFILE);
-  msgEl.style.display='block';msgEl.style.background='#dcfce7';msgEl.style.color='#16a34a';msgEl.textContent='✅ Perfil atualizado com sucesso!';
-  setTimeout(function(){document.getElementById('m-info-pessoais').classList.remove('show');},1500);
+
+  var updates={name:nome,phone:phone,concurso_alvo:concurso,updated_at:new Date().toISOString()};
+  var{error}=await sb.from('profiles').update(updates).eq('id',USER.id);
+
+  if(btn){btn.disabled=false;btn.textContent='✓ Salvar alterações';}
+
+  if(error){
+    msgEl.style.cssText='display:block;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:6px';
+    msgEl.textContent='❌ Erro: '+error.message;
+    return;
+  }
+
+  // Atualizar PROFILE local
+  PROFILE=Object.assign(PROFILE,updates);
+  if(typeof metaSetUser==='function') metaSetUser(PROFILE);
+  updateProfileUI();
+
+  msgEl.style.cssText='display:block;background:#dcfce7;color:#16a34a;padding:8px 12px;border-radius:6px';
+  msgEl.textContent='✅ Perfil atualizado!';
+  setTimeout(function(){
+    document.getElementById('m-info-pessoais').classList.remove('show');
+    msgEl.style.display='none';
+    if(pwd) showFT('🔑 Senha alterada com sucesso!');
+  },1500);
 }
 
 // ── FALE CONOSCO ──
@@ -2497,12 +2641,35 @@ input,select,textarea{-webkit-appearance:none;border-radius:6px}
 <!-- FEAT MODALS -->
 <div class="feat-modal" id="modal-comentarios" onclick="if(event.target===this)closeFeat('comentarios')">
   <div class="feat-box">
-    <div class="feat-hd"><span class="feat-title">💬 Comentários</span><button class="feat-x" onclick="closeFeat('comentarios')">✕</button></div>
-    <div id="coment-q-ref" style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding:7px 10px;background:#f9fafb;border-radius:6px"></div>
-    <div id="coment-list" style="margin-bottom:14px;max-height:240px;overflow-y:auto"></div>
-    <div style="display:flex;gap:8px">
-      <textarea id="coment-inp" placeholder="Escreva um comentário..." style="flex:1;padding:8px 11px;border:1px solid var(--bd2);border-radius:8px;font-size:15px;font-family:inherit;resize:none;min-height:56px;outline:none"></textarea>
-      <button onclick="postComment()" style="padding:0 14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;align-self:flex-end;height:38px;min-height:38px">Enviar</button>
+    <div class="feat-hd"><span class="feat-title">💬 Comentários e Anotações</span><button class="feat-x" onclick="closeFeat('comentarios')">✕</button></div>
+    <div id="coment-q-ref" style="font-size:.72rem;color:var(--muted);margin-bottom:10px;padding:7px 10px;background:#f9fafb;border-radius:6px;line-height:1.4"></div>
+
+    <!-- Abas: Comentários / Anotações -->
+    <div style="display:flex;gap:0;border-bottom:1.5px solid var(--bd);margin-bottom:12px">
+      <button id="coment-tab-pub" onclick="switchComentTab('pub')" style="padding:7px 14px;border:none;background:none;font-size:.78rem;font-weight:700;color:var(--blue);border-bottom:2px solid var(--blue);margin-bottom:-2px;cursor:pointer">💬 Comentários</button>
+      <button id="coment-tab-priv" onclick="switchComentTab('priv')" style="padding:7px 14px;border:none;background:none;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer">📝 Minha Anotação</button>
+    </div>
+
+    <!-- Aba Comentários públicos -->
+    <div id="coment-panel-pub">
+      <div id="coment-list" style="margin-bottom:12px;max-height:220px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <textarea id="coment-inp" placeholder="Escreva um comentário público..." onkeydown="if(event.key==='Enter'&&event.ctrlKey)postComment()" style="flex:1;padding:9px 11px;border:1.5px solid var(--bd2);border-radius:8px;font-size:.84rem;font-family:inherit;resize:none;min-height:60px;outline:none;transition:.15s" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd2)'"></textarea>
+        <button onclick="postComment()" style="padding:0 14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;align-self:flex-end;height:40px;min-height:40px;flex-shrink:0">Enviar</button>
+      </div>
+      <div style="font-size:.65rem;color:var(--dim);margin-top:4px">Ctrl+Enter para enviar · Comentários ficam salvos e podem ser editados ou excluídos a qualquer momento</div>
+    </div>
+
+    <!-- Aba Anotação Privada -->
+    <div id="coment-panel-priv" style="display:none">
+      <div style="background:#fefce8;border:1px solid #fef08a;border-radius:7px;padding:8px 11px;font-size:.72rem;color:#713f12;margin-bottom:10px;line-height:1.5">
+        🔒 <strong>Sua anotação é privada</strong> — só você pode ver. Fica salva na nuvem e aparece sempre que você abrir essa questão.
+      </div>
+      <textarea id="anotacao-txt" placeholder="Escreva suas anotações sobre essa questão... Ex: Revisar antes da prova! Artigo 5º, inciso LXVIII — lembre de decorar os prazos." style="width:100%;padding:10px 12px;border:1.5px solid var(--bd2);border-radius:8px;font-size:.84rem;font-family:inherit;resize:vertical;min-height:120px;outline:none;box-sizing:border-box;transition:.15s" onfocus="this.style.borderColor='#f59e0b'" onblur="this.style.borderColor='var(--bd2)'"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="saveAnotacao()" style="flex:1;padding:10px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-size:.84rem;font-weight:700;cursor:pointer;min-height:44px">📝 Salvar anotação</button>
+        <button onclick="closeFeat('comentarios')" style="padding:10px 14px;background:#fff;border:1px solid var(--bd2);border-radius:8px;font-size:.84rem;color:var(--muted);cursor:pointer;min-height:44px">Fechar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2669,13 +2836,20 @@ function showVitBanner(){
 function openFeat(tipo, qId){
   FEAT_QID=qId;
   var q=(window.QUESTIONS||[]).find(function(x){return x.id===qId;});
-  var info=q?(q.artigo||'')+' '+(q.lei||'')+' — '+(q.enunciado||'').substring(0,80)+'...':'';
+  var enun=q?(q.enunciado||'').substring(0,90)+'...':'';
+  var ref=q?'<strong>'+(q.artigo||'')+(q.lei?' · '+q.lei.substring(0,40):'')+'</strong><br>'+escF(enun):'';
   ['coment','lembrete','erro','hist','stats'].forEach(function(pfx){
     var el=document.getElementById(pfx+'-q-ref');
-    if(el) el.textContent=info;
+    if(el) el.innerHTML=ref||'';
   });
+  // Atualizar também o erro-q-ref com formato diferente
+  var erroRef=document.getElementById('erro-q-ref');
+  if(erroRef) erroRef.innerHTML=ref;
   document.getElementById('modal-'+tipo).classList.add('show');
-  if(tipo==='comentarios') loadComentarios(qId);
+  if(tipo==='comentarios'){
+    switchComentTab('pub'); // Sempre abrir na aba de comentários públicos
+    loadComentarios(qId);
+  }
   if(tipo==='lembrete') loadLembreteModal(qId);
   if(tipo==='historico') loadHistoricoModal(qId);
   if(tipo==='stats') loadStatsModal(qId);
@@ -2684,35 +2858,167 @@ function closeFeat(tipo){
   document.getElementById('modal-'+tipo).classList.remove('show');
 }
 
-// ── COMENTÁRIOS ──
+// ══════════════════════════════════════════════
+// COMENTÁRIOS — Sistema completo com edição
+// ══════════════════════════════════════════════
+var EDITANDO_COMENT_ID = null; // ID do comentário sendo editado
+
 async function loadComentarios(qId){
   var list=document.getElementById('coment-list');
+  if(!list) return;
   list.innerHTML='<div style="text-align:center;padding:16px;color:var(--dim);font-size:.78rem">Carregando...</div>';
-  if(!window.USER||!window.sb){list.innerHTML='<div style="text-align:center;padding:16px;color:var(--dim);font-size:.78rem">Faça login para comentar</div>';return;}
+
+  var ok=await ensureUser();
+  if(!ok){
+    list.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim);font-size:.82rem">🔒 <a href="#" onclick="showLogin();return false" style="color:var(--blue)">Faça login</a> para ver e deixar comentários</div>';
+    return;
+  }
   try{
-    var res=await window.sb.from('comentarios').select('*,profiles(name,email)').eq('question_id',qId).order('created_at',{ascending:true}).limit(50);
+    var res=await sb.from('comentarios')
+      .select('*')
+      .eq('question_id',qId)
+      .order('created_at',{ascending:true})
+      .limit(100);
     var comentarios=res.data||[];
-    if(!comentarios.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim);font-size:.78rem">Nenhum comentário ainda. Seja o primeiro! 💬</div>';return;}
+    if(res.error) throw res.error;
+
+    if(!comentarios.length){
+      list.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim);font-size:.78rem">Nenhum comentário ainda. Seja o primeiro! 💬</div>';
+      return;
+    }
+
     list.innerHTML=comentarios.map(function(c){
       var mine=c.user_id===USER.id;
-      var nome=c.profiles&&c.profiles.name?c.profiles.name:(c.profiles&&c.profiles.email?c.profiles.email.split('@')[0]:'Usuário');
-      var dt=new Date(c.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
-      return '<div class="coment-item '+(mine?'coment-mine':'')+'"><div class="coment-autor">'+(mine?'(Você) ':'')+escF(nome)+'</div><div class="coment-txt">'+escF(c.texto)+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px"><div style="font-size:.66rem;color:var(--dim)">'+dt+'</div>'+(mine?'<button onclick="delComentario(\''+c.id+'\')" style="font-size:.66rem;color:var(--red);background:none;border:none;cursor:pointer;min-height:auto">Excluir</button>':'')+'</div></div>';
+      var nome=c.user_name||'Usuário';
+      var ini=nome.substring(0,2).toUpperCase();
+      var dt=new Date(c.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      var editedTxt=c.editado?'<span style="font-size:.62rem;color:var(--muted);font-style:italic"> (editado)</span>':'';
+      return '<div class="coment-item'+(mine?' coment-mine':'')+'" id="ci-'+c.id+'">'
+        +'<div style="display:flex;gap:8px;align-items:flex-start">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+(mine?'var(--blue)':'#94a3b8')+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0">'+ini+'</div>'
+          +'<div style="flex:1;min-width:0">'
+            +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px">'
+              +'<span style="font-size:.75rem;font-weight:700;color:'+(mine?'var(--blue)':'#374151')+'">'+(mine?'Você':escF(nome))+'</span>'
+              +'<span style="font-size:.65rem;color:var(--dim)">'+dt+editedTxt+'</span>'
+            +'</div>'
+            +'<div id="ct-'+c.id+'" style="font-size:.82rem;line-height:1.5;color:#111;word-break:break-word">'+escF(c.texto)+'</div>'
+            +(mine?'<div style="display:flex;gap:8px;margin-top:4px">'
+              +'<button onclick="editComentario(\''+c.id+'\',this)" style="font-size:.68rem;color:var(--blue);background:none;border:none;cursor:pointer;padding:0;min-height:auto">✏️ Editar</button>'
+              +'<button onclick="delComentario(\''+c.id+'\')" style="font-size:.68rem;color:#dc2626;background:none;border:none;cursor:pointer;padding:0;min-height:auto">🗑 Excluir</button>'
+            +'</div>':'')
+          +'</div>'
+        +'</div>'
+      +'</div>';
     }).join('');
-  }catch(e){list.innerHTML='<div style="text-align:center;padding:16px;color:var(--dim);font-size:.78rem">Execute o SQL de conteúdo no Supabase para ativar comentários.</div>';}
+  }catch(e){
+    list.innerHTML='<div style="text-align:center;padding:16px;color:#dc2626;font-size:.78rem">Erro ao carregar comentários: '+e.message+'</div>';
+  }
 }
-async function postComment(){
-  var txt=document.getElementById('coment-inp').value.trim();if(!txt)return;
-  if(!window.USER){showUpsell('cadernos');return;}
-  try{
-    var res=await window.sb.from('comentarios').insert({question_id:FEAT_QID,user_id:USER.id,texto:txt});
-    if(!res.error){document.getElementById('coment-inp').value='';loadComentarios(FEAT_QID);}
-  }catch(e){showFT('Execute o SQL no Supabase para ativar comentários.');}
+
+function editComentario(id, btn){
+  if(EDITANDO_COMENT_ID===id){
+    // Cancelar edição
+    EDITANDO_COMENT_ID=null;
+    var item=document.getElementById('ci-'+id);
+    if(item) loadComentarios(FEAT_QID);
+    return;
+  }
+  EDITANDO_COMENT_ID=id;
+  var txtEl=document.getElementById('ct-'+id);
+  if(!txtEl) return;
+  var textoAtual=txtEl.textContent;
+  // Substituir o texto por um textarea inline
+  var wrap=txtEl.parentElement;
+  var editDiv=document.createElement('div');
+  editDiv.id='edit-wrap-'+id;
+  editDiv.style.cssText='margin-top:4px';
+  editDiv.innerHTML='<textarea id="edit-txt-'+id+'" style="width:100%;padding:7px 10px;border:1.5px solid var(--blue);border-radius:7px;font-size:.82rem;font-family:inherit;resize:vertical;min-height:60px;outline:none;box-sizing:border-box">'+escF(textoAtual)+'</textarea>'
+    +'<div style="display:flex;gap:6px;margin-top:4px">'
+    +'<button onclick="saveEditComentario(\''+id+'\')" style="padding:4px 12px;background:var(--blue);color:#fff;border:none;border-radius:5px;font-size:.75rem;font-weight:600;cursor:pointer">Salvar</button>'
+    +'<button onclick="cancelEditComentario(\''+id+'\')" style="padding:4px 12px;background:#fff;border:1px solid var(--bd2);border-radius:5px;font-size:.75rem;color:var(--muted);cursor:pointer">Cancelar</button>'
+    +'</div>';
+  txtEl.style.display='none';
+  if(btn&&btn.parentElement) btn.parentElement.style.display='none';
+  txtEl.after(editDiv);
+  document.getElementById('edit-txt-'+id)?.focus();
 }
-async function delComentario(id){
-  if(!confirm('Excluir?'))return;
-  await window.sb.from('comentarios').delete().eq('id',id).eq('user_id',USER.id).catch(function(){});
+
+function cancelEditComentario(id){
+  EDITANDO_COMENT_ID=null;
   loadComentarios(FEAT_QID);
+}
+
+async function saveEditComentario(id){
+  var txt=(document.getElementById('edit-txt-'+id)?.value||'').trim();
+  if(!txt){showFT('⚠️ Comentário não pode ser vazio');return;}
+  var{error}=await sb.from('comentarios').update({texto:txt,editado:true,edited_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',USER.id);
+  if(error){showFT('Erro ao salvar: '+error.message);return;}
+  EDITANDO_COMENT_ID=null;
+  showFT('✅ Comentário editado!');
+  loadComentarios(FEAT_QID);
+}
+
+async function postComment(){
+  var txt=(document.getElementById('coment-inp')?.value||'').trim();
+  if(!txt) return;
+  var ok=await ensureUser();
+  if(!ok){showUpsell('questoes');return;}
+  var nome=PROFILE?.name||USER.email?.split('@')[0]||'Usuário';
+  var{error}=await sb.from('comentarios').insert({
+    question_id:FEAT_QID,
+    user_id:USER.id,
+    user_name:nome,
+    texto:txt
+  });
+  if(error){showFT('Erro: '+error.message);return;}
+  document.getElementById('coment-inp').value='';
+  loadComentarios(FEAT_QID);
+  showFT('💬 Comentário publicado!');
+}
+
+async function delComentario(id){
+  if(!confirm('Excluir este comentário?'))return;
+  var{error}=await sb.from('comentarios').delete().eq('id',id).eq('user_id',USER.id);
+  if(error){showFT('Erro: '+error.message);return;}
+  showFT('🗑 Comentário excluído');
+  loadComentarios(FEAT_QID);
+}
+
+function switchComentTab(tab){
+  var isPub=tab==='pub';
+  document.getElementById('coment-panel-pub').style.display=isPub?'':'none';
+  document.getElementById('coment-panel-priv').style.display=isPub?'none':'';
+  document.getElementById('coment-tab-pub').style.cssText='padding:7px 14px;border:none;background:none;font-size:.78rem;cursor:pointer;font-weight:'+(isPub?700:600)+';color:'+(isPub?'var(--blue)':'var(--muted)')+';border-bottom:2px solid '+(isPub?'var(--blue)':'transparent')+';margin-bottom:-2px';
+  document.getElementById('coment-tab-priv').style.cssText='padding:7px 14px;border:none;background:none;font-size:.78rem;cursor:pointer;font-weight:'+(isPub?600:700)+';color:'+(isPub?'var(--muted)':'#f59e0b')+';border-bottom:2px solid '+(isPub?'transparent':'#f59e0b')+';margin-bottom:-2px';
+  if(!isPub) loadAnotacao(FEAT_QID);
+}
+
+// ══════════════════════════════════════════════
+// ANOTAÇÕES PESSOAIS (visíveis só para o aluno)
+// ══════════════════════════════════════════════
+async function loadAnotacao(qId){
+  var el=document.getElementById('anotacao-txt');
+  if(!el) return;
+  if(!USER){el.value='';return;}
+  var{data}=await sb.from('anotacoes').select('texto').eq('question_id',qId).eq('user_id',USER.id).single().catch(function(){return{data:null};});
+  el.value=data?data.texto:'';
+}
+
+async function saveAnotacao(){
+  var txt=(document.getElementById('anotacao-txt')?.value||'').trim();
+  var ok=await ensureUser();
+  if(!ok){showFT('❌ Faça login para salvar anotações');return;}
+  if(!txt){
+    // Deletar se vazio
+    await sb.from('anotacoes').delete().eq('question_id',FEAT_QID).eq('user_id',USER.id).catch(function(){});
+    showFT('🗑 Anotação removida');
+    closeFeat('comentarios');
+    return;
+  }
+  var{error}=await sb.from('anotacoes').upsert({question_id:FEAT_QID,user_id:USER.id,texto:txt,updated_at:new Date().toISOString()},{onConflict:'question_id,user_id'});
+  if(error){showFT('Erro: '+error.message);return;}
+  showFT('📝 Anotação salva!');
+  closeFeat('comentarios');
 }
 
 // ── LEMBRETES ──
@@ -3126,14 +3432,15 @@ function closeCadModal(){document.getElementById('cad-modal').classList.remove('
 async function saveCad(){
   var nome=(document.getElementById('cad-nome-inp').value||'').trim();
   if(!nome){showFT('⚠️ Digite um nome');return;}
-  if(!window.USER||!window.sb){showFT('❌ Faça login primeiro');return;}
-  var{data,error}=await window.sb.from('cadernos').insert({user_id:window.USER.id,nome:nome}).select().single();
+  var ok=await ensureUser();
+  if(!ok){showFT('❌ Sessão expirada — faça login novamente');return;}
+  var{data,error}=await sb.from('cadernos').insert({user_id:USER.id,nome:nome}).select().single();
   if(error){showFT('Erro: '+error.message);return;}
   closeCadModal();
   ALL_CADS.unshift(data);
   renderCadGrid();
   showFT('📚 Caderno "'+nome+'" criado!');
-  if(window._cadFromQ&&window.FEAT_QID) addQToSpecificCad(data.id,nome,window.FEAT_QID);
+  if(window._cadFromQ&&FEAT_QID) addQToSpecificCad(data.id,nome,FEAT_QID);
 }
 
 async function openCadDetalhe(cadId){
@@ -3188,10 +3495,25 @@ async function deleteCad(){
   showFT('🗑 Caderno excluído');
 }
 
-var FEAT_QID=null;
+// Função auxiliar: garante que USER está carregado
+async function ensureUser(){
+  if(USER) return true;
+  if(!sb) return false;
+  try{
+    var{data:{session}}=await sb.auth.getSession();
+    if(session){
+      USER=session.user;
+      if(!PROFILE) await loadProfile();
+      unlockChipsForUser();
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
 
-function addQToCad(qId){
-  if(!window.USER){showUpsell('cadernos');return;}
+async function addQToCad(qId){
+  var ok=await ensureUser();
+  if(!ok){showUpsell('cadernos');return;}
   FEAT_QID=qId;
   if(!ALL_CADS.length){openCadModal(true);}
   else{openAddQModal(qId);}
