@@ -788,35 +788,107 @@ tr:last-child td{border-bottom:none}
 
       <!-- SIMULADOS -->
       <div class="page" id="p-simulados">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div></div>
-          <input type="text" placeholder="Busque pelo nome" style="padding:7px 12px;border:1px solid var(--bd2);border-radius:6px;font-size:.78rem;outline:none;width:220px">
+        <!-- LISTA DE SIMULADOS -->
+        <div id="sim-list-view">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+            <div></div>
+            <input type="text" id="sim-search" placeholder="Buscar simulado..." oninput="filterSims(this.value)" style="padding:7px 12px;border:1px solid var(--bd2);border-radius:6px;font-size:.78rem;outline:none;width:220px">
+          </div>
+          <div class="sim-list" id="sim-list"></div>
         </div>
-        <div class="sim-list" id="sim-list"></div>
-        <!-- SIMULADO EM ANDAMENTO -->
+
+        <!-- SIMULADO EM ANDAMENTO — Motor completo -->
         <div id="sim-running" style="display:none">
-          <div class="sim-run">
-            <div class="sim-header">
-              <div class="sim-progress" id="sim-prog-txt">Questão 1 de 10</div>
-              <div class="sim-timer" id="sim-timer">60:00</div>
+          <!-- Topbar do simulado -->
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em" id="sim-titulo-top">Simulado</div>
+              <div style="font-size:.82rem;font-weight:700;color:#111" id="sim-prog-txt">Questão 1 de 80</div>
             </div>
-            <div class="sim-prog-bar"><div class="sim-prog-fill" id="sim-prog-fill" style="width:10%"></div></div>
+            <!-- Timer -->
+            <div style="display:flex;align-items:center;gap:6px;background:#f9fafb;border:1px solid var(--bd);border-radius:7px;padding:7px 12px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--muted)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="sim-timer" style="font-size:.88rem;font-weight:800;font-variant-numeric:tabular-nums;color:#111">5:00:00</span>
+            </div>
+            <!-- Resumo respondidas -->
+            <div style="display:flex;gap:10px;font-size:.72rem">
+              <div style="text-align:center"><div id="sim-cnt-resp" style="font-weight:800;color:var(--blue)">0</div><div style="color:var(--muted)">Resp.</div></div>
+              <div style="text-align:center"><div id="sim-cnt-rev" style="font-weight:800;color:#f59e0b">0</div><div style="color:var(--muted)">Revisar</div></div>
+              <div style="text-align:center"><div id="sim-cnt-pend" style="font-weight:800;color:var(--muted)">80</div><div style="color:var(--muted)">Pend.</div></div>
+            </div>
+            <button onclick="confirmFinishSim()" style="padding:8px 14px;background:#16a34a;color:#fff;border:none;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap">Finalizar →</button>
+          </div>
+
+          <!-- Grid de navegação entre questões -->
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+              <span>Navegação</span>
+              <div style="display:flex;gap:8px;font-size:.62rem;font-weight:500">
+                <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:50%;background:#2563eb;display:inline-block"></span>Resp.</span>
+                <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block"></span>Revisar</span>
+                <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:50%;background:#e5e7eb;display:inline-block"></span>Pend.</span>
+              </div>
+            </div>
+            <div id="sim-nav-grid" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+          </div>
+
+          <!-- Questão atual -->
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px">
             <div id="sim-q-area"></div>
+            <!-- Botões de navegação -->
+            <div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap">
+              <button id="sim-btn-ant" onclick="simNav(-1)" style="padding:9px 16px;border:1px solid var(--bd);border-radius:7px;background:#fff;font-size:.8rem;cursor:pointer;color:var(--muted)">← Anterior</button>
+              <button id="sim-btn-rev" onclick="simToggleReview()" style="padding:9px 14px;border:1.5px solid #f59e0b;border-radius:7px;background:#fffbeb;font-size:.78rem;font-weight:600;cursor:pointer;color:#d97706">🚩 Marcar revisão</button>
+              <div style="flex:1"></div>
+              <button id="sim-btn-prox" onclick="simNav(1)" style="padding:9px 16px;background:var(--blue);color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer">Próxima →</button>
+            </div>
           </div>
         </div>
-        <!-- RESULTADO -->
-        <div id="sim-result" style="display:none">
-          <div class="sim-run">
-            <div class="sim-result">
-              <div class="sim-result-score" id="result-score">—</div>
-              <div class="sim-result-label">de aproveitamento</div>
-              <div style="display:flex;gap:20px;justify-content:center;margin-bottom:24px">
-                <div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:var(--green)" id="result-acertos">0</div><div style="font-size:.72rem;color:var(--muted)">Acertos</div></div>
-                <div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:var(--red)" id="result-erros">0</div><div style="font-size:.72rem;color:var(--muted)">Erros</div></div>
-                <div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:var(--muted)" id="result-tempo">—</div><div style="font-size:.72rem;color:var(--muted)">Tempo</div></div>
-              </div>
-              <button class="btn-filter" onclick="exitSim()">Voltar aos simulados</button>
+
+        <!-- INSIGHTS — Dashboard pós-simulado -->
+        <div id="sim-insights" style="display:none">
+          <!-- Score principal -->
+          <div id="ins-hero" style="background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:14px;padding:28px 20px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;opacity:.05;background:radial-gradient(circle at 30% 50%,#3b82f6 0%,transparent 60%)"></div>
+            <div id="ins-aprovado-badge" style="display:inline-block;border-radius:99px;padding:4px 16px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">APROVADO</div>
+            <div id="ins-score" style="font-size:3rem;font-weight:900;color:#fff;line-height:1;margin-bottom:4px">—</div>
+            <div style="font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:16px" id="ins-score-sub">de 80 questões</div>
+            <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap">
+              <div style="text-align:center"><div id="ins-acertos" style="font-size:1.4rem;font-weight:800;color:#4ade80">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.6)">Acertos</div></div>
+              <div style="text-align:center"><div id="ins-erros" style="font-size:1.4rem;font-weight:800;color:#f87171">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.6)">Erros</div></div>
+              <div style="text-align:center"><div id="ins-puladas" style="font-size:1.4rem;font-weight:800;color:rgba(255,255,255,.5)">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.6)">Puladas</div></div>
+              <div style="text-align:center"><div id="ins-tempo" style="font-size:1.4rem;font-weight:800;color:#93c5fd">—</div><div style="font-size:.7rem;color:rgba(255,255,255,.6)">Tempo</div></div>
             </div>
+          </div>
+
+          <!-- Desempenho por disciplina -->
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:12px">
+            <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px">📊 Desempenho por Disciplina</div>
+            <div id="ins-disciplinas" style="display:flex;flex-direction:column;gap:10px"></div>
+          </div>
+
+          <!-- Questões erradas para revisar -->
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+              <div style="font-size:.82rem;font-weight:700">❌ Questões para Revisar</div>
+              <div style="display:flex;gap:6px">
+                <button onclick="insFilter('erros')" id="ins-f-err" style="padding:4px 10px;border:1.5px solid #dc2626;border-radius:5px;background:#fef2f2;color:#dc2626;font-size:.7rem;font-weight:700;cursor:pointer">Erros</button>
+                <button onclick="insFilter('revisao')" id="ins-f-rev" style="padding:4px 10px;border:1px solid var(--bd);border-radius:5px;background:#fff;color:var(--muted);font-size:.7rem;cursor:pointer">🚩 Marcadas</button>
+                <button onclick="insFilter('todas')" id="ins-f-all" style="padding:4px 10px;border:1px solid var(--bd);border-radius:5px;background:#fff;color:var(--muted);font-size:.7rem;cursor:pointer">Todas</button>
+              </div>
+            </div>
+            <div id="ins-erros-list" style="display:flex;flex-direction:column;gap:10px;max-height:400px;overflow-y:auto"></div>
+          </div>
+
+          <!-- Histórico de rodadas -->
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:12px">
+            <div style="font-size:.82rem;font-weight:700;margin-bottom:10px">📈 Evolução nas Rodadas</div>
+            <div id="ins-historico" style="font-size:.78rem;color:var(--muted);text-align:center;padding:12px">Carregando histórico...</div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="exitSim()" style="flex:1;padding:11px;border:1px solid var(--bd);border-radius:8px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted)">← Voltar aos simulados</button>
+            <button onclick="refazerSim()" style="flex:1;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer">🔄 Refazer simulado</button>
           </div>
         </div>
       </div>
@@ -1128,8 +1200,8 @@ var PROFILE = null;
 let S = { ans:{}, stats:{t:0,u:0,c:0,e:0} };
 let chart = null;
 let QUESTIONS = [];
-let simState = null;
-let simTimer = null;
+// simState managed in sim engine below
+// simTimer managed in sim engine below
 let discPage = 1;
 const DISC_PER_PAGE = 10;
 const ALL_DISCS = [
@@ -1968,40 +2040,6 @@ function renderSimuladosStatic(){
   list.innerHTML='<div class="sim-item" onclick="startSim(\'trial\',10)"><div><div class="sim-item-name">Trial — 10 questões grátis</div><div class="sim-item-sub">10 questões · 30 min</div></div><span class="sim-tag free">Grátis</span></div>';
 }
 
-async function startSimDB(simId,total,productId,tempoMin){
-  var listEl=document.getElementById('sim-list');
-  if(listEl)listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Carregando '+total+' questões...</div>';
-  var q=window.sb.from('questions').select('id,enunciado,gabarito,justificativa,lei,artigo,tipo,opcoes').eq('active',true);
-  if(productId)q=q.eq('product_id',productId);
-  var res=await q.limit(500);
-  var data=res.data||[];
-  if(!data.length){if(listEl)listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--red)">❌ Sem questões para este simulado</div>';setTimeout(renderSimulados,2000);return;}
-  var pool=data.sort(function(){return Math.random()-.5;}).slice(0,Math.min(total,data.length));
-  _launchSim(pool,(tempoMin||60)*60);
-}
-
-function _launchSim(pool,tempoSecs){
-  simState={qs:pool,curr:0,ans:{},startTime:Date.now(),totalTime:tempoSecs};
-  document.getElementById('sim-list').style.display='none';
-  document.getElementById('sim-running').style.display='block';
-  document.getElementById('sim-result').style.display='none';
-  renderSimQ();
-  clearInterval(simTimerInt);
-  simTimerInt=setInterval(function(){
-    var rem=tempoSecs-Math.round((Date.now()-simState.startTime)/1000);
-    if(rem<=0){clearInterval(simTimerInt);finishSim();return;}
-    var m=Math.floor(rem/60),s=rem%60;
-    var el=document.getElementById('sim-timer');
-    if(el)el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
-  },1000);
-}
-
-function startSim(simId,total){
-  var pool=(QUESTIONS||[]).slice(0,Math.min(total,(QUESTIONS||[]).length));
-  if(!pool.length){alert('Acesse questões primeiro.');return;}
-  _launchSim(pool,total*60);
-}
-
 // RETAS FINAIS — DB version
 // ═══════════════════════════════════════════════
 var USER_PRODUCTS_IDS=new Set(), PRODUCTS_DATA={};
@@ -2050,6 +2088,429 @@ function renderRetas(){
     <button onclick="showUpsell('ilimitada')" style="padding:8px 18px;background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver Ilimitada →</button>
   </div>`;
 }
+
+// ═══════════════════════════════════════════════
+// MOTOR DE SIMULADO COMPLETO — estilo DLS Insights
+// ═══════════════════════════════════════════════
+var simState = null;
+var simTimer = null;
+var SIM_SESSAO_ID = null;
+var SIM_FILTER = 'erros';
+
+// Iniciar simulado a partir do banco
+async function startSimDB(simId, total, productId, tempoMin){
+  var listEl = document.getElementById('sim-list-view');
+  if(listEl) listEl.style.display = 'none';
+  document.getElementById('sim-running').style.display = 'none';
+  document.getElementById('sim-insights').style.display = 'none';
+
+  // Mostrar loading
+  var runEl = document.getElementById('sim-running');
+  runEl.style.display = 'block';
+  document.getElementById('sim-q-area').innerHTML = '<div style="text-align:center;padding:40px;color:var(--dim)">⏳ Carregando questões...</div>';
+
+  // Buscar questões
+  var q = sb.from('questions').select('id,enunciado,gabarito,justificativa,lei,artigo,tipo,opcoes,disciplina').eq('active', true);
+  if(productId) q = q.eq('product_id', productId);
+  else q = q.is('product_id', null);
+  var res = await q.limit(500);
+  var data = res.data || [];
+
+  if(!data.length){
+    document.getElementById('sim-q-area').innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">❌ Sem questões para este simulado.<br><small>Adicione questões com esse product_id.</small></div>';
+    return;
+  }
+
+  // Embaralhar e pegar N questões
+  data.sort(function(){ return Math.random() - .5; });
+  var pool = data.slice(0, Math.min(total, data.length));
+  var tempoTotal = (tempoMin || Math.max(60, pool.length * 4)) * 60;
+
+  simState = {
+    id: simId,
+    productId: productId,
+    qs: pool,
+    curr: 0,
+    ans: {},   // {idx: resposta}
+    rev: {},   // {idx: true} — marcadas para revisar
+    startTime: Date.now(),
+    totalTime: tempoTotal,
+    tempoRestante: tempoTotal,
+    titulo: document.getElementById('sim-titulo-top')?.textContent || 'Simulado',
+  };
+
+  // Criar sessão no banco se logado
+  if(USER){
+    try{
+      var sess = await sb.from('simulado_sessoes').insert({
+        user_id: USER.id,
+        simulado_id: simId,
+        total_questoes: pool.length,
+        status: 'em_andamento',
+        questoes_order: pool.map(function(x){ return x.id; }),
+      }).select('id').single();
+      SIM_SESSAO_ID = sess.data?.id || null;
+    }catch(e){ SIM_SESSAO_ID = null; }
+  }
+
+  renderSimQ();
+  renderSimNav();
+  startSimTimer();
+}
+
+// Renderizar questão atual
+function renderSimQ(){
+  if(!simState) return;
+  var q = simState.qs[simState.curr];
+  var idx = simState.curr;
+  var opts = q.tipo === 'vf' ? ['Certo','Errado'] : (q.opcoes || []);
+  var saved = simState.ans[idx];
+  var isRev = simState.rev[idx];
+
+  // Atualizar header
+  var total = simState.qs.length;
+  var el = document.getElementById('sim-prog-txt');
+  if(el) el.textContent = 'Questão ' + (idx+1) + ' de ' + total;
+  var btnRev = document.getElementById('sim-btn-rev');
+  if(btnRev){
+    btnRev.style.background = isRev ? '#fef9c3' : '#fffbeb';
+    btnRev.style.borderColor = isRev ? '#d97706' : '#f59e0b';
+    btnRev.textContent = isRev ? '🚩 Marcada para revisão' : '🚩 Marcar revisão';
+  }
+  var btnAnt = document.getElementById('sim-btn-ant');
+  if(btnAnt) btnAnt.style.opacity = idx === 0 ? '.3' : '1';
+  var btnProx = document.getElementById('sim-btn-prox');
+  if(btnProx) btnProx.textContent = idx === total-1 ? 'Finalizar →' : 'Próxima →';
+
+  // Renderizar questão
+  document.getElementById('sim-q-area').innerHTML = '<div style="font-size:.7rem;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px">'
+    + '<span style="background:var(--blue-bg);color:var(--blue);border-radius:4px;padding:2px 8px;font-weight:700;font-size:.65rem">' + (q.lei||'').substring(0,35) + '</span>'
+    + (q.disciplina ? '<span style="background:#f3f4f6;color:#6b7280;border-radius:4px;padding:2px 8px;font-size:.65rem">' + q.disciplina + '</span>' : '')
+    + '</div>'
+    + '<div style="font-size:.88rem;line-height:1.65;color:#111;margin-bottom:16px;font-weight:500">' + escF(q.enunciado) + '</div>'
+    + '<div id="sim-opts">'
+    + opts.map(function(o, i){
+        var isSel = saved === i;
+        return '<div class="q-opt' + (isSel?' sel':'') + '" onclick="simSel(' + i + ',this)" style="margin-bottom:8px">'
+          + '<div class="q-radio"><div class="q-radio-inner"></div></div>' + escF(o) + '</div>';
+    }).join('')
+    + '</div>';
+}
+
+// Selecionar opção no simulado
+function simSel(idx, el){
+  document.querySelectorAll('#sim-opts .q-opt').forEach(function(o){ o.classList.remove('sel'); });
+  el.classList.add('sel');
+  simState.ans[simState.curr] = idx;
+  renderSimNav();
+  updateSimCounters();
+}
+
+// Navegar entre questões
+function simNav(dir){
+  if(!simState) return;
+  var next = simState.curr + dir;
+  if(next < 0 || next >= simState.qs.length){
+    if(dir > 0) confirmFinishSim();
+    return;
+  }
+  simState.curr = next;
+  renderSimQ();
+}
+
+// Toggle marcar para revisão
+function simToggleReview(){
+  if(!simState) return;
+  var idx = simState.curr;
+  simState.rev[idx] = !simState.rev[idx];
+  renderSimQ();
+  renderSimNav();
+  updateSimCounters();
+}
+
+// Grid de navegação (dots)
+function renderSimNav(){
+  if(!simState) return;
+  var el = document.getElementById('sim-nav-grid');
+  if(!el) return;
+  el.innerHTML = simState.qs.map(function(q, i){
+    var resp = simState.ans[i] !== undefined;
+    var rev = simState.rev[i];
+    var isCurr = i === simState.curr;
+    var bg = rev ? '#f59e0b' : resp ? '#2563eb' : '#e5e7eb';
+    var color = (rev || resp) ? '#fff' : '#6b7280';
+    return '<button onclick="simState.curr=' + i + ';renderSimQ()" style="width:26px;height:26px;border-radius:5px;border:' + (isCurr ? '2px solid #111' : '1px solid transparent') + ';background:' + bg + ';color:' + color + ';font-size:.65rem;font-weight:700;cursor:pointer;transition:.1s">' + (i+1) + '</button>';
+  }).join('');
+}
+
+// Atualizar contadores no header
+function updateSimCounters(){
+  if(!simState) return;
+  var resp = Object.keys(simState.ans).length;
+  var rev = Object.keys(simState.rev).filter(function(k){ return simState.rev[k]; }).length;
+  var pend = simState.qs.length - resp;
+  var cntR = document.getElementById('sim-cnt-resp'); if(cntR) cntR.textContent = resp;
+  var cntV = document.getElementById('sim-cnt-rev');  if(cntV) cntV.textContent = rev;
+  var cntP = document.getElementById('sim-cnt-pend'); if(cntP) cntP.textContent = pend;
+}
+
+// Timer
+function startSimTimer(){
+  clearInterval(simTimer);
+  function tick(){
+    if(!simState) return;
+    var elapsed = Math.round((Date.now() - simState.startTime) / 1000);
+    var rem = Math.max(0, simState.totalTime - elapsed);
+    var h = Math.floor(rem / 3600), m = Math.floor((rem % 3600) / 60), s = rem % 60;
+    var display = h > 0
+      ? (h + ':' + (m<10?'0':'')+m + ':' + (s<10?'0':'')+s)
+      : ((m<10?'0':'')+m + ':' + (s<10?'0':'')+s);
+    var timerEl = document.getElementById('sim-timer');
+    if(timerEl){
+      timerEl.textContent = display;
+      timerEl.style.color = rem < 300 ? '#dc2626' : '#111'; // vermelho nos últimos 5min
+    }
+    if(rem <= 0){ clearInterval(simTimer); finishSim(); }
+  }
+  simTimer = setInterval(tick, 1000);
+  tick();
+}
+
+// Confirmar finalização
+function confirmFinishSim(){
+  if(!simState) return;
+  var resp = Object.keys(simState.ans).length;
+  var total = simState.qs.length;
+  var pend = total - resp;
+  if(pend > 0){
+    if(!confirm('Você ainda tem ' + pend + ' questão(ões) não respondida(s).\nDeseja finalizar mesmo assim?')) return;
+  }
+  finishSim();
+}
+
+// Finalizar simulado e mostrar insights
+async function finishSim(){
+  clearInterval(simTimer);
+  if(!simState) return;
+
+  var qs = simState.qs;
+  var elapsed = Math.round((Date.now() - simState.startTime) / 1000);
+  var acertos = 0, erros = 0, puladas = 0;
+  var byDisc = {};
+  var respostas = [];
+
+  qs.forEach(function(q, i){
+    var resp = simState.ans[i];
+    var correta = resp !== undefined && resp === q.gabarito;
+    if(resp === undefined) puladas++;
+    else if(correta) acertos++;
+    else erros++;
+
+    var disc = q.disciplina || q.lei || 'Geral';
+    if(!byDisc[disc]) byDisc[disc] = {total:0, acertos:0};
+    byDisc[disc].total++;
+    if(correta) byDisc[disc].acertos++;
+
+    respostas.push({
+      question_id: q.id,
+      resposta: resp !== undefined ? resp : null,
+      correta: correta,
+      marcada_revisar: !!simState.rev[i],
+      tempo_seg: Math.round(elapsed / qs.length), // aproximado
+      disciplina: disc,
+    });
+  });
+
+  var total = qs.length;
+  var notaCorte = Math.ceil(total * 0.5); // 50% = aprovação (OAB = 40/80)
+  var aprovado = acertos >= notaCorte;
+
+  // Salvar no banco
+  if(USER && SIM_SESSAO_ID){
+    try{
+      await sb.from('simulado_sessoes').update({
+        finalizado_em: new Date().toISOString(),
+        tempo_gasto_seg: elapsed,
+        total_acertos: acertos,
+        total_erros: erros,
+        total_puladas: puladas,
+        percentual: Math.round(acertos/total*100 * 10) / 10,
+        aprovado: aprovado,
+        nota_corte: notaCorte,
+        status: 'finalizado',
+      }).eq('id', SIM_SESSAO_ID);
+
+      // Salvar respostas individuais
+      var respPayload = respostas.map(function(r){
+        return Object.assign({sessao_id: SIM_SESSAO_ID}, r);
+      });
+      await sb.from('simulado_respostas').upsert(respPayload, {onConflict:'sessao_id,question_id'});
+    }catch(e){}
+
+    // Atualizar stats globais
+    S.stats.t += total; S.stats.c += acertos; S.stats.e += erros;
+    updateStats();
+  }
+
+  // Exibir insights
+  document.getElementById('sim-running').style.display = 'none';
+  document.getElementById('sim-insights').style.display = 'block';
+
+  // Score hero
+  var pct = Math.round(acertos/total*100);
+  document.getElementById('ins-score').textContent = acertos + '/' + total;
+  document.getElementById('ins-score-sub').textContent = pct + '% de aproveitamento — ' + (aprovado ? 'Corte: ' + notaCorte + ' questões' : 'Mínimo: ' + notaCorte + ' questões');
+  document.getElementById('ins-acertos').textContent = acertos;
+  document.getElementById('ins-erros').textContent = erros;
+  document.getElementById('ins-puladas').textContent = puladas;
+  var h2 = Math.floor(elapsed/3600), m2 = Math.floor((elapsed%3600)/60), s2 = elapsed%60;
+  document.getElementById('ins-tempo').textContent = (h2>0?h2+'h ':'')+m2+'min';
+
+  var badge = document.getElementById('ins-aprovado-badge');
+  if(aprovado){
+    badge.textContent = '✅ APROVADO';
+    badge.style.cssText = 'display:inline-block;border-radius:99px;padding:4px 16px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;background:#16a34a;color:#fff';
+  } else {
+    badge.textContent = '❌ NÃO APROVADO';
+    badge.style.cssText = 'display:inline-block;border-radius:99px;padding:4px 16px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;background:#dc2626;color:#fff';
+  }
+
+  // Disciplinas
+  var discEl = document.getElementById('ins-disciplinas');
+  if(discEl){
+    discEl.innerHTML = Object.entries(byDisc)
+      .sort(function(a,b){ return (a[1].acertos/a[1].total) - (b[1].acertos/b[1].total); })
+      .map(function(entry){
+        var disc = entry[0]; var d = entry[1];
+        var p = Math.round(d.acertos/d.total*100);
+        var color = p >= 70 ? '#16a34a' : p >= 50 ? '#f59e0b' : '#dc2626';
+        return '<div>'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
+          + '<span style="font-size:.78rem;font-weight:600;color:#111">' + disc + '</span>'
+          + '<span style="font-size:.72rem;font-weight:800;color:'+color+'">'+d.acertos+'/'+d.total+' ('+p+'%)</span>'
+          + '</div>'
+          + '<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden">'
+          + '<div style="height:100%;width:'+p+'%;background:'+color+';border-radius:3px;transition:width 1s .2s"></div>'
+          + '</div></div>';
+    }).join('');
+  }
+
+  // Guardar respostas no simState para filtros
+  simState._respostas = respostas;
+  simState._byDisc = byDisc;
+  insFilter('erros');
+  loadInsHistorico();
+}
+
+// Filtrar questões erradas nos insights
+function insFilter(tipo){
+  SIM_FILTER = tipo;
+  // Atualizar botões
+  ['err','rev','all'].forEach(function(k){
+    var b = document.getElementById('ins-f-'+k);
+    if(b){ b.style.background = '#fff'; b.style.borderColor = 'var(--bd)'; b.style.color = 'var(--muted)'; }
+  });
+  var activeMap = {erros:'err', revisao:'rev', todas:'all'};
+  var ab = document.getElementById('ins-f-'+activeMap[tipo]);
+  if(ab){ ab.style.background = tipo==='erros'?'#fef2f2':'#eff6ff'; ab.style.borderColor = tipo==='erros'?'#dc2626':'#2563eb'; ab.style.color = tipo==='erros'?'#dc2626':'#2563eb'; }
+
+  var qs = simState && simState.qs || [];
+  var resps = (simState && simState._respostas) || [];
+  var filtered = qs.filter(function(q, i){
+    var r = resps[i] || {};
+    if(tipo === 'erros') return !r.correta && r.resposta !== null && r.resposta !== undefined;
+    if(tipo === 'revisao') return simState.rev[i];
+    return true;
+  });
+
+  var el = document.getElementById('ins-erros-list');
+  if(!el) return;
+  if(!filtered.length){
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:.8rem">'+(tipo==='erros'?'🎉 Parabéns! Nenhum erro nessa rodada.':'Nenhuma questão marcada.')+'</div>';
+    return;
+  }
+  el.innerHTML = filtered.map(function(q, i){
+    var r = resps[qs.indexOf(q)] || {};
+    var opts = q.tipo === 'vf' ? ['Certo','Errado'] : (q.opcoes || []);
+    var gabText = opts[q.gabarito] || '';
+    var respText = r.resposta !== undefined && r.resposta !== null ? (opts[r.resposta] || '') : '(não respondida)';
+    return '<div style="border:1px solid var(--bd);border-radius:8px;padding:12px 14px">'
+      + '<div style="font-size:.7rem;color:var(--muted);margin-bottom:5px">'+(q.lei||'')+(q.artigo?' · '+q.artigo:'')+(q.disciplina?' — '+q.disciplina:'')+'</div>'
+      + '<div style="font-size:.82rem;color:#111;line-height:1.5;margin-bottom:8px">'+escF(q.enunciado)+'</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:.75rem">'
+      + '<span style="background:#fee2e2;color:#dc2626;border-radius:5px;padding:2px 8px;font-weight:600">Sua resposta: '+escF(respText)+'</span>'
+      + '<span style="background:#dcfce7;color:#16a34a;border-radius:5px;padding:2px 8px;font-weight:600">✓ Gabarito: '+escF(gabText)+'</span>'
+      + '</div>'
+      + (q.justificativa ? '<details style="margin-top:8px"><summary style="font-size:.72rem;color:var(--blue);cursor:pointer;font-weight:600">Ver justificativa</summary><div style="margin-top:6px;font-size:.78rem;color:#374151;line-height:1.6;padding:8px;background:#f8fafc;border-radius:5px">'+escF(q.justificativa)+'</div></details>' : '')
+      + '</div>';
+  }).join('');
+}
+
+// Histórico de rodadas
+async function loadInsHistorico(){
+  var el = document.getElementById('ins-historico');
+  if(!el || !USER || !simState) return;
+  try{
+    var res = await sb.from('simulado_sessoes')
+      .select('finalizado_em,total_acertos,total_questoes,percentual,aprovado')
+      .eq('user_id', USER.id)
+      .eq('simulado_id', simState.id)
+      .eq('status','finalizado')
+      .order('finalizado_em', {ascending:true})
+      .limit(10);
+    var rows = res.data || [];
+    if(!rows.length){ el.textContent = 'Esta é sua primeira rodada neste simulado!'; return; }
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px">'
+      + rows.map(function(r, i){
+          var dt = new Date(r.finalizado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+          var pct = r.percentual || Math.round((r.total_acertos||0)/(r.total_questoes||1)*100);
+          var color = r.aprovado ? '#16a34a' : '#dc2626';
+          return '<div style="display:flex;align-items:center;gap:10px;font-size:.78rem">'
+            + '<span style="color:var(--muted);min-width:40px">'+dt+'</span>'
+            + '<div style="flex:1;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden">'
+            + '<div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:4px"></div>'
+            + '</div>'
+            + '<span style="font-weight:700;color:'+color+';min-width:42px;text-align:right">'+pct+'%</span>'
+            + '</div>';
+      }).join('')
+      + '</div>';
+  }catch(e){ el.textContent = 'Erro ao carregar histórico.'; }
+}
+
+function refazerSim(){
+  if(!simState) return;
+  var id = simState.id; var total = simState.qs.length;
+  var productId = simState.productId; var tempoMin = Math.round(simState.totalTime/60);
+  document.getElementById('sim-insights').style.display = 'none';
+  startSimDB(id, total, productId, tempoMin);
+}
+
+function exitSim(){
+  clearInterval(simTimer);
+  simState = null; SIM_SESSAO_ID = null;
+  document.getElementById('sim-list-view').style.display = 'block';
+  document.getElementById('sim-running').style.display = 'none';
+  document.getElementById('sim-insights').style.display = 'none';
+  renderSimulados();
+}
+
+function filterSims(q){
+  var items = document.querySelectorAll('#sim-list .sim-item');
+  items.forEach(function(el){
+    el.style.display = !q || el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function startSim(simId, total){
+  var pool = (QUESTIONS||[]).slice(0, Math.min(total, (QUESTIONS||[]).length));
+  if(!pool.length){ alert('Acesse questões primeiro.'); return; }
+  simState = { id:simId, qs:pool, curr:0, ans:{}, rev:{}, startTime:Date.now(), totalTime:total*120, productId:null };
+  document.getElementById('sim-list-view').style.display = 'none';
+  document.getElementById('sim-running').style.display = 'block';
+  renderSimQ(); renderSimNav(); startSimTimer();
+}
+
+function fmt(s){ return (Math.floor(s/60)<10?'0':'')+Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60); }
 
 // Meta: abrir link de compra + disparar InitiateCheckout
 function metaEventAndOpen(productId, name, preco, url){
@@ -2131,77 +2592,6 @@ function startSim(simId,total){
   document.getElementById('sim-result').style.display='none';
   renderSimQ();
   startTimer();
-}
-
-function renderSimQ(){
-  if(!simState)return;
-  const {qs,curr}=simState;
-  const q=qs[curr];
-  const total=qs.length;
-  document.getElementById('sim-prog-txt').textContent=`Questão ${curr+1} de ${total}`;
-  document.getElementById('sim-prog-fill').style.width=`${((curr+1)/total)*100}%`;
-  const opts=q.tipo==='vf'?['Verdadeiro','Falso']:(q.opcoes||[]);
-  document.getElementById('sim-q-area').innerHTML=`
-    <div class="q-ref">[${q.artigo||''}, ${q.lei}]</div>
-    <div class="q-text" style="margin:10px 0 14px">${q.enunciado}</div>
-    <div class="q-opts" id="sim-opts">
-      ${opts.map((o,i)=>`<div class="q-opt" onclick="simSel(${i},this)"><div class="q-radio"><div class="q-radio-inner"></div></div>${o}</div>`).join('')}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="q-answer" onclick="simNext()">Próxima →</button>
-      ${curr>0?'<button style="padding:8px 16px;border:1px solid var(--bd);border-radius:6px;background:#fff;font-size:.8rem;cursor:pointer" onclick="simPrev()">← Anterior</button>':''}
-    </div>`;
-}
-
-function simSel(idx,el){
-  document.querySelectorAll('#sim-opts .q-opt').forEach(o=>o.classList.remove('sel'));
-  el.classList.add('sel');
-  simState.ans[simState.curr]=idx;
-}
-function simNext(){
-  const {qs,curr}=simState;
-  if(curr+1>=qs.length){finishSim();return;}
-  simState.curr++;renderSimQ();
-  const saved=simState.ans[simState.curr];
-  if(saved!==undefined){
-    const opts=document.querySelectorAll('#sim-opts .q-opt');
-    if(opts[saved])opts[saved].classList.add('sel');
-  }
-}
-function simPrev(){
-  if(simState.curr>0){simState.curr--;renderSimQ();}
-}
-function startTimer(){
-  clearInterval(simTimer);
-  let rem=simState.totalTime;
-  document.getElementById('sim-timer').textContent=fmt(rem);
-  simTimer=setInterval(()=>{
-    rem--;
-    document.getElementById('sim-timer').textContent=fmt(rem);
-    if(rem<=0){clearInterval(simTimer);finishSim();}
-  },1000);
-}
-function fmt(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
-function finishSim(){
-  clearInterval(simTimer);
-  let ac=0;
-  simState.qs.forEach((q,i)=>{if(simState.ans[i]===q.gabarito)ac++;});
-  const total=simState.qs.length;
-  const elapsed=Math.round((Date.now()-simState.startTime)/1000);
-  document.getElementById('sim-running').style.display='none';
-  document.getElementById('sim-result').style.display='block';
-  document.getElementById('result-score').textContent=Math.round(ac/total*100)+'%';
-  document.getElementById('result-acertos').textContent=ac;
-  document.getElementById('result-erros').textContent=total-ac;
-  document.getElementById('result-tempo').textContent=fmt(elapsed);
-  S.stats.t+=total;S.stats.c+=ac;S.stats.e+=(total-ac);
-  updateStats();
-}
-function exitSim(){
-  clearInterval(simTimer);simState=null;
-  document.getElementById('sim-list').style.display='flex';
-  document.getElementById('sim-running').style.display='none';
-  document.getElementById('sim-result').style.display='none';
 }
 
 // ═══════════════════════════════════════════════
