@@ -326,8 +326,56 @@ tr:last-child td{border-bottom:none}
   .lr{display:none}
 }
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:3px}
+
+/* ═══ ACESSIBILIDADE ═══ */
+body.high-contrast{--bg:#0a0a0a;--bg2:#111;--text:#f0f0f0;--muted:#bbb;--dim:#888;--bd:#444;--bd2:#555;--blue:#5cb8ff;--blue-bg:#001525;background:#0a0a0a!important;color:#f0f0f0!important}
+body.high-contrast .q-card{background:#111!important;border-color:#444!important}
+body.high-contrast .q-text{color:#f0f0f0!important}
+body.high-contrast .q-opt{background:#1a1a1a!important;border-color:#555!important;color:#f0f0f0!important}
+body.high-contrast .q-opt.sel{background:#001525!important;border-color:#5cb8ff!important}
+body.high-contrast .q-opt.ok{background:#002200!important;border-color:#00bb44!important;color:#00ee55!important}
+body.high-contrast .q-opt.ng{background:#220000!important;border-color:#cc2200!important;color:#ff5533!important}
+body.high-contrast .sidebar,body.high-contrast .topbar{background:#0d0d0d!important;border-color:#333!important}
+body.high-contrast .vmq-filters{background:#111!important;border-color:#333!important}
+body.high-contrast #btn-contraste{background:#5cb8ff!important;color:#000!important;border-color:#5cb8ff!important;font-weight:700!important}
+body.high-contrast .chip{background:#1a1a1a!important;border-color:#444!important;color:#ddd!important}
+body.high-contrast .chip.active{background:#001525!important;border-color:#5cb8ff!important;color:#5cb8ff!important}
+
+body.wide-spacing .q-text{line-height:2.1!important;letter-spacing:.025em!important}
+body.wide-spacing .q-opt{padding:13px 14px!important;margin-bottom:5px!important}
+body.wide-spacing .q-card{padding:22px!important;margin-bottom:14px!important}
+body.wide-spacing #btn-espacamento{background:#e0f2fe!important;color:#0369a1!important;border-color:#7dd3fc!important;font-weight:700!important}
+
+/* ═══ IMPRESSÃO ═══ */
+.print-header{display:none}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .sidebar,.topbar,.vmq-filters,.vmq-meta,.tb-acts,.qf-btn,.q-footer,
+  .q-answer,.load-more-wrap,#sim-running,#sim-insights,.feat-modal,
+  .modal-bg,.upsell-modal,#loading,button:not(.q-opt){display:none!important}
+  body,html{background:#fff!important;margin:0;padding:0}
+  .main-content,.content-area{margin:0!important;padding:0 8mm!important}
+  .page{display:block!important}
+  #p-questoes{display:block!important;padding:0!important}
+  .print-header{display:block!important;text-align:center;padding:0 0 10mm;border-bottom:2px solid #1a56db;margin-bottom:10mm}
+  .print-header h1{font-size:18pt;color:#1a56db;margin:0 0 3mm}
+  .print-header p{font-size:9pt;color:#666;margin:0}
+  .q-card{border:1pt solid #ccc!important;border-radius:3pt!important;padding:10pt!important;margin-bottom:10pt!important;break-inside:avoid!important;page-break-inside:avoid!important;background:#fff!important;box-shadow:none!important}
+  .q-num{font-size:8pt;color:#1a56db;margin-bottom:4pt}
+  .q-ref{font-size:8pt;color:#333;border:1pt solid #ddd;padding:2pt 6pt;border-radius:3pt;display:inline-block;margin-bottom:6pt}
+  .q-text{font-size:11pt!important;line-height:1.65!important;color:#000!important;margin-bottom:10pt!important}
+  .q-opts{gap:4pt!important;margin-bottom:6pt!important}
+  .q-radio,.q-radio-inner{display:none!important}
+  .q-opt{border:1pt solid #ccc!important;border-radius:3pt!important;padding:5pt 8pt!important;font-size:10pt!important;color:#000!important;background:#fff!important;margin-bottom:3pt!important;min-height:auto!important}
+  .q-opt.ok{border-color:#15803d!important;color:#15803d!important;font-weight:700!important;background:#f0fdf4!important}
+  .q-opt.ng{border-color:#b91c1c!important;color:#b91c1c!important;background:#fef2f2!important}
+  .q-opt.sel:not(.ok):not(.ng){border-color:#1d4ed8!important;background:#eff6ff!important}
+  .q-fb{padding:6pt!important;border:1pt solid #ccc!important;border-radius:3pt!important;font-size:9.5pt!important;margin-top:5pt!important;line-height:1.5!important}
+  .q-fb.ok{background:#f0fdf4!important;color:#166534!important;border-color:#16a34a!important}
+  .q-fb.ng{background:#fef2f2!important;color:#991b1b!important;border-color:#dc2626!important}
+}
 </style>
-</head>
+
 <body>
 
 <!-- LOADING -->
@@ -440,7 +488,7 @@ tr:last-child td{border-bottom:none}
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="sb-acc-body" id="body-vmq">
-        <div class="sb-sub" id="sub-questoes" onclick="navTo('questoes')">
+        <div class="sb-sub" id="sub-questoes" onclick="ACTIVE_PRODUCT_FILTER=null;navTo('questoes');loadQuestions()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Acessar questões
         </div>
@@ -628,14 +676,27 @@ tr:last-child td{border-bottom:none}
         </div>
         <div class="vmq-meta">
           <div class="vmq-count"><span id="q-count">—</span> Questões encontradas</div>
-          <div class="vmq-meta-r">
-            <button class="sz-btn" id="btn-aplus" onclick="adjustFont(1)" title="Aumentar fonte">A+</button>
-            <button class="sz-btn" id="btn-aminus" onclick="adjustFont(-1)" title="Diminuir fonte">A-</button>
-            <select class="mode-sel"><option>Modo scroll</option></select>
-            <select class="qty-sel"><option>Questões a resolver: 50</option><option>Questões a resolver: 20</option><option>Questões a resolver: 10</option></select>
+          <div class="vmq-meta-r" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <!-- Acessibilidade: Fonte -->
+            <div style="display:flex;align-items:center;gap:2px;background:#f3f4f6;border-radius:7px;padding:2px 4px" title="Tamanho da fonte">
+              <button class="sz-btn" id="btn-aminus" onclick="adjustFont(-1)" title="Diminuir fonte" style="font-size:.75rem;font-weight:700;padding:4px 7px;border-radius:5px;border:none;background:transparent;cursor:pointer;color:var(--muted)">A−</button>
+              <span id="font-size-label" style="font-size:.65rem;color:var(--muted);min-width:24px;text-align:center">14</span>
+              <button class="sz-btn" id="btn-aplus"  onclick="adjustFont(1)"  title="Aumentar fonte" style="font-size:.85rem;font-weight:700;padding:4px 7px;border-radius:5px;border:none;background:transparent;cursor:pointer;color:var(--muted)">A+</button>
+            </div>
+            <!-- Alto contraste -->
+            <button id="btn-contraste" onclick="toggleContrast()" title="Alto contraste" style="padding:5px 9px;border:1px solid var(--bd);border-radius:7px;background:#fff;cursor:pointer;font-size:.72rem;color:var(--muted);white-space:nowrap">◐ Contraste</button>
+            <!-- Espaçamento -->
+            <button id="btn-espacamento" onclick="toggleSpacing()" title="Aumentar espaçamento entre linhas" style="padding:5px 9px;border:1px solid var(--bd);border-radius:7px;background:#fff;cursor:pointer;font-size:.72rem;color:var(--muted);white-space:nowrap">≡ Espaçamento</button>
+            <!-- Imprimir -->
+            <button onclick="printQuestoes()" title="Imprimir questões" style="padding:5px 9px;border:1px solid var(--bd);border-radius:7px;background:#fff;cursor:pointer;font-size:.72rem;color:var(--muted);white-space:nowrap">🖨️ Imprimir</button>
           </div>
         </div>
         <div id="qlist"><div style="text-align:center;padding:40px;color:var(--dim)">Carregando questões...</div></div>
+        <!-- Cabeçalho só aparece ao imprimir -->
+        <div class="print-header" id="print-header">
+          <h1>LeisecaQuest — Questões Comentadas</h1>
+          <p id="print-subtitle">Impresso em <span id="print-date"></span></p>
+        </div>
       </div>
 
       <!-- POSICAO — Ranking Moderno com Pódio -->
@@ -1617,7 +1678,7 @@ function updateChart(c,t){
 // QUESTIONS (VMQ)
 // ═══════════════════════════════════════════════
 var Q_PAGE=0, Q_TOTAL=0, Q_FILTER_LEI='';
-window.ACTIVE_PRODUCT_FILTER=null;
+var ACTIVE_PRODUCT_FILTER=null; // null = VMQ geral (todas as questões)
 
 async function loadQuestions(reset=true){
   // Ler todos os filtros do formulário
@@ -1628,20 +1689,21 @@ async function loadQuestions(reset=true){
   const fInstit=document.getElementById('f-instit')?.value||'';
   const fModo=document.querySelector('.vmq-tab-row:last-of-type .chip.active')?.textContent?.trim()||'Ordenado';
 
-  if(reset){Q_PAGE=0; Q_FILTER_LEI=fLei; window.ACTIVE_PRODUCT_FILTER=null;}
+  if(reset){Q_PAGE=0; Q_FILTER_LEI=fLei;}
+  // NÃO resetar ACTIVE_PRODUCT_FILTER aqui — ele é controlado por openRetaFinal/navToVMQ
   const from=Q_PAGE*100, to=from+99;
   const el=document.getElementById('qlist');
+  if(!el) return;
   if(reset) el.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim)">⏳ Carregando questões...</div>';
 
   // Construir query base
   let query=sb.from('questions').select('*',{count:'exact'}).eq('active',true);
 
-  // Filtro de produto (quando vem de uma Reta Final)
-  if(window.ACTIVE_PRODUCT_FILTER){
-    query=query.eq('product_id',window.ACTIVE_PRODUCT_FILTER);
-  } else {
-    query=query.is('product_id',null);
+  // Filtro de produto — só filtra se vier de uma Reta Final específica
+  if(ACTIVE_PRODUCT_FILTER){
+    query=query.eq('product_id',ACTIVE_PRODUCT_FILTER);
   }
+  // VMQ geral: sem filtro de product_id → mostra TODAS as questões
 
   // Filtros textuais
   if(Q_FILTER_LEI||fLei) query=query.ilike('lei','%'+(Q_FILTER_LEI||fLei)+'%');
@@ -1652,53 +1714,71 @@ async function loadQuestions(reset=true){
 
   // Filtro de questões por status (Acertei/Errei/Resolvidas/Não resolvidas)
   var qFilter=Q_FILTER_Q||'todas';
-  if((qFilter==='acertei'||qFilter==='errei'||qFilter==='resolvidas'||qFilter==='nresolvidas')&&USER&&window.S&&window.S.ans){
-    var answeredIds=Object.keys(window.S.ans);
-    var correctIds=answeredIds.filter(function(id){return window.S.ans[id]&&window.S.ans[id].ok;});
-    var wrongIds=answeredIds.filter(function(id){return window.S.ans[id]&&!window.S.ans[id].ok;});
+  if((qFilter==='acertei'||qFilter==='errei'||qFilter==='resolvidas'||qFilter==='nresolvidas')&&USER&&S&&S.ans){
+    var answeredIds=Object.keys(S.ans);
+    var correctIds=answeredIds.filter(function(id){return S.ans[id]&&S.ans[id].ok;});
+    var wrongIds=answeredIds.filter(function(id){return S.ans[id]&&!S.ans[id].ok;});
     if(qFilter==='acertei'&&correctIds.length) query=query.in('id',correctIds);
     else if(qFilter==='errei'&&wrongIds.length) query=query.in('id',wrongIds);
     else if(qFilter==='resolvidas'&&answeredIds.length) query=query.in('id',answeredIds);
     else if(qFilter==='nresolvidas'&&answeredIds.length) query=query.not('id','in','('+answeredIds.map(function(i){return "'"+i+"'";}).join(',')+')');
   }
 
-  // Ordenação
+  // Ordenação e paginação
   var aleatorio=fModo==='Aleatório';
-  query=aleatorio?query.order('created_at',{ascending:false}):query.order('id',{ascending:true});
+  if(aleatorio){
+    query=query.order('created_at',{ascending:false});
+  } else {
+    query=query.order('id',{ascending:true});
+  }
   query=query.range(from,to);
 
-  const {data,error,count}=await query;
-  if(error){
-    console.error('Erro loadQuestions:',error);
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--red)">❌ Erro ao carregar: '+error.message+'</div>';
-    document.getElementById('q-count').textContent='0'; return;
-  }
-  if(!data||!data.length){
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">🔍 Nenhuma questão encontrada com estes filtros.</div>';
-    document.getElementById('q-count').textContent='0'; return;
-  }
+  try{
+    const {data,error,count}=await query;
+    if(error){
+      el.innerHTML='<div style="text-align:center;padding:40px;color:#dc2626">❌ Erro ao carregar: '+error.message+'</div>';
+      var qc=document.getElementById('q-count');if(qc)qc.textContent='0';
+      return;
+    }
+    if(!data||!data.length){
+      var msg=ACTIVE_PRODUCT_FILTER
+        ?'Nenhuma questão cadastrada para este produto ainda.'
+        :'🔍 Nenhuma questão encontrada com estes filtros.';
+      el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">'+msg+'</div>';
+      var qc=document.getElementById('q-count');if(qc)qc.textContent='0';
+      return;
+    }
 
-  Q_TOTAL=count||data.length;
-  if(reset) QUESTIONS=data; else QUESTIONS=[...QUESTIONS,...data];
-  document.getElementById('q-count').textContent=Q_TOTAL.toLocaleString('pt-BR');
+    Q_TOTAL=count||data.length;
+    if(reset) QUESTIONS=data; else QUESTIONS=[...QUESTIONS,...data];
+    var qc=document.getElementById('q-count');if(qc)qc.textContent=Q_TOTAL.toLocaleString('pt-BR');
 
-  const qHTML=data.map((q,i)=>buildQ(q,from+i)).join('');
-  const loaded=from+data.length;
-  const moreLeft=Q_TOTAL-loaded;
-  const moreBtn=moreLeft>0
-    ?`<div class="load-more-wrap" style="text-align:center;padding:16px">
-        <button onclick="Q_PAGE++;loadQuestions(false)" style="padding:9px 24px;border:1.5px solid var(--blue);border-radius:6px;background:#fff;color:var(--blue);font-size:.8rem;font-weight:600;cursor:pointer">
-          Carregar mais ${Math.min(100,moreLeft)} questões (de ${Q_TOTAL.toLocaleString('pt-BR')} total) →
-        </button>
-      </div>`
-    :`<div style="text-align:center;padding:12px;font-size:.75rem;color:var(--dim)">✓ Todas as ${Q_TOTAL.toLocaleString('pt-BR')} questões carregadas</div>`;
+    var qHTML='';
+    for(var i=0;i<data.length;i++){
+      try{ qHTML+=buildQ(data[i],from+i); }
+      catch(e){ console.error('buildQ error',data[i]?.id,e); }
+    }
 
-  if(reset){
-    el.innerHTML=qHTML+moreBtn;
-  }else{
-    const existing=el.querySelector('.load-more-wrap');
-    if(existing)existing.remove();
-    el.insertAdjacentHTML('beforeend',qHTML+moreBtn);
+    const loaded=from+data.length;
+    const moreLeft=Q_TOTAL-loaded;
+    const moreBtn=moreLeft>0
+      ?'<div class="load-more-wrap" style="text-align:center;padding:16px"><button onclick="Q_PAGE++;loadQuestions(false)" style="padding:9px 24px;border:1.5px solid var(--blue);border-radius:6px;background:#fff;color:var(--blue);font-size:.8rem;font-weight:600;cursor:pointer">Carregar mais '+Math.min(100,moreLeft)+' questões (de '+Q_TOTAL.toLocaleString('pt-BR')+' total) →</button></div>'
+      :'<div style="text-align:center;padding:12px;font-size:.75rem;color:var(--dim)">✓ Todas as '+Q_TOTAL.toLocaleString('pt-BR')+' questões carregadas</div>';
+
+    if(reset){
+      el.innerHTML=qHTML+moreBtn;
+    }else{
+      var existing=el.querySelector('.load-more-wrap');
+      if(existing)existing.remove();
+      el.insertAdjacentHTML('beforeend',qHTML+moreBtn);
+    }
+
+    // Scroll pro topo da lista
+    if(reset) el.scrollIntoView({behavior:'smooth',block:'start'});
+
+  }catch(e){
+    console.error('loadQuestions error:',e);
+    el.innerHTML='<div style="text-align:center;padding:40px;color:#dc2626">❌ Erro inesperado: '+e.message+'</div>';
   }
 }
 
@@ -1810,27 +1890,100 @@ function unlockChipsForUser(){
   document.querySelectorAll('.vmq-inp').forEach(function(inp){ inp.disabled=false; });
 }
 
-// ── FONT SIZE ──
-var FONT_SIZES=[13,14,15,16,18,20];
-var FONT_IDX=1; // default 14px
+// ══════════════════════════════════════════════
+// ACESSIBILIDADE — Fonte, Contraste, Espaçamento, Impressão
+// ══════════════════════════════════════════════
+var FONT_SIZES=[12,13,14,15,16,18,20,22];
+var FONT_IDX=2; // padrão 14px
+var CONTRAST_ON=false;
+var SPACING_ON=false;
 
 function adjustFont(dir){
   FONT_IDX=Math.max(0,Math.min(FONT_SIZES.length-1,FONT_IDX+dir));
-  var sz=FONT_SIZES[FONT_IDX]+'px';
-  document.getElementById('qlist').style.fontSize=sz;
-  var reta=document.getElementById('reta-q-list');if(reta)reta.style.fontSize=sz;
+  var sz=FONT_SIZES[FONT_IDX];
+  var qlist=document.getElementById('qlist');
+  if(qlist) qlist.style.fontSize=sz+'px';
+  var lbl=document.getElementById('font-size-label');
+  if(lbl) lbl.textContent=sz;
   var plus=document.getElementById('btn-aplus');
   var minus=document.getElementById('btn-aminus');
-  if(plus){plus.classList.toggle('active',FONT_IDX>1);}
-  if(minus){minus.classList.toggle('active',FONT_IDX<FONT_SIZES.length-1);}
+  if(plus) plus.style.opacity=FONT_IDX>=FONT_SIZES.length-1?'.3':'1';
+  if(minus) minus.style.opacity=FONT_IDX<=0?'.3':'1';
   localStorage.setItem('lq_font_idx',FONT_IDX);
-  showFT('Fonte: '+sz);
+  showFT('Fonte: '+sz+'px');
 }
 
-// Restaurar tamanho de fonte salvo
-(function(){
-  var saved=parseInt(localStorage.getItem('lq_font_idx'));
-  if(!isNaN(saved)&&saved>=0&&saved<FONT_SIZES.length){FONT_IDX=saved;}
+function toggleContrast(){
+  CONTRAST_ON=!CONTRAST_ON;
+  document.body.classList.toggle('high-contrast',CONTRAST_ON);
+  localStorage.setItem('lq_contrast',CONTRAST_ON?'1':'0');
+  var btn=document.getElementById('btn-contraste');
+  if(btn){
+    btn.style.background=CONTRAST_ON?'#5cb8ff':'';
+    btn.style.color=CONTRAST_ON?'#000':'';
+    btn.style.fontWeight=CONTRAST_ON?'700':'400';
+    btn.style.borderColor=CONTRAST_ON?'#5cb8ff':'';
+  }
+  showFT(CONTRAST_ON?'🌑 Alto contraste ativado':'🌕 Contraste normal');
+}
+
+function toggleSpacing(){
+  SPACING_ON=!SPACING_ON;
+  document.body.classList.toggle('wide-spacing',SPACING_ON);
+  localStorage.setItem('lq_spacing',SPACING_ON?'1':'0');
+  var btn=document.getElementById('btn-espacamento');
+  if(btn){
+    btn.style.background=SPACING_ON?'#e0f2fe':'';
+    btn.style.color=SPACING_ON?'#0369a1':'';
+    btn.style.borderColor=SPACING_ON?'#7dd3fc':'';
+    btn.style.fontWeight=SPACING_ON?'700':'400';
+  }
+  showFT(SPACING_ON?'≡ Espaçamento aumentado':'≡ Espaçamento padrão');
+}
+
+function printQuestoes(){
+  var qlist=document.getElementById('qlist');
+  var cards=qlist?qlist.querySelectorAll('.q-card'):[]; 
+  if(!cards.length){showFT('⚠️ Nenhuma questão carregada para imprimir.');return;}
+  var dateEl=document.getElementById('print-date');
+  if(dateEl) dateEl.textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  var sub=document.getElementById('print-subtitle');
+  if(sub){
+    var titulo=(ACTIVE_PRODUCT_FILTER?document.getElementById('page-title')?.textContent:'VMQ LeisecaQuest')||'LeisecaQuest';
+    sub.textContent=cards.length+' questões — '+titulo+' — '+new Date().toLocaleDateString('pt-BR');
+  }
+  showFT('🖨️ Abrindo impressão...');
+  setTimeout(function(){window.print();},100);
+}
+
+// Restaurar preferências salvas ao carregar
+(function initAccessibility(){
+  var savedFont=parseInt(localStorage.getItem('lq_font_idx'));
+  if(!isNaN(savedFont)&&savedFont>=0&&savedFont<FONT_SIZES.length){
+    FONT_IDX=savedFont;
+    setTimeout(function(){
+      var qlist=document.getElementById('qlist');
+      if(qlist) qlist.style.fontSize=FONT_SIZES[FONT_IDX]+'px';
+      var lbl=document.getElementById('font-size-label');
+      if(lbl) lbl.textContent=FONT_SIZES[FONT_IDX];
+    },500);
+  }
+  if(localStorage.getItem('lq_contrast')==='1'){
+    CONTRAST_ON=true;
+    document.body.classList.add('high-contrast');
+    setTimeout(function(){
+      var btn=document.getElementById('btn-contraste');
+      if(btn){btn.style.background='#5cb8ff';btn.style.color='#000';btn.style.fontWeight='700';btn.style.borderColor='#5cb8ff';}
+    },500);
+  }
+  if(localStorage.getItem('lq_spacing')==='1'){
+    SPACING_ON=true;
+    document.body.classList.add('wide-spacing');
+    setTimeout(function(){
+      var btn=document.getElementById('btn-espacamento');
+      if(btn){btn.style.background='#e0f2fe';btn.style.color='#0369a1';btn.style.fontWeight='700';btn.style.borderColor='#7dd3fc';}
+    },500);
+  }
 })();
 
 // ═══════════════════════════════════════════════
@@ -2540,48 +2693,13 @@ function metaViewContent(productId, name){
 }
 
 async function openRetaFinal(productId, name){
-  window.ACTIVE_PRODUCT_FILTER=productId;
+  ACTIVE_PRODUCT_FILTER=productId; // Setar ANTES de navegar
   navTo('questoes');
   document.getElementById('page-title').textContent='Reta Final: '+name;
-  Q_PAGE=0; Q_FILTER_LEI='';
-  const el=document.getElementById('qlist');
-  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">⏳ Carregando '+name+'...</div>';
-
-  const{data,error,count}=await sb.from('questions').select('*',{count:'exact'})
-    .eq('product_id',productId).eq('active',true).range(0,99).order('id',{ascending:true});
-
-  if(error||!data||!data.length){
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">Nenhuma questão encontrada para '+name+'.</div>';
-    return;
-  }
-  QUESTIONS=data; Q_TOTAL=count||data.length;
-  document.getElementById('q-count').textContent=Q_TOTAL;
-  const qHTML=QUESTIONS.map(buildQ).join('');
-  const moreLeft=Q_TOTAL-data.length;
-  const moreBtn=moreLeft>0
-    ?`<div class="load-more-wrap" style="text-align:center;padding:16px">
-        <button onclick="Q_PAGE=1;loadRetaFinalPage('${productId}')" style="padding:9px 24px;border:1.5px solid var(--blue);border-radius:6px;background:#fff;color:var(--blue);font-size:.8rem;font-weight:600;cursor:pointer">
-          Carregar mais ${Math.min(100,moreLeft)} questões →
-        </button>
-      </div>`
-    :`<div style="text-align:center;padding:12px;font-size:.75rem;color:var(--dim)">✓ Todas as ${Q_TOTAL} questões da ${name}</div>`;
-  el.innerHTML=qHTML+moreBtn;
-  showFT('✅ '+Q_TOTAL+' questões — '+name);
+  loadQuestions(true); // Recarregar com o filtro do produto
 }
 
-async function loadRetaFinalPage(productId){
-  const from=Q_PAGE*100, to=from+99;
-  const{data,count}=await sb.from('questions').select('*',{count:'exact'})
-    .eq('product_id',productId).eq('active',true).range(from,to).order('id',{ascending:true});
-  if(!data||!data.length)return;
-  QUESTIONS=[...QUESTIONS,...data];
-  const moreLeft=(count||Q_TOTAL)-(from+data.length);
-  const moreBtn=moreLeft>0
-    ?`<div class="load-more-wrap" style="text-align:center;padding:16px"><button onclick="Q_PAGE++;loadRetaFinalPage('${productId}')" style="padding:9px 24px;border:1.5px solid var(--blue);border-radius:6px;background:#fff;color:var(--blue);font-size:.8rem;font-weight:600;cursor:pointer">Carregar mais ${Math.min(100,moreLeft)} →</button></div>`:'';
-  const el=document.getElementById('qlist');
-  const existing=el.querySelector('.load-more-wrap');if(existing)existing.remove();
-  el.insertAdjacentHTML('beforeend',data.map((q,i)=>buildQ(q,from+i)).join('')+moreBtn);
-}
+// loadRetaFinalPage — agora usa loadQuestions(false) com ACTIVE_PRODUCT_FILTER já setado
 
 function startSim(simId,total){
   const simQs=QUESTIONS.slice(0,Math.min(total,QUESTIONS.length));
@@ -3168,37 +3286,6 @@ function applyDark(){
     var sw=document.getElementById('sw-dark');
     if(sw) sw.classList.add('on');
   }
-}
-
-// ── ACESSIBILIDADE ──
-function openA11y(){document.getElementById('a11y-panel').classList.add('open');}
-function closeA11y(){document.getElementById('a11y-panel').classList.remove('open');}
-function toggleLg(){
-  document.body.classList.toggle('font-lg');
-  var on=document.body.classList.contains('font-lg');
-  localStorage.setItem('lq_font_lg',on?'1':'0');
-}
-function toggleHC(){
-  document.body.classList.toggle('high-contrast');
-  var on=document.body.classList.contains('high-contrast');
-  localStorage.setItem('lq_hc',on?'1':'0');
-}
-var fontSize=parseInt(localStorage.getItem('lq_font_sz')||'14');
-function adjFont(d){
-  fontSize=Math.min(20,Math.max(12,fontSize+d));
-  document.body.style.fontSize=fontSize+'px';
-  var el=document.getElementById('font-sz');if(el)el.textContent=fontSize;
-  localStorage.setItem('lq_font_sz',fontSize);
-}
-function resetA11y(){
-  ['lq_dark','lq_font_lg','lq_hc','lq_font_sz'].forEach(k=>localStorage.removeItem(k));
-  location.reload();
-}
-function applyPrefsExtra(){
-  applyDark();
-  if(localStorage.getItem('lq_font_lg')==='1') document.body.classList.add('font-lg');
-  if(localStorage.getItem('lq_hc')==='1') document.body.classList.add('high-contrast');
-  document.body.style.fontSize=fontSize+'px';
 }
 
 // ── VITALÍCIO BANNER ──
